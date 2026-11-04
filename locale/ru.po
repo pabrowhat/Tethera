@@ -1,0 +1,1307 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Tethera\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "menu.types"
+msgstr "Типы…"
+
+msgid "type.manager.title"
+msgstr "Типы"
+
+msgid "type.manager.close"
+msgstr "Закрыть"
+
+msgid "type.manager.empty"
+msgstr "Типов пока нет. Создайте первый выше."
+
+msgid "type.create.placeholder"
+msgstr "Название нового типа…"
+
+msgid "type.create.button"
+msgstr "Создать тип"
+
+msgid "type.create.duplicate"
+msgstr "Тип «%s» уже существует"
+
+msgid "type.rename.duplicate"
+msgstr "Другой тип уже называется «%s»"
+
+msgid "type.notes_count"
+msgstr "Заметок этого типа"
+
+msgid "type.delete.button"
+msgstr "Удалить тип"
+
+msgid "type.delete.title"
+msgstr "Удаление типа"
+
+msgid "type.delete.confirm"
+msgstr "Удалить тип «%s»?\nЗаметки этого типа (%d) сохранят поля и останутся без типа."
+
+msgid "type.field.none"
+msgstr "Полей пока нет"
+
+msgid "type.field.add"
+msgstr "Добавить поле"
+
+msgid "type.field.label_placeholder"
+msgstr "Название поля…"
+
+msgid "type.field.duplicate"
+msgstr "В этом типе уже есть поле «%s»"
+
+msgid "type.field.remove"
+msgstr "Убрать поле"
+
+msgid "type.field.kind.text"
+msgstr "Текст"
+
+msgid "type.field.kind.number"
+msgstr "Число"
+
+msgid "type.field.kind.date"
+msgstr "Дата"
+
+msgid "type.field.kind.list"
+msgstr "Список"
+
+msgid "type.section.title"
+msgstr "Тип"
+
+msgid "type.none"
+msgstr "Без типа"
+
+msgid "type.color.follow"
+msgstr "Цвет по типу"
+
+msgid "type.field.number_invalid"
+msgstr "Введите число, например 1500 или 2,5"
+
+msgid "type.field.date_invalid"
+msgstr "Формат даты: ГГГГ-ММ-ДД"
+
+msgid "type.field.date_hint"
+msgstr "ГГГГ-ММ-ДД"
+
+msgid "type.field.list_hint"
+msgstr "Через запятую"
+
+msgid "menu.text.undo"
+msgstr "Отменить"
+
+msgid "menu.text.redo"
+msgstr "Повторить"
+
+msgid "menu.text.cut"
+msgstr "Вырезать"
+
+msgid "menu.text.copy"
+msgstr "Копировать"
+
+msgid "menu.text.paste"
+msgstr "Вставить"
+
+msgid "menu.text.select_all"
+msgstr "Выделить всё"
+
+msgid "filter.no_type"
+msgstr "Без типа"
+
+msgid "filter.button"
+msgstr "Типы %d/%d"
+
+msgid "filter.show_all"
+msgstr "Показать все"
+
+msgid "filter.hide_all"
+msgstr "Скрыть все"
+
+msgid "filter.search"
+msgstr "Найти тип…"
+
+msgid "menu.export"
+msgstr "Экспортировать…"
+
+msgid "export.dialog.title"
+msgstr "Экспорт заметок"
+
+msgid "export.dialog.action"
+msgstr "Экспортировать"
+
+msgid "export.empty"
+msgstr "Холст пуст, нечего экспортировать"
+
+msgid "export.none_selected"
+msgstr "Не выбрано ни одной заметки"
+
+msgid "export.done"
+msgstr "Экспорт готов: %s (заметок: %d)"
+
+msgid "export.done_missing"
+msgstr "Экспорт готов: %s (заметок: %d, картинок не найдено: %d)"
+
+msgid "select.search"
+msgstr "Найти заметку…"
+
+msgid "select.all"
+msgstr "Выбрать все"
+
+msgid "select.none"
+msgstr "Снять все"
+
+msgid "select.cancel"
+msgstr "Отмена"
+
+msgid "select.counter"
+msgstr "Выбрано: %d из %d"
+
+msgid "select.counter.linked"
+msgstr " (+%d связанных)"
+
+msgid "select.include_linked"
+msgstr "Включить связанные"
+
+msgid "select.types"
+msgstr "Типы: %s"
+
+msgid "select.types.none"
+msgstr "Типы: нет"
+
+msgid "select.images"
+msgstr "Картинки: %s"
+
+msgid "select.images.none"
+msgstr "Картинки: нет"
+
+msgid "select.more"
+msgstr "и ещё %d"
+
+msgid "select.row.linked"
+msgstr "добавлена по связи"
+
+msgid "select.row.duplicate"
+msgstr "будет переименована"
+
+msgid "select.duplicates"
+msgstr "Заметок с таким же названием, как на холсте: %d. Они придут с номером в названии; ссылки [[...]] между импортируемыми заметками обновятся."
+
+msgid "import.dialog.title"
+msgstr "Проект: %s"
+
+msgid "import.dialog.action.import"
+msgstr "Импортировать в текущий мир"
+
+msgid "import.dialog.action.open_all"
+msgstr "Открыть целиком"
+
+msgid "import.none_selected"
+msgstr "Не выбрано ни одной заметки"
+
+msgid "import.canceled"
+msgstr "Импорт отменён"
+
+msgid "import.done"
+msgstr "Импортировано заметок: %d из «%s»"
+
+msgid "import.problem.skipped"
+msgstr "пропущено повреждённых заметок: %d"
+
+msgid "import.problem.images"
+msgstr "обложек не загружено: %d"
+
+msgid "import.conflict.title"
+msgstr "Такой тип уже есть"
+
+msgid "import.conflict.message"
+msgstr "В файле есть тип «%s» (%d из %d), и тип с таким названием уже есть."
+
+msgid "import.conflict.help"
+msgstr "Объединить: заметки войдут в существующий тип, недостающие поля добавятся.\nПереименовать: тип придёт под названием ниже.\nПропустить: заметки придут без типа."
+
+msgid "import.conflict.name"
+msgstr "Новое название…"
+
+msgid "import.conflict.name_empty"
+msgstr "Введите название"
+
+msgid "import.conflict.name_taken"
+msgstr "Тип «%s» уже существует"
+
+msgid "import.conflict.cancel"
+msgstr "Отменить импорт"
+
+msgid "import.conflict.skip"
+msgstr "Пропустить"
+
+msgid "import.conflict.rename"
+msgstr "Переименовать"
+
+msgid "import.conflict.merge"
+msgstr "Объединить"
+
+msgid "import.history"
+msgstr "Импорт заметок (%d)"
+
+msgid "import.problem.renamed"
+msgstr "переименовано заметок: %d"
+
+msgid "image.missing"
+msgstr "Картинка не найдена: %s"
+
+msgid "image.missing_toast"
+msgstr "Картинка не найдена: %s"
+
+msgid "image.missing_toast_many"
+msgstr "Картинок не найдено: %d"
+
+msgid "image.insert"
+msgstr "Вставить картинку"
+
+msgid "image.insert.dialog"
+msgstr "Выберите картинку"
+
+msgid "image.insert.failed"
+msgstr "Не удалось скопировать картинку"
+
+msgid "import.problem.inline_images"
+msgstr "картинок нет в файле: %d"
+
+msgid "save.done_missing"
+msgstr "Проект сохранён: %s (картинок не найдено: %d)"
+
+msgid "menu.clean_images"
+msgstr "Удалить неиспользуемые картинки…"
+
+msgid "images.clean.none"
+msgstr "Неиспользуемых картинок нет"
+
+msgid "images.clean.title"
+msgstr "Удалить неиспользуемые картинки"
+
+msgid "images.clean.message"
+msgstr "Файлов картинок, на которые не ссылается ни одна заметка, резервная копия или заметка в корзине: %d.\nОни будут перемещены в корзину и удалены навсегда через 30 дней."
+
+msgid "images.clean.confirm"
+msgstr "В корзину"
+
+msgid "images.clean.done"
+msgstr "Перемещено в корзину картинок: %d"
+
+msgid "bundle.refused.damaged"
+msgstr "Файл повреждён: оглавление архива не читается."
+
+msgid "bundle.refused.too_large"
+msgstr "Файл не открыт: в распакованном виде он занял бы больше 2 ГБ."
+
+msgid "bundle.refused.entry_too_large"
+msgstr "Файл не открыт: часть «%s» больше 50 МБ."
+
+msgid "bundle.refused.ratio"
+msgstr "Файл не открыт: часть «%s» сжата больше чем в 100 раз. Так выглядят архивные бомбы."
+
+msgid "image.refused.too_large"
+msgstr "Картинка «%s» больше 8000 × 8000 пикселей."
+
+msgid "image.refused.file_too_large"
+msgstr "Файл картинки «%s» больше 50 МБ."
+
+msgid "image.refused.mismatch"
+msgstr "«%s» – не картинка того формата, который указан в расширении."
+
+msgid "image.refused.unreadable"
+msgstr "Картинка «%s» повреждена."
+
+msgid "import.problem.refused_images"
+msgstr "отклонено картинок (слишком большие или повреждённые): %d"
+
+msgid "vault.corrupt_notes"
+msgstr "Повреждённых заметок: %d. Их файлы переименованы в .corrupt в папке заметок: %s."
+
+msgid "vault.unreadable_notes"
+msgstr "Не удалось открыть файлы заметок (их может держать другая программа): %d: %s."
+
+msgid "vault.snapshot_failed"
+msgstr "Сегодняшний снимок заметок не удалось сохранить в папку резервных копий."
+
+msgid "select.linked_group"
+msgstr "Добавлены по связи (%d)"
+
+msgid "select.linked_group.hint"
+msgstr "Эти заметки не отмечены. Они попадут в файл, потому что на них ссылаются отмеченные. Отметьте заметку, чтобы выбрать её самому."
+
+msgid "menu.trash_restore"
+msgstr "Восстановить из корзины…"
+
+msgid "menu.trash_empty"
+msgstr "Очистить корзину сейчас…"
+
+msgid "trash.none"
+msgstr "Корзина пуста"
+
+msgid "trash.empty.title"
+msgstr "Очистить корзину"
+
+msgid "trash.empty.message"
+msgstr "Файлов в корзине: %d. Они будут удалены навсегда.\nОтменить это нельзя. Резервные копии это не затрагивает."
+
+msgid "trash.empty.confirm"
+msgstr "Очистить"
+
+msgid "trash.empty.done"
+msgstr "Удалено из корзины: %d"
+
+msgid "trash.restore.title"
+msgstr "Восстановить из корзины"
+
+msgid "trash.restore.action"
+msgstr "Восстановить"
+
+msgid "trash.restore.done"
+msgstr "Заметок восстановлено: %d. Связи в корзине не хранятся."
+
+msgid "trash.restore.failed"
+msgstr "Не удалось восстановить заметки."
+
+msgid "trash.restore.history"
+msgstr "Восстановление заметок из корзины: %d"
+
+msgid "menu.trash"
+msgstr "Корзина"
+
+msgid "bookmark.set"
+msgstr "Закладка %d: %s"
+
+msgid "bookmark.need_one"
+msgstr "Выберите одну заметку, чтобы поставить закладку."
+
+msgid "bookmark.empty"
+msgstr "Закладка %d пуста. Выберите заметку и нажмите Shift+%d."
+
+msgid "bookmark.missing"
+msgstr "Закладка указывает на удалённую заметку."
+
+msgid "note.untitled"
+msgstr "(без названия)"
+
+msgid "recent.button"
+msgstr "Недавние"
+
+msgid "recent.empty"
+msgstr "Изменённых заметок пока нет."
+
+msgid "recent.just_now"
+msgstr "только что"
+
+msgid "recent.minutes"
+msgstr "%d мин назад"
+
+msgid "recent.hours"
+msgstr "%d ч назад"
+
+msgid "recent.days"
+msgstr "%d дн назад"
+
+msgid "bookmark.cleared"
+msgstr "Закладка %d снята."
+
+msgid "menu.settings"
+msgstr "Настройки…"
+
+msgid "settings.title"
+msgstr "Настройки"
+
+msgid "settings.reduce_motion"
+msgstr "Уменьшить движение"
+
+msgid "settings.reduce_motion.hint"
+msgstr "Переворот карточки и сворачивание в плашку происходят мгновенно. Затухания и подсветка остаются."
+
+msgid "settings.show_grid"
+msgstr "Показывать сетку на фоне"
+
+msgid "settings.line_width"
+msgstr "Толщина линий"
+
+msgid "settings.line_width.value"
+msgstr "×%.1f"
+
+msgid "settings.default_color"
+msgstr "Цвет по умолчанию для заметок без типа"
+
+msgid "settings.default_color.hint"
+msgstr "Заметки с типом всегда берут цвет своего типа."
+
+msgid "settings.advanced"
+msgstr "Расширенные"
+
+msgid "settings.backups"
+msgstr "Сколько копий хранить при открытии проекта"
+
+msgid "settings.backups.hint"
+msgstr "Если 0, то копии не делаются, старые удаляются. Ежедневные снимки всегда хранятся 7 дней."
+
+msgid "settings.export_include_linked"
+msgstr "Отмечать «Включить связанные» при экспорте"
+
+msgid "settings.save"
+msgstr "Сохранить"
+
+msgid "settings.cancel"
+msgstr "Отмена"
+
+msgid "settings.reset"
+msgstr "Сбросить по умолчанию"
+
+msgid "settings.reset.title"
+msgstr "Сбросить настройки?"
+
+msgid "settings.reset.message"
+msgstr "Все настройки в этом окне вернутся к значениям по умолчанию. Пока вы не нажмёте «Сохранить», ничего не сохранится."
+
+msgid "settings.reset.confirm"
+msgstr "Сбросить"
+
+msgid "settings.unsaved.title"
+msgstr "Есть несохранённые изменения"
+
+msgid "settings.unsaved.message"
+msgstr "Некоторые настройки не были сохранены. Сохранить их, отклонить изменения или вернуться к настройкам?"
+
+msgid "settings.unsaved.discard"
+msgstr "Отклонить изменения"
+
+msgid "settings.saved"
+msgstr "Настройки сохранены"
+
+msgid "background.title"
+msgstr "Оформление"
+
+msgid "background.title_type"
+msgstr "Фон заметок этого типа"
+
+msgid "background.pick_image"
+msgstr "Выбрать картинку"
+
+msgid "background.clear"
+msgstr "Убрать фон"
+
+msgid "background.dialog"
+msgstr "Выберите картинку для фона"
+
+msgid "background.from_note"
+msgstr "Свой фон"
+
+msgid "background.from_type"
+msgstr "Фон берётся у типа"
+
+msgid "background.from_default"
+msgstr "Фон по умолчанию"
+
+msgid "background.gradient_end"
+msgstr "Конец градиента (необязательно)"
+
+msgid "menu.add_decor"
+msgstr "Добавить картинку на стол…"
+
+msgid "decor.dialog"
+msgstr "Выберите картинку для стола"
+
+msgid "decor.limit"
+msgstr "На столе не больше %d картинок. Сначала уберите лишние."
+
+msgid "decor.refused.too_large"
+msgstr "Картинка «%s» больше 4000 × 4000 пикселей."
+
+msgid "decor.refused.file_too_large"
+msgstr "Картинка «%s» больше 20 МБ."
+
+msgid "decor.history.add"
+msgstr "Добавление картинки"
+
+msgid "decor.history.move"
+msgstr "Перемещение картинки"
+
+msgid "decor.history.resize"
+msgstr "Изменение размера картинки"
+
+msgid "decor.history.rotate"
+msgstr "Поворот картинки"
+
+msgid "decor.history.delete"
+msgstr "Удаление (%d)"
+
+msgid "decor.deleted"
+msgstr "Удалено объектов: %d"
+
+msgid "decor.layer.below"
+msgstr "Под заметками"
+
+msgid "decor.layer.above"
+msgstr "Над заметками"
+
+msgid "decor.delete"
+msgstr "Удалить картинку"
+
+msgid "decor.history.layer"
+msgstr "Смена слоя картинки"
+
+msgid "import.problem.decor"
+msgstr "картинок не восстановлено: %d"
+
+msgid "menu.open_folder"
+msgstr "Открыть папку миров"
+
+msgid "command.reason.no_undo"
+msgstr "Нечего отменить"
+
+msgid "command.reason.no_redo"
+msgstr "Нечего повторить"
+
+msgid "command.new_note"
+msgstr "Новая заметка"
+
+msgid "command.search"
+msgstr "Поиск заметок"
+
+msgid "command.type_filter"
+msgstr "Фильтр по типам"
+
+msgid "palette.placeholder"
+msgstr "Введите команду…"
+
+msgid "palette.empty"
+msgstr "Команда не найдена"
+
+msgid "type.field.read_line"
+msgstr "%s: %s"
+
+msgid "background.gradient"
+msgstr "Градиент"
+
+msgid "background.border_color"
+msgstr "Цвет рамки"
+
+msgid "background.body_color"
+msgstr "Цвет фона"
+
+msgid "menu.canvas_background"
+msgstr "Фон холста…"
+
+msgid "canvas_bg.title"
+msgstr "Фон холста"
+
+msgid "canvas_bg.pick"
+msgstr "Выбрать картинку"
+
+msgid "canvas_bg.clear"
+msgstr "Убрать фон"
+
+msgid "canvas_bg.opacity"
+msgstr "Непрозрачность"
+
+msgid "canvas_bg.none"
+msgstr "Фон не задан"
+
+msgid "canvas_bg.done"
+msgstr "Готово"
+
+msgid "canvas_bg.dialog"
+msgstr "Выберите картинку для фона холста"
+
+msgid "canvas_bg.load_failed"
+msgstr "Картинка фона холста не загрузилась, показан обычный холст."
+
+msgid "canvas_bg.refused.too_large"
+msgstr "Картинка «%s» больше 4000 × 4000 пикселей."
+
+msgid "canvas_bg.refused.file_too_large"
+msgstr "Картинка «%s» больше 20 МБ."
+
+msgid "import.problem.canvas_bg"
+msgstr "фон холста не восстановлен"
+
+msgid "eyedropper.tooltip"
+msgstr "Пипетка: взять цвет с любого места экрана\nShift – цвет карточки под курсором"
+
+msgid "eyedropper.unavailable"
+msgstr "Не удалось снять цвета с экрана."
+
+msgid "link.style.solid"
+msgstr "Сплошная"
+
+msgid "link.style.dashed"
+msgstr "Пунктир"
+
+msgid "link.style.dotted"
+msgstr "Точки"
+
+msgid "link.history.style"
+msgstr "Стиль связи"
+
+msgid "layout.history"
+msgstr "Расположение"
+
+msgid "layout.button"
+msgstr "Расположить"
+
+msgid "layout.tree_down"
+msgstr "Дерево вниз"
+
+msgid "layout.tree_right"
+msgstr "Дерево вправо"
+
+msgid "layout.orbit"
+msgstr "Общая орбита"
+
+msgid "layout.orbit_by_type"
+msgstr "Орбита по типам"
+
+msgid "layout.no_selection"
+msgstr "Выделите заметки: первая станет корнем или центром"
+
+msgid "layout.single"
+msgstr "Выделите хотя бы две заметки"
+
+msgid "layout.done"
+msgstr "Расположено заметок: %d"
+
+msgid "layout.done_overlaps"
+msgstr "Расположено заметок: %d. Перекрывают другие заметки: %d"
+
+msgid "settings.language"
+msgstr "Язык"
+
+msgid "settings.language.auto"
+msgstr "Авто"
+
+msgid "settings.language.en"
+msgstr "English"
+
+msgid "settings.language.ru"
+msgstr "Русский"
+
+msgid "settings.language.hint"
+msgstr "«Авто» берёт язык системы. Изменение применяется сразу."
+
+msgid "confirm.delete"
+msgstr "Удалить"
+
+msgid "confirm.cancel"
+msgstr "Отмена"
+
+msgid "menu.project"
+msgstr "Проект"
+
+msgid "menu.open"
+msgstr "Открыть…"
+
+msgid "menu.save"
+msgstr "Сохранить"
+
+msgid "menu.undo"
+msgstr "Отменить"
+
+msgid "menu.undo.labeled"
+msgstr "Отменить: %s"
+
+msgid "menu.redo"
+msgstr "Повторить"
+
+msgid "menu.redo.labeled"
+msgstr "Повторить: %s"
+
+msgid "menu.export_png"
+msgstr "Экспорт снимка (PNG)…"
+
+msgid "topbar.search.placeholder"
+msgstr "Поиск (Ctrl+F)..."
+
+msgid "snapshot.dialog.title"
+msgstr "Сохранить снимок холста"
+
+msgid "filedialog.filter.png"
+msgstr "PNG-изображение"
+
+msgid "filedialog.filter.project"
+msgstr "Проект Tethera"
+
+msgid "snapshot.failed.create"
+msgstr "Не удалось создать снимок"
+
+msgid "snapshot.failed.save"
+msgstr "Не удалось сохранить снимок: %s"
+
+msgid "snapshot.saved"
+msgstr "Снимок сохранён: %s"
+
+msgid "open.dialog.title"
+msgstr "Открыть проект Tethera"
+
+msgid "open.drop_hint"
+msgstr "Перетащите файл проекта .tether"
+
+msgid "save.dialog.title"
+msgstr "Сохранить копию проекта"
+
+msgid "save.done"
+msgstr "Проект сохранён: %s"
+
+msgid "open.confirm.title"
+msgstr "Открыть проект"
+
+msgid "open.confirm.message"
+msgstr "Текущий холст (заметок: %d) будет заменён проектом «%s».\nКопия текущих данных сохранится в папке резервных копий."
+
+msgid "open.confirm.action"
+msgstr "Открыть"
+
+msgid "open.problem.no_backup"
+msgstr "резервная копия не создана"
+
+msgid "open.done"
+msgstr "Импортировано в новый мир из %s. Заметок: %d"
+
+msgid "sidebar.mode.edit"
+msgstr "Правка"
+
+msgid "sidebar.mode.view"
+msgstr "Просмотр"
+
+msgid "sidebar.title.placeholder"
+msgstr "Название статьи..."
+
+msgid "sidebar.content.placeholder"
+msgstr "Подробное описание лора, заметки, факты..."
+
+msgid "sidebar.cover"
+msgstr "Обложка"
+
+msgid "sidebar.cover.dialog"
+msgstr "Выберите обложку заметки"
+
+msgid "sidebar.delete_note"
+msgstr "Удалить эту заметку"
+
+msgid "sidebar.zen.enter"
+msgstr "Режим фокуса (F11)"
+
+msgid "sidebar.zen.exit"
+msgstr "Свернуть (Esc)"
+
+msgid "sidebar.preview.empty"
+msgstr "Пока пусто. Переключитесь в режим правки и напишите что-нибудь."
+
+msgid "link.autocomplete.empty"
+msgstr "Нет совпадений"
+
+msgid "batch.palette_caption"
+msgstr "Цвет для всех выбранных"
+
+msgid "batch.header"
+msgstr "Выделено заметок: %d"
+
+msgid "batch.delete"
+msgstr "Удалить выбранные (%d)"
+
+msgid "batch.remove_chip"
+msgstr "Убрать из выделения"
+
+msgid "confirm.default.title"
+msgstr "Удаление заметки"
+
+msgid "confirm.default.message"
+msgstr "Вы уверены, что хотите удалить эту заметку?"
+
+msgid "history.nothing_to_undo"
+msgstr "Нечего отменять"
+
+msgid "history.nothing_to_redo"
+msgstr "Нечего повторять"
+
+msgid "history.undone"
+msgstr "Отменено: %s"
+
+msgid "history.redone"
+msgstr "Повторено: %s"
+
+msgid "history.move"
+msgstr "Перемещение"
+
+msgid "history.carry"
+msgstr "Перенос"
+
+msgid "history.recolor"
+msgstr "Смена цвета"
+
+msgid "history.note.create"
+msgstr "Создание заметки"
+
+msgid "history.note.delete"
+msgstr "Удаление заметки"
+
+msgid "history.notes.delete"
+msgstr "Удаление заметок (%d)"
+
+msgid "history.link.create"
+msgstr "Создание связи"
+
+msgid "history.link.delete"
+msgstr "Удаление связи"
+
+msgid "note.default_title"
+msgstr "Заметка %d"
+
+msgid "note.default_body"
+msgstr "Новая запись..."
+
+msgid "note.title_fallback"
+msgstr "Без названия"
+
+msgid "note.deleted"
+msgstr "Заметка удалена"
+
+msgid "notes.deleted"
+msgstr "Удалено заметок: %d"
+
+msgid "error.bundle.create"
+msgstr "Не удалось создать файл. Проверьте, что в папку можно записывать."
+
+msgid "error.bundle.write"
+msgstr "Не удалось записать данные проекта."
+
+msgid "error.bundle.save"
+msgstr "Не удалось сохранить файл. Возможно, он открыт в другой программе."
+
+msgid "error.bundle.corrupt"
+msgstr "Файл повреждён или это не проект Tethera."
+
+msgid "error.bundle.no_data"
+msgstr "Файл повреждён или это не проект Tethera: в архиве нет данных проекта."
+
+msgid "error.bundle.manifest"
+msgstr "Файл повреждён: манифест проекта нечитаем."
+
+msgid "error.bundle.foreign"
+msgstr "Это не проект Tethera."
+
+msgid "error.bundle.version_unknown"
+msgstr "Файл повреждён: неизвестная версия формата."
+
+msgid "error.bundle.version_newer"
+msgstr "Проект создан в более новой версии Tethera (формат %d, поддерживается %d). Обновите приложение."
+
+msgid "error.bundle.graph"
+msgstr "Файл повреждён: данные графа нечитаемы."
+
+msgid "error.bundle.notes_missing"
+msgstr "Файл повреждён: в данных графа нет списка заметок."
+
+msgid "format.bold"
+msgstr "Жирный (**текст**)"
+
+msgid "format.italic"
+msgstr "Курсив (*текст*)"
+
+msgid "format.strike"
+msgstr "Зачёркнутый (~~текст~~)"
+
+msgid "format.h1"
+msgstr "Заголовок 1"
+
+msgid "format.h2"
+msgstr "Заголовок 2"
+
+msgid "format.bullet"
+msgstr "Маркированный список"
+
+msgid "format.text_color"
+msgstr "Цвет текста"
+
+msgid "format.highlight"
+msgstr "Подсветка фона"
+
+msgid "palette.slot.filled"
+msgstr "#%s\nПКМ – очистить слот"
+
+msgid "palette.slot.empty"
+msgstr "Пустой слот: свои цвета сохраняются сюда"
+
+msgid "palette.custom"
+msgstr "Свой цвет"
+
+msgid "picker.copy_hex"
+msgstr "Копировать HEX"
+
+msgid "minimap.fit"
+msgstr "Вместить всё (F)"
+
+msgid "minimap.collapse"
+msgstr "Свернуть (M)"
+
+msgid "minimap.expand"
+msgstr "Развернуть (M)"
+
+msgid "card.backlink.tooltip"
+msgstr "Перейти к заметке"
+
+msgid "card.flip.tooltip"
+msgstr "Перевернуть (двойной клик)"
+
+msgid "card.unflip.tooltip"
+msgstr "Вернуть лицевую сторону (двойной клик)"
+
+msgid "card.title.default"
+msgstr "Название карточки"
+
+msgid "card.back.title"
+msgstr "Сведения"
+
+msgid "card.dates"
+msgstr "Создано: %s\nИзменено: %s"
+
+msgid "card.dates.empty"
+msgstr "Создано: –\nИзменено: –"
+
+msgid "card.status.todo"
+msgstr "План"
+
+msgid "card.status.in_progress"
+msgstr "В работе"
+
+msgid "card.status.done"
+msgstr "Готово"
+
+msgid "card.backlinks.title"
+msgstr "Входящие ссылки"
+
+msgid "card.backlinks.none"
+msgstr "Нет входящих ссылок"
+
+msgid "card.backlinks.more"
+msgstr "+%d ещё"
+
+msgid "picker.was"
+msgstr "Было"
+
+msgid "picker.now"
+msgstr "Стало"
+
+msgid "minimap.title"
+msgstr "Карта"
+
+msgid "vault.pick.title"
+msgstr "Выберите папку для миров"
+
+msgid "vault.pick.message"
+msgstr "Каждый мир – это папка внутри неё: заметки, картинки, типы, связи, резервные копии и корзина. Ваши заметки будут скопированы в первый мир «Мой мир»; старые файлы останутся на месте."
+
+msgid "vault.pick.choose"
+msgstr "Выбрать папку…"
+
+msgid "vault.pick.dialog_title"
+msgstr "Папка для миров"
+
+msgid "vault.missing.title"
+msgstr "Папка миров не найдена"
+
+msgid "vault.missing.message"
+msgstr "Папка %s недоступна. Возможно, диск не подключён или папку переместили или переименовали. Ничего не создано и не удалено."
+
+msgid "vault.missing.choose"
+msgstr "Выбрать другую папку"
+
+msgid "vault.missing.create"
+msgstr "Создать пустую папку"
+
+msgid "vault.error.not_absolute"
+msgstr "Выберите папку на диске (полный путь)."
+
+msgid "vault.error.parent_ref"
+msgstr "В пути к папке не должно быть «.» или «..»."
+
+msgid "vault.error.not_dir"
+msgstr "Такой папки нет, или это не папка."
+
+msgid "vault.error.legacy_folder"
+msgstr "Это старая папка заметок приложения. Выберите другую: старые заметки будут скопированы из неё."
+
+msgid "vault.error.world_folder"
+msgstr "Это папка мира или папка внутри мира. Выберите папку, в которой лежат миры."
+
+msgid "vault.error.create_failed"
+msgstr "Не удалось создать мир в этой папке. Проверьте, что в неё можно записывать."
+
+msgid "vault.error.copy_failed"
+msgstr "Не удалось скопировать старые заметки (%s). Новый мир удалён, старые заметки на месте."
+
+msgid "worlds.default_name"
+msgstr "Мой мир"
+
+msgid "worlds.damaged_skipped"
+msgstr "Пропущено миров с повреждённым world.json: %d."
+
+msgid "worlds.empty_list"
+msgstr "В этой папке пока нет миров."
+
+msgid "worlds.rename"
+msgstr "Переименовать"
+
+msgid "worlds.delete"
+msgstr "Удалить"
+
+msgid "worlds.cancel"
+msgstr "Отмена"
+
+msgid "worlds.notes"
+msgstr "Заметок: %d"
+
+msgid "worlds.damaged"
+msgstr "Повреждён"
+
+msgid "worlds.name.title_create"
+msgstr "Новый мир"
+
+msgid "worlds.name.title_rename"
+msgstr "Переименовать мир"
+
+msgid "worlds.name.placeholder"
+msgstr "Название мира"
+
+msgid "worlds.name.ok"
+msgstr "Готово"
+
+msgid "worlds.name.empty"
+msgstr "Название не может быть пустым."
+
+msgid "worlds.name.too_long"
+msgstr "Название слишком длинное (не больше 80 символов)."
+
+msgid "worlds.name.line_break"
+msgstr "Название должно быть в одну строку."
+
+msgid "worlds.rename.failed"
+msgstr "Не удалось переименовать мир."
+
+msgid "worlds.delete.title"
+msgstr "Удалить мир"
+
+msgid "worlds.delete.message"
+msgstr "Переместить мир «%s» в корзину? Заметок: %d. Он пролежит в папке trash-worlds 30 дней."
+
+msgid "worlds.delete.confirm"
+msgstr "В корзину"
+
+msgid "worlds.delete.last"
+msgstr "Последний мир удалить нельзя. Сначала создайте другой."
+
+msgid "worlds.delete.damaged"
+msgstr "Повреждённый мир нельзя переместить в корзину."
+
+msgid "worlds.delete.damaged_message"
+msgstr "Мир «%s» повреждён: его world.json не читается. Он будет удалён навсегда вместе со всеми файлами (заметок: %d), без корзины. Это нельзя отменить."
+
+msgid "worlds.delete.forever"
+msgstr "Удалить навсегда"
+
+msgid "worlds.delete.damaged_failed"
+msgstr "Не удалось удалить повреждённый мир."
+
+msgid "worlds.delete.damaged_done"
+msgstr "Повреждённый мир удалён: %s"
+
+msgid "worlds.delete.failed"
+msgstr "Не удалось переместить мир в корзину."
+
+msgid "worlds.delete.done"
+msgstr "Мир перемещён в корзину: %s"
+
+msgid "worlds.switch.failed"
+msgstr "Этот мир нельзя открыть."
+
+msgid "worlds.switch.flush_failed"
+msgstr "Не удалось сохранить открытый мир, поэтому он остаётся открытым. Проверьте, что в его папку можно записывать."
+
+msgid "worlds.switch.done"
+msgstr "Открыт мир: %s"
+
+msgid "save.world_done"
+msgstr "Сохранено"
+
+msgid "save.world_failed"
+msgstr "Сохранить удалось не всё. Проверьте, что в папку мира можно записывать."
+
+msgid "import.dialog.action.new_world"
+msgstr "Создать новый мир"
+
+msgid "import.new_world.title"
+msgstr "Название нового мира"
+
+msgid "import.failed_partial"
+msgstr "Импорт остановлен: не удалось записать файл. Импортировано заметок: %d. Проверьте, что в папку мира можно записывать."
+
+msgid "settings.vault_dir"
+msgstr "Папка миров"
+
+msgid "settings.vault_dir.choose"
+msgstr "Выбрать…"
+
+msgid "settings.vault_dir.dialog_title"
+msgstr "Папка для миров"
+
+msgid "settings.vault_dir.hint"
+msgstr "Применяется при сохранении. Миры не переносятся, старая папка остаётся на месте."
+
+msgid "settings.vault.confirm.title"
+msgstr "Папка миров"
+
+msgid "settings.vault.confirm.message"
+msgstr "Сделать %s папкой миров? Миры не переносятся. Старая папка останется на месте."
+
+msgid "settings.vault.confirm.action"
+msgstr "Сменить папку"
+
+msgid "settings.vault.create.title"
+msgstr "Создать папку?"
+
+msgid "settings.vault.create.message"
+msgstr "Папки %s нет. Создать её?"
+
+msgid "settings.vault.create.action"
+msgstr "Создать"
+
+msgid "vault.change.flush_failed"
+msgstr "Не удалось сохранить открытый мир, поэтому папка миров не изменена."
+
+msgid "vault.change.done"
+msgstr "Папка миров изменена. Открыт мир: %s"
+
+msgid "menu.about"
+msgstr "О программе…"
+
+msgid "start.subtitle"
+msgstr "Пространственное полотно для заметок и лора"
+
+msgid "start.worlds"
+msgstr "Миры"
+
+msgid "start.open"
+msgstr "Открыть"
+
+msgid "start.create"
+msgstr "Создать"
+
+msgid "start.import"
+msgstr "Импорт .tether…"
+
+msgid "start.settings"
+msgstr "Настройки"
+
+msgid "start.about"
+msgstr "О программе"
+
+msgid "start.quit"
+msgstr "Выход"
+
+msgid "start.last_world"
+msgstr "Последний"
+
+msgid "start.example_failed"
+msgstr "Не удалось загрузить мир-пример. Вместо него создан пустой мир."
+
+msgid "worlds.example_name"
+msgstr "Пример"
+
+msgid "about.title"
+msgstr "О программе"
+
+msgid "about.tab.about"
+msgstr "О программе"
+
+msgid "about.tab.whats_new"
+msgstr "Что нового"
+
+msgid "about.close"
+msgstr "Закрыть"
+
+msgid "about.version"
+msgstr "Версия: %s"
+
+msgid "about.licenses"
+msgstr "Лицензии"
+
+msgid "about.license.godot"
+msgstr "Godot Engine (включая встроенный шрифт интерфейса)"
+
+msgid "about.license.lucide"
+msgstr "Иконки Lucide"
+
+msgid "about.license.show"
+msgstr "Показать"
+
+msgid "about.license.hide"
+msgstr "Скрыть"
+
+msgid "about.license.missing"
+msgstr "Файл лицензии не найден."
+
+msgid "about.whats_new.none"
+msgstr "Для этой версии заметок нет."
+
+msgid "about.whats_new.heading"
+msgstr "Что нового в %s"
+
+msgid "whats_new.1_0_0.worlds"
+msgstr "Миры: несколько отдельных полотен в одной папке миров."
+
+msgid "whats_new.1_0_0.start_screen"
+msgstr "Стартовый экран показывает ваши миры и открывает выбранный."
+
+msgid "whats_new.1_0_0.import"
+msgstr "Файл .tether можно импортировать в текущий мир или в новый."
+
+msgid "whats_new.1_0_0.example"
+msgstr "Мир «Пример» показывает, как работают заметки, связи и типы."
+
+msgid "whats_new.1_0_0.about"
+msgstr "Окно «О программе» показывает версию и лицензии."
+
+msgid "menu.main_menu"
+msgstr "Главное меню"
+
+msgid "menu.quit"
+msgstr "Выход (Ctrl+Q)"
+
+msgid "exit.flush_failed"
+msgstr "Мир не удалось сохранить, поэтому ничего не закрыто. Проверьте, что в папку мира можно писать и на диске есть место."
+
+msgid "menu.export_group"
+msgstr "Экспорт"
+
+msgid "menu.export_all"
+msgstr "Экспортировать весь мир…"
+
+msgid "menu.images_group"
+msgstr "Картинки"
+
+msgid "menu.insert_image"
+msgstr "Вставить картинку…"
+
+msgid "command.reason.no_editor"
+msgstr "Сначала откройте заметку для правки"
+
+msgid "about.author"
+msgstr "Автор: %s"
+
+msgid "about.guide"
+msgstr "Гайд"
+
+msgid "guide.title"
+msgstr "Гайд"
+
+msgid "guide.not_found"
+msgstr "Гайд не найден"

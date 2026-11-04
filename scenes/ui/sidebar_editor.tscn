@@ -1,0 +1,200 @@
+[gd_scene format=3 uid="uid://c54qymup4x8ev"]
+
+[ext_resource type="Script" uid="uid://b1311hufkk64n" path="res://scripts/ui/sidebar_editor.gd" id="1_side"]
+[ext_resource type="Script" uid="uid://c380i6dcrj4uy" path="res://scripts/ui/mode_toggle.gd" id="2_toggle"]
+[ext_resource type="Script" uid="uid://dwe7ubij7mlvd" path="res://scripts/ui/format_toolbar.gd" id="3_format"]
+[ext_resource type="Texture2D" uid="uid://cgukpbdu8k642" path="res://assets/icons/image.svg" id="icon_image"]
+[ext_resource type="Texture2D" uid="uid://cw5r8tpd7v0qu" path="res://assets/icons/maximize-2.svg" id="icon_zen"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.0901961, 0.0980392, 0.137255, 1)
+border_width_left = 1
+border_color = Color(0.192157, 0.207843, 0.286275, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.141176, 0.152941, 0.211765, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.247059, 0.266667, 0.364706, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_content"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.0705882, 0.0745098, 0.105882, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.192157, 0.207843, 0.286275, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preview"]
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.0705882, 0.0745098, 0.105882, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.192157, 0.207843, 0.286275, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_del"]
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_del_hover"]
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.141176, 0.152941, 0.211765, 0.6)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="SidebarEditor" type="PanelContainer" unique_id=215613377]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -380.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+script = ExtResource("1_side")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=947080945]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=879015387]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=773826791]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleInput" type="LineEdit" parent="MarginContainer/VBoxContainer/Header" unique_id=256845028]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_input")
+theme_override_styles/focus = SubResource("StyleBoxFlat_input")
+placeholder_text = "sidebar.title.placeholder"
+
+[node name="ZenButton" type="Button" parent="MarginContainer/VBoxContainer/Header" unique_id=1105580730]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "sidebar.zen.enter"
+focus_mode = 0
+theme_override_constants/icon_max_width = 16
+icon = ExtResource("icon_zen")
+icon_alignment = 1
+expand_icon = true
+
+[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/Header" unique_id=967231100]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+focus_mode = 0
+
+[node name="ModeRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580721]
+layout_mode = 2
+
+[node name="ModeToggle" type="Control" parent="MarginContainer/VBoxContainer/ModeRow" unique_id=1105580722]
+custom_minimum_size = Vector2(190, 30)
+layout_mode = 2
+script = ExtResource("2_toggle")
+
+[node name="Toolbar" type="HFlowContainer" parent="MarginContainer/VBoxContainer" unique_id=304203251]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
+
+[node name="ImageButton" type="Button" parent="MarginContainer/VBoxContainer/Toolbar" unique_id=322671950]
+layout_mode = 2
+focus_mode = 0
+theme_override_constants/icon_max_width = 14
+theme_override_font_sizes/font_size = 12
+text = "sidebar.cover"
+icon = ExtResource("icon_image")
+expand_icon = true
+
+[node name="ColorPalette" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Toolbar" unique_id=977503568]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="FormatBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580723]
+layout_mode = 2
+script = ExtResource("3_format")
+
+[node name="ContentStack" type="MarginContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580724]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ContentEdit" type="TextEdit" parent="MarginContainer/VBoxContainer/ContentStack" unique_id=219841727]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.88, 0.89, 0.94, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_content")
+theme_override_styles/focus = SubResource("StyleBoxFlat_content")
+placeholder_text = "sidebar.content.placeholder"
+wrap_mode = 1
+
+[node name="PreviewLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/ContentStack" unique_id=1105580725]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 2
+theme_override_colors/default_color = Color(0.88, 0.89, 0.94, 1)
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
+theme_override_font_sizes/mono_font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_preview")
+bbcode_enabled = true
+selection_enabled = true
+
+[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=346071463]
+layout_mode = 2
+
+[node name="DeleteButton" type="Button" parent="MarginContainer/VBoxContainer/Footer" unique_id=1346062253]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_colors/font_color = Color(0.85, 0.35, 0.35, 0.85)
+theme_override_colors/font_pressed_color = Color(0.9, 0.25, 0.25, 1)
+theme_override_colors/font_hover_color = Color(1, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxEmpty_del")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_del")
+theme_override_styles/hover = SubResource("StyleBoxFlat_del_hover")
+text = "sidebar.delete_note"

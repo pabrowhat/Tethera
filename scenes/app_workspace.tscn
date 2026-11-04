@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://bvyg7kq0v37pm"]
+
+[ext_resource type="Script" uid="uid://c5uhcenamqsdw" path="res://scripts/app_workspace.gd" id="1_work"]
+[ext_resource type="Script" uid="uid://cl6441ldvyu22" path="res://scripts/graph/connection_renderer.gd" id="2_renderer"]
+[ext_resource type="PackedScene" uid="uid://c54qymup4x8ev" path="res://scenes/ui/sidebar_editor.tscn" id="4_side"]
+[ext_resource type="Shader" uid="uid://b14t2ur5ra8po" path="res://shaders/dot_grid.gdshader" id="5_grid"]
+[ext_resource type="PackedScene" uid="uid://buq1bx5dpt3nv" path="res://scenes/ui/confirm_modal.tscn" id="6_modal"]
+[ext_resource type="Script" uid="uid://brioh3k4sgybv" path="res://scripts/graph/canvas_navigator.gd" id="7_nav"]
+[ext_resource type="Texture2D" uid="uid://boneetw5gepb7" path="res://assets/icons/plus.svg" id="icon_plus"]
+[ext_resource type="Texture2D" uid="uid://ib1i3mrtqn3u" path="res://assets/icons/search.svg" id="icon_search"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grid"]
+shader = ExtResource("5_grid")
+shader_parameter/bg_color = Color(0.0627451, 0.0666667, 0.0901961, 1)
+shader_parameter/dot_color = Color(0.24, 0.26, 0.35, 0.45)
+shader_parameter/grid_spacing = 32.0
+shader_parameter/dot_radius = 1.2
+shader_parameter/pan_offset = Vector2(0, 0)
+shader_parameter/zoom = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar_btn"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.117647, 0.129412, 0.180392, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.247059, 0.266667, 0.364706, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="AppWorkspace" type="Control" unique_id=1612089501]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_work")
+
+[node name="CanvasNavigator" type="Node" parent="." unique_id=320529248]
+script = ExtResource("7_nav")
+
+[node name="Background" type="ColorRect" parent="." unique_id=993844478]
+material = SubResource("ShaderMaterial_grid")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0627451, 0.0666667, 0.0901961, 1)
+
+[node name="Canvas" type="Control" parent="." unique_id=1665766148]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ConnectionRenderer" type="Node2D" parent="Canvas" unique_id=2002294937]
+script = ExtResource("2_renderer")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1590493440]
+
+[node name="TopBar" type="HBoxContainer" parent="UI" unique_id=1453625228]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 660.0
+offset_bottom = 52.0
+theme_override_constants/separation = 8
+
+[node name="AddCardButton" type="Button" parent="UI/TopBar" unique_id=1531219284]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
+theme_override_constants/icon_max_width = 16
+theme_override_font_sizes/font_size = 13
+text = "command.new_note"
+icon = ExtResource("icon_plus")
+expand_icon = true
+
+[node name="SearchInput" type="LineEdit" parent="UI/TopBar" unique_id=1596892173]
+custom_minimum_size = Vector2(230, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_topbar_btn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_topbar_btn")
+placeholder_text = "topbar.search.placeholder"
+right_icon = ExtResource("icon_search")
+
+[node name="SidebarEditor" parent="UI" unique_id=2146091206 instance=ExtResource("4_side")]
+visible = false
+
+[node name="ConfirmModal" parent="UI" unique_id=1723095833 instance=ExtResource("6_modal")]
+visible = false

@@ -1,0 +1,7 @@
+[
+	{"name": "Персонаж", "color": "3498db", "fields": []},
+	{"name": "Событие", "color": "f1c40f", "fields": []},
+	{"name": "Место", "color": "2ecc71", "fields": []},
+	{"name": "Фракция", "color": "e74c3c", "fields": []},
+	{"name": "Предмет", "color": "9b59b6", "fields": []}
+]

@@ -1,0 +1,1307 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Tethera\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "menu.types"
+msgstr "Types…"
+
+msgid "type.manager.title"
+msgstr "Types"
+
+msgid "type.manager.close"
+msgstr "Close"
+
+msgid "type.manager.empty"
+msgstr "No types yet. Create the first one above."
+
+msgid "type.create.placeholder"
+msgstr "New type name…"
+
+msgid "type.create.button"
+msgstr "Create type"
+
+msgid "type.create.duplicate"
+msgstr "A type named “%s” already exists"
+
+msgid "type.rename.duplicate"
+msgstr "Another type is already named “%s”"
+
+msgid "type.notes_count"
+msgstr "Notes of this type"
+
+msgid "type.delete.button"
+msgstr "Delete type"
+
+msgid "type.delete.title"
+msgstr "Delete type"
+
+msgid "type.delete.confirm"
+msgstr "Delete type “%s”?\nNotes of this type (%d) keep their fields and become untyped."
+
+msgid "type.field.none"
+msgstr "No fields yet"
+
+msgid "type.field.add"
+msgstr "Add field"
+
+msgid "type.field.label_placeholder"
+msgstr "Field name…"
+
+msgid "type.field.duplicate"
+msgstr "This type already has a field “%s”"
+
+msgid "type.field.remove"
+msgstr "Remove field"
+
+msgid "type.field.kind.text"
+msgstr "Text"
+
+msgid "type.field.kind.number"
+msgstr "Number"
+
+msgid "type.field.kind.date"
+msgstr "Date"
+
+msgid "type.field.kind.list"
+msgstr "List"
+
+msgid "type.section.title"
+msgstr "Type"
+
+msgid "type.none"
+msgstr "No type"
+
+msgid "type.color.follow"
+msgstr "Use the type colour"
+
+msgid "type.field.number_invalid"
+msgstr "Enter a number, for example 1500 or 2.5"
+
+msgid "type.field.date_invalid"
+msgstr "Use the format YYYY-MM-DD"
+
+msgid "type.field.date_hint"
+msgstr "YYYY-MM-DD"
+
+msgid "type.field.list_hint"
+msgstr "Comma-separated"
+
+msgid "menu.text.undo"
+msgstr "Undo"
+
+msgid "menu.text.redo"
+msgstr "Redo"
+
+msgid "menu.text.cut"
+msgstr "Cut"
+
+msgid "menu.text.copy"
+msgstr "Copy"
+
+msgid "menu.text.paste"
+msgstr "Paste"
+
+msgid "menu.text.select_all"
+msgstr "Select all"
+
+msgid "filter.no_type"
+msgstr "No type"
+
+msgid "filter.button"
+msgstr "Types %d/%d"
+
+msgid "filter.show_all"
+msgstr "Show all"
+
+msgid "filter.hide_all"
+msgstr "Hide all"
+
+msgid "filter.search"
+msgstr "Find a type…"
+
+msgid "menu.export"
+msgstr "Export…"
+
+msgid "export.dialog.title"
+msgstr "Export notes"
+
+msgid "export.dialog.action"
+msgstr "Export"
+
+msgid "export.empty"
+msgstr "The canvas is empty, nothing to export"
+
+msgid "export.none_selected"
+msgstr "No notes selected"
+
+msgid "export.done"
+msgstr "Exported: %s (notes: %d)"
+
+msgid "export.done_missing"
+msgstr "Exported: %s (notes: %d, pictures not found: %d)"
+
+msgid "select.search"
+msgstr "Search notes…"
+
+msgid "select.all"
+msgstr "Select all"
+
+msgid "select.none"
+msgstr "Clear all"
+
+msgid "select.cancel"
+msgstr "Cancel"
+
+msgid "select.counter"
+msgstr "Selected: %d of %d"
+
+msgid "select.counter.linked"
+msgstr " (+%d linked)"
+
+msgid "select.include_linked"
+msgstr "Include linked notes"
+
+msgid "select.types"
+msgstr "Types: %s"
+
+msgid "select.types.none"
+msgstr "Types: none"
+
+msgid "select.images"
+msgstr "Images: %s"
+
+msgid "select.images.none"
+msgstr "Images: none"
+
+msgid "select.more"
+msgstr "and %d more"
+
+msgid "select.row.linked"
+msgstr "added by link"
+
+msgid "select.row.duplicate"
+msgstr "will be renamed"
+
+msgid "select.duplicates"
+msgstr "Notes with the same title as a note already on the canvas: %d. They are imported with a number added to the title; [[links]] between imported notes follow."
+
+msgid "import.dialog.title"
+msgstr "Open project: %s"
+
+msgid "import.dialog.action.import"
+msgstr "Import into current world"
+
+msgid "import.dialog.action.open_all"
+msgstr "Open whole project"
+
+msgid "import.none_selected"
+msgstr "No notes selected"
+
+msgid "import.canceled"
+msgstr "Import canceled"
+
+msgid "import.done"
+msgstr "Imported notes: %d from %s"
+
+msgid "import.problem.skipped"
+msgstr "damaged notes skipped: %d"
+
+msgid "import.problem.images"
+msgstr "covers not loaded: %d"
+
+msgid "import.conflict.title"
+msgstr "This type already exists"
+
+msgid "import.conflict.message"
+msgstr "The file has a type \"%s\" (%d of %d) and a type with that name is already here."
+
+msgid "import.conflict.help"
+msgstr "Merge: the notes join the existing type and its missing fields are added.\nRename: the type is imported under the name below.\nSkip: the notes are imported without a type."
+
+msgid "import.conflict.name"
+msgstr "New name…"
+
+msgid "import.conflict.name_empty"
+msgstr "Enter a name"
+
+msgid "import.conflict.name_taken"
+msgstr "A type named \"%s\" already exists"
+
+msgid "import.conflict.cancel"
+msgstr "Cancel import"
+
+msgid "import.conflict.skip"
+msgstr "Skip"
+
+msgid "import.conflict.rename"
+msgstr "Rename"
+
+msgid "import.conflict.merge"
+msgstr "Merge"
+
+msgid "import.history"
+msgstr "Import notes (%d)"
+
+msgid "import.problem.renamed"
+msgstr "notes renamed: %d"
+
+msgid "image.missing"
+msgstr "Image not found: %s"
+
+msgid "image.missing_toast"
+msgstr "Image not found: %s"
+
+msgid "image.missing_toast_many"
+msgstr "Images not found: %d"
+
+msgid "image.insert"
+msgstr "Insert picture"
+
+msgid "image.insert.dialog"
+msgstr "Choose a picture"
+
+msgid "image.insert.failed"
+msgstr "Could not copy the picture"
+
+msgid "import.problem.inline_images"
+msgstr "pictures missing from the file: %d"
+
+msgid "save.done_missing"
+msgstr "Project saved: %s (pictures not found: %d)"
+
+msgid "menu.clean_images"
+msgstr "Delete unused pictures…"
+
+msgid "images.clean.none"
+msgstr "No unused pictures"
+
+msgid "images.clean.title"
+msgstr "Delete unused pictures"
+
+msgid "images.clean.message"
+msgstr "Picture files that no note, backup or note in the trash refers to: %d.\nThey will be moved to the trash and removed for good after 30 days."
+
+msgid "images.clean.confirm"
+msgstr "Move to trash"
+
+msgid "images.clean.done"
+msgstr "Pictures moved to the trash: %d"
+
+msgid "bundle.refused.damaged"
+msgstr "The file is damaged: the archive's table of contents cannot be read."
+
+msgid "bundle.refused.too_large"
+msgstr "The file was not opened: unpacked, it would take more than 2 GB."
+
+msgid "bundle.refused.entry_too_large"
+msgstr "The file was not opened: the part “%s” is larger than 50 MB."
+
+msgid "bundle.refused.ratio"
+msgstr "The file was not opened: the part “%s” is compressed more than 100 times. That is how archive bombs look."
+
+msgid "image.refused.too_large"
+msgstr "The picture “%s” is larger than 8000 × 8000 pixels."
+
+msgid "image.refused.file_too_large"
+msgstr "The picture file “%s” is larger than 50 MB."
+
+msgid "image.refused.mismatch"
+msgstr "“%s” is not a picture of the format its extension names."
+
+msgid "image.refused.unreadable"
+msgstr "The picture “%s” is damaged: its size cannot be read."
+
+msgid "import.problem.refused_images"
+msgstr "pictures refused (too large or damaged): %d"
+
+msgid "vault.corrupt_notes"
+msgstr "Damaged notes: %d. Their files were renamed to .corrupt in the notes folder: %s."
+
+msgid "vault.unreadable_notes"
+msgstr "Note files that could not be opened (another program may hold them): %d: %s."
+
+msgid "vault.snapshot_failed"
+msgstr "Today's snapshot of the notes could not be saved to the backups folder."
+
+msgid "select.linked_group"
+msgstr "Added by link (%d)"
+
+msgid "select.linked_group.hint"
+msgstr "These notes are not ticked. They come in because ticked notes link to them. Tick one to choose it yourself."
+
+msgid "menu.trash_restore"
+msgstr "Restore from trash…"
+
+msgid "menu.trash_empty"
+msgstr "Empty trash now…"
+
+msgid "trash.none"
+msgstr "The trash is empty"
+
+msgid "trash.empty.title"
+msgstr "Empty trash"
+
+msgid "trash.empty.message"
+msgstr "Files in the trash: %d. They will be removed for good.\nThis cannot be undone. Backups are not affected."
+
+msgid "trash.empty.confirm"
+msgstr "Empty trash"
+
+msgid "trash.empty.done"
+msgstr "Removed from the trash: %d"
+
+msgid "trash.restore.title"
+msgstr "Restore from trash"
+
+msgid "trash.restore.action"
+msgstr "Restore"
+
+msgid "trash.restore.done"
+msgstr "Notes restored: %d. Their links are not kept in the trash."
+
+msgid "trash.restore.failed"
+msgstr "The notes could not be restored."
+
+msgid "trash.restore.history"
+msgstr "Restore notes from trash: %d"
+
+msgid "menu.trash"
+msgstr "Trash"
+
+msgid "bookmark.set"
+msgstr "Bookmark %d: %s"
+
+msgid "bookmark.need_one"
+msgstr "Select one note to set a bookmark."
+
+msgid "bookmark.empty"
+msgstr "Bookmark %d is empty. Select a note and press Shift+%d."
+
+msgid "bookmark.missing"
+msgstr "The bookmark points to a deleted note."
+
+msgid "note.untitled"
+msgstr "(untitled)"
+
+msgid "recent.button"
+msgstr "Recent"
+
+msgid "recent.empty"
+msgstr "No changed notes yet."
+
+msgid "recent.just_now"
+msgstr "just now"
+
+msgid "recent.minutes"
+msgstr "%d min ago"
+
+msgid "recent.hours"
+msgstr "%d h ago"
+
+msgid "recent.days"
+msgstr "%d d ago"
+
+msgid "bookmark.cleared"
+msgstr "Bookmark %d removed."
+
+msgid "menu.settings"
+msgstr "Settings…"
+
+msgid "settings.title"
+msgstr "Settings"
+
+msgid "settings.reduce_motion"
+msgstr "Reduce motion"
+
+msgid "settings.reduce_motion.hint"
+msgstr "Card flip and collapse into a pill happen at once. Fades and highlights stay."
+
+msgid "settings.show_grid"
+msgstr "Show the background grid"
+
+msgid "settings.line_width"
+msgstr "Line width"
+
+msgid "settings.line_width.value"
+msgstr "×%.1f"
+
+msgid "settings.default_color"
+msgstr "Default colour for notes without a type"
+
+msgid "settings.default_color.hint"
+msgstr "Notes with a type always use their type’s colour."
+
+msgid "settings.advanced"
+msgstr "Advanced"
+
+msgid "settings.backups"
+msgstr "Backups kept when a project is opened"
+
+msgid "settings.backups.hint"
+msgstr "If the value is 0, no copies are made, and old ones are deleted. Daily snapshots are always kept for 7 days."
+
+msgid "settings.export_include_linked"
+msgstr "Tick “Include linked” when exporting"
+
+msgid "settings.save"
+msgstr "Save"
+
+msgid "settings.cancel"
+msgstr "Cancel"
+
+msgid "settings.reset"
+msgstr "Reset to defaults"
+
+msgid "settings.reset.title"
+msgstr "Reset settings?"
+
+msgid "settings.reset.message"
+msgstr "Every setting in this window goes back to its default. Nothing is stored until you press “Save”."
+
+msgid "settings.reset.confirm"
+msgstr "Reset"
+
+msgid "settings.unsaved.title"
+msgstr "Unsaved changes"
+
+msgid "settings.unsaved.message"
+msgstr "Some settings have not been saved. Save them, discard the changes, or go back to the settings?"
+
+msgid "settings.unsaved.discard"
+msgstr "Discard changes"
+
+msgid "settings.saved"
+msgstr "Settings saved"
+
+msgid "background.title"
+msgstr "Appearance"
+
+msgid "background.title_type"
+msgstr "Default note background"
+
+msgid "background.pick_image"
+msgstr "Choose picture"
+
+msgid "background.clear"
+msgstr "Remove background"
+
+msgid "background.dialog"
+msgstr "Choose a background picture"
+
+msgid "background.from_note"
+msgstr "Own background"
+
+msgid "background.from_type"
+msgstr "Follows the type"
+
+msgid "background.from_default"
+msgstr "Default background"
+
+msgid "background.gradient_end"
+msgstr "Gradient end (optional)"
+
+msgid "menu.add_decor"
+msgstr "Add picture to the table…"
+
+msgid "decor.dialog"
+msgstr "Choose a picture for the table"
+
+msgid "decor.limit"
+msgstr "The table holds at most %d pictures. Remove some first."
+
+msgid "decor.refused.too_large"
+msgstr "The picture “%s” is larger than 4000 × 4000 pixels."
+
+msgid "decor.refused.file_too_large"
+msgstr "The picture “%s” is larger than 20 MB."
+
+msgid "decor.history.add"
+msgstr "Add picture"
+
+msgid "decor.history.move"
+msgstr "Move picture"
+
+msgid "decor.history.resize"
+msgstr "Resize picture"
+
+msgid "decor.history.rotate"
+msgstr "Rotate picture"
+
+msgid "decor.history.delete"
+msgstr "Delete (%d)"
+
+msgid "decor.deleted"
+msgstr "Removed: %d · Ctrl+Z to undo"
+
+msgid "decor.layer.below"
+msgstr "Below the notes"
+
+msgid "decor.layer.above"
+msgstr "Above the notes"
+
+msgid "decor.delete"
+msgstr "Delete picture"
+
+msgid "decor.history.layer"
+msgstr "Change picture layer"
+
+msgid "import.problem.decor"
+msgstr "pictures not restored: %d"
+
+msgid "menu.open_folder"
+msgstr "Open worlds folder"
+
+msgid "command.reason.no_undo"
+msgstr "Nothing to undo"
+
+msgid "command.reason.no_redo"
+msgstr "Nothing to redo"
+
+msgid "command.new_note"
+msgstr "New note"
+
+msgid "command.search"
+msgstr "Search notes"
+
+msgid "command.type_filter"
+msgstr "Filter by type"
+
+msgid "palette.placeholder"
+msgstr "Type a command…"
+
+msgid "palette.empty"
+msgstr "No matching command"
+
+msgid "type.field.read_line"
+msgstr "%s: %s"
+
+msgid "background.gradient"
+msgstr "Gradient"
+
+msgid "background.border_color"
+msgstr "Border colour"
+
+msgid "background.body_color"
+msgstr "Background colour"
+
+msgid "menu.canvas_background"
+msgstr "Canvas background…"
+
+msgid "canvas_bg.title"
+msgstr "Canvas background"
+
+msgid "canvas_bg.pick"
+msgstr "Choose picture"
+
+msgid "canvas_bg.clear"
+msgstr "Remove background"
+
+msgid "canvas_bg.opacity"
+msgstr "Opacity"
+
+msgid "canvas_bg.none"
+msgstr "No background"
+
+msgid "canvas_bg.done"
+msgstr "Done"
+
+msgid "canvas_bg.dialog"
+msgstr "Choose a picture for the canvas background"
+
+msgid "canvas_bg.load_failed"
+msgstr "The canvas background picture could not be loaded; the plain canvas is shown."
+
+msgid "canvas_bg.refused.too_large"
+msgstr "The picture “%s” is larger than 4000 × 4000 pixels."
+
+msgid "canvas_bg.refused.file_too_large"
+msgstr "The picture “%s” is larger than 20 MB."
+
+msgid "import.problem.canvas_bg"
+msgstr "canvas background not restored"
+
+msgid "eyedropper.tooltip"
+msgstr "Eyedropper: take a colour from anywhere on screen\nShift – the colour of the card under the pointer"
+
+msgid "eyedropper.unavailable"
+msgstr "Could not read colours from the screen."
+
+msgid "link.style.solid"
+msgstr "Solid"
+
+msgid "link.style.dashed"
+msgstr "Dashed"
+
+msgid "link.style.dotted"
+msgstr "Dotted"
+
+msgid "link.history.style"
+msgstr "Link style"
+
+msgid "layout.history"
+msgstr "Layout"
+
+msgid "layout.button"
+msgstr "Arrange"
+
+msgid "layout.tree_down"
+msgstr "Tree down"
+
+msgid "layout.tree_right"
+msgstr "Tree right"
+
+msgid "layout.orbit"
+msgstr "Shared orbit"
+
+msgid "layout.orbit_by_type"
+msgstr "Orbit by type"
+
+msgid "layout.no_selection"
+msgstr "Select notes: the first one becomes the root or the centre"
+
+msgid "layout.single"
+msgstr "Select at least two notes"
+
+msgid "layout.done"
+msgstr "Notes laid out: %d"
+
+msgid "layout.done_overlaps"
+msgstr "Notes laid out: %d. Overlapping other notes: %d"
+
+msgid "settings.language"
+msgstr "Language"
+
+msgid "settings.language.auto"
+msgstr "Auto"
+
+msgid "settings.language.en"
+msgstr "English"
+
+msgid "settings.language.ru"
+msgstr "Русский"
+
+msgid "settings.language.hint"
+msgstr "Auto follows the language of the system. The change applies at once."
+
+msgid "confirm.delete"
+msgstr "Delete"
+
+msgid "confirm.cancel"
+msgstr "Cancel"
+
+msgid "menu.project"
+msgstr "Project"
+
+msgid "menu.open"
+msgstr "Open…"
+
+msgid "menu.save"
+msgstr "Save"
+
+msgid "menu.undo"
+msgstr "Undo"
+
+msgid "menu.undo.labeled"
+msgstr "Undo: %s"
+
+msgid "menu.redo"
+msgstr "Redo"
+
+msgid "menu.redo.labeled"
+msgstr "Redo: %s"
+
+msgid "menu.export_png"
+msgstr "Export snapshot (PNG)…"
+
+msgid "topbar.search.placeholder"
+msgstr "Search (Ctrl+F)..."
+
+msgid "snapshot.dialog.title"
+msgstr "Save canvas snapshot"
+
+msgid "filedialog.filter.png"
+msgstr "PNG image"
+
+msgid "filedialog.filter.project"
+msgstr "Tethera project"
+
+msgid "snapshot.failed.create"
+msgstr "Could not create the snapshot"
+
+msgid "snapshot.failed.save"
+msgstr "Could not save the snapshot: %s"
+
+msgid "snapshot.saved"
+msgstr "Snapshot saved: %s"
+
+msgid "open.dialog.title"
+msgstr "Open a Tethera project"
+
+msgid "open.drop_hint"
+msgstr "Drop a .tether project file here"
+
+msgid "save.dialog.title"
+msgstr "Save a copy of the project"
+
+msgid "save.done"
+msgstr "Project saved: %s"
+
+msgid "open.confirm.title"
+msgstr "Open project"
+
+msgid "open.confirm.message"
+msgstr "The current canvas (notes: %d) will be replaced by the project “%s”.\nA copy of the current data is kept in the backups folder."
+
+msgid "open.confirm.action"
+msgstr "Open"
+
+msgid "open.problem.no_backup"
+msgstr "no backup was made"
+
+msgid "open.done"
+msgstr "Imported into the new world from %s. Notes: %d"
+
+msgid "sidebar.mode.edit"
+msgstr "Edit"
+
+msgid "sidebar.mode.view"
+msgstr "Preview"
+
+msgid "sidebar.title.placeholder"
+msgstr "Note title..."
+
+msgid "sidebar.content.placeholder"
+msgstr "Describe the lore, notes, facts..."
+
+msgid "sidebar.cover"
+msgstr "Cover"
+
+msgid "sidebar.cover.dialog"
+msgstr "Choose a cover for the note"
+
+msgid "sidebar.delete_note"
+msgstr "Delete this note"
+
+msgid "sidebar.zen.enter"
+msgstr "Focus mode (F11)"
+
+msgid "sidebar.zen.exit"
+msgstr "Collapse (Esc)"
+
+msgid "sidebar.preview.empty"
+msgstr "Nothing here yet. Switch to edit mode and write something."
+
+msgid "link.autocomplete.empty"
+msgstr "No matches"
+
+msgid "batch.palette_caption"
+msgstr "Colour for all selected"
+
+msgid "batch.header"
+msgstr "Notes selected: %d"
+
+msgid "batch.delete"
+msgstr "Delete selected (%d)"
+
+msgid "batch.remove_chip"
+msgstr "Remove from selection"
+
+msgid "confirm.default.title"
+msgstr "Delete note"
+
+msgid "confirm.default.message"
+msgstr "Are you sure you want to delete this note?"
+
+msgid "history.nothing_to_undo"
+msgstr "Nothing to undo"
+
+msgid "history.nothing_to_redo"
+msgstr "Nothing to redo"
+
+msgid "history.undone"
+msgstr "Undone: %s"
+
+msgid "history.redone"
+msgstr "Redone: %s"
+
+msgid "history.move"
+msgstr "Move"
+
+msgid "history.carry"
+msgstr "Carry"
+
+msgid "history.recolor"
+msgstr "Change colour"
+
+msgid "history.note.create"
+msgstr "Create note"
+
+msgid "history.note.delete"
+msgstr "Delete note"
+
+msgid "history.notes.delete"
+msgstr "Delete notes (%d)"
+
+msgid "history.link.create"
+msgstr "Create link"
+
+msgid "history.link.delete"
+msgstr "Delete link"
+
+msgid "note.default_title"
+msgstr "Note %d"
+
+msgid "note.default_body"
+msgstr "New entry..."
+
+msgid "note.title_fallback"
+msgstr "Untitled"
+
+msgid "note.deleted"
+msgstr "Note deleted · Ctrl+Z to undo"
+
+msgid "notes.deleted"
+msgstr "Notes deleted: %d · Ctrl+Z to undo"
+
+msgid "error.bundle.create"
+msgstr "Could not create the file. Check that the folder can be written to."
+
+msgid "error.bundle.write"
+msgstr "Could not write the project data."
+
+msgid "error.bundle.save"
+msgstr "Could not save the file. It may be open in another program."
+
+msgid "error.bundle.corrupt"
+msgstr "The file is damaged or is not a Tethera project."
+
+msgid "error.bundle.no_data"
+msgstr "The file is damaged or is not a Tethera project: the archive has no project data."
+
+msgid "error.bundle.manifest"
+msgstr "The file is damaged: the project manifest cannot be read."
+
+msgid "error.bundle.foreign"
+msgstr "This is not a Tethera project."
+
+msgid "error.bundle.version_unknown"
+msgstr "The file is damaged: the format version is unknown."
+
+msgid "error.bundle.version_newer"
+msgstr "The project was made by a newer version of Tethera (format %d, supported %d). Update the app."
+
+msgid "error.bundle.graph"
+msgstr "The file is damaged: the graph data cannot be read."
+
+msgid "error.bundle.notes_missing"
+msgstr "The file is damaged: the graph data has no list of notes."
+
+msgid "format.bold"
+msgstr "Bold (**text**)"
+
+msgid "format.italic"
+msgstr "Italic (*text*)"
+
+msgid "format.strike"
+msgstr "Strikethrough (~~text~~)"
+
+msgid "format.h1"
+msgstr "Heading 1"
+
+msgid "format.h2"
+msgstr "Heading 2"
+
+msgid "format.bullet"
+msgstr "Bulleted list"
+
+msgid "format.text_color"
+msgstr "Text colour"
+
+msgid "format.highlight"
+msgstr "Background highlight"
+
+msgid "palette.slot.filled"
+msgstr "#%s\nRight-click to clear the slot"
+
+msgid "palette.slot.empty"
+msgstr "Empty slot: your own colours are saved here"
+
+msgid "palette.custom"
+msgstr "Custom colour"
+
+msgid "picker.copy_hex"
+msgstr "Copy HEX"
+
+msgid "minimap.fit"
+msgstr "Fit all (F)"
+
+msgid "minimap.collapse"
+msgstr "Collapse (M)"
+
+msgid "minimap.expand"
+msgstr "Expand (M)"
+
+msgid "card.backlink.tooltip"
+msgstr "Go to the note"
+
+msgid "card.flip.tooltip"
+msgstr "Flip (double click)"
+
+msgid "card.unflip.tooltip"
+msgstr "Back to the front (double click)"
+
+msgid "card.title.default"
+msgstr "Card title"
+
+msgid "card.back.title"
+msgstr "Details"
+
+msgid "card.dates"
+msgstr "Created: %s\nModified: %s"
+
+msgid "card.dates.empty"
+msgstr "Created: –\nModified: –"
+
+msgid "card.status.todo"
+msgstr "Planned"
+
+msgid "card.status.in_progress"
+msgstr "In progress"
+
+msgid "card.status.done"
+msgstr "Done"
+
+msgid "card.backlinks.title"
+msgstr "Inbound links"
+
+msgid "card.backlinks.none"
+msgstr "No inbound links"
+
+msgid "card.backlinks.more"
+msgstr "+%d more"
+
+msgid "picker.was"
+msgstr "Before"
+
+msgid "picker.now"
+msgstr "After"
+
+msgid "minimap.title"
+msgstr "Map"
+
+msgid "vault.pick.title"
+msgstr "Choose a folder for your worlds"
+
+msgid "vault.pick.message"
+msgstr "Each world is a folder inside it: notes, pictures, types, links, backups and trash. Notes you already have are copied into the first world, \"My world\"; the old files stay where they are."
+
+msgid "vault.pick.choose"
+msgstr "Choose folder…"
+
+msgid "vault.pick.dialog_title"
+msgstr "Folder for worlds"
+
+msgid "vault.missing.title"
+msgstr "Folder for worlds not found"
+
+msgid "vault.missing.message"
+msgstr "The folder %s is not available. It may be on a drive that is not connected, or it was moved or renamed. Nothing has been created or deleted."
+
+msgid "vault.missing.choose"
+msgstr "Choose another folder"
+
+msgid "vault.missing.create"
+msgstr "Create an empty folder"
+
+msgid "vault.error.not_absolute"
+msgstr "Choose a folder on a disk (a full path)."
+
+msgid "vault.error.parent_ref"
+msgstr "The folder path must not contain \".\" or \"..\"."
+
+msgid "vault.error.not_dir"
+msgstr "This folder does not exist or is not a folder."
+
+msgid "vault.error.legacy_folder"
+msgstr "This is the app's old notes folder. Choose another folder; the old notes are copied from it."
+
+msgid "vault.error.world_folder"
+msgstr "This folder is a world or lies inside one. Choose the folder that holds the worlds."
+
+msgid "vault.error.create_failed"
+msgstr "The world could not be created in this folder. Check that it can be written to."
+
+msgid "vault.error.copy_failed"
+msgstr "The old notes could not be copied (%s). The new world was removed; the old notes are where they were."
+
+msgid "worlds.default_name"
+msgstr "My world"
+
+msgid "worlds.damaged_skipped"
+msgstr "Worlds skipped because their world.json is damaged: %d."
+
+msgid "worlds.empty_list"
+msgstr "No worlds in this folder yet."
+
+msgid "worlds.rename"
+msgstr "Rename"
+
+msgid "worlds.delete"
+msgstr "Delete"
+
+msgid "worlds.cancel"
+msgstr "Cancel"
+
+msgid "worlds.notes"
+msgstr "Notes: %d"
+
+msgid "worlds.damaged"
+msgstr "Damaged"
+
+msgid "worlds.name.title_create"
+msgstr "New world"
+
+msgid "worlds.name.title_rename"
+msgstr "Rename world"
+
+msgid "worlds.name.placeholder"
+msgstr "World name"
+
+msgid "worlds.name.ok"
+msgstr "OK"
+
+msgid "worlds.name.empty"
+msgstr "The name must not be empty."
+
+msgid "worlds.name.too_long"
+msgstr "The name is too long (at most 80 characters)."
+
+msgid "worlds.name.line_break"
+msgstr "The name must be one line."
+
+msgid "worlds.rename.failed"
+msgstr "The world could not be renamed."
+
+msgid "worlds.delete.title"
+msgstr "Delete world"
+
+msgid "worlds.delete.message"
+msgstr "Move the world \"%s\" to the trash? Notes: %d. It stays in the trash-worlds folder for 30 days."
+
+msgid "worlds.delete.confirm"
+msgstr "Move to trash"
+
+msgid "worlds.delete.last"
+msgstr "The last world cannot be deleted. Create another world first."
+
+msgid "worlds.delete.damaged"
+msgstr "A damaged world cannot be moved to the trash."
+
+msgid "worlds.delete.damaged_message"
+msgstr "The world \"%s\" is damaged: its world.json cannot be read. It will be deleted for good with all its files (notes: %d), not moved to the trash. This cannot be undone."
+
+msgid "worlds.delete.forever"
+msgstr "Delete for good"
+
+msgid "worlds.delete.damaged_failed"
+msgstr "The damaged world could not be deleted."
+
+msgid "worlds.delete.damaged_done"
+msgstr "Damaged world deleted: %s"
+
+msgid "worlds.delete.failed"
+msgstr "The world could not be moved to the trash."
+
+msgid "worlds.delete.done"
+msgstr "World moved to the trash: %s"
+
+msgid "worlds.switch.failed"
+msgstr "This world cannot be opened."
+
+msgid "worlds.switch.flush_failed"
+msgstr "The open world could not be saved, so it stays open. Check that its folder can be written to."
+
+msgid "worlds.switch.done"
+msgstr "World opened: %s"
+
+msgid "save.world_done"
+msgstr "Saved"
+
+msgid "save.world_failed"
+msgstr "Not everything could be saved. Check that the world folder can be written to."
+
+msgid "import.dialog.action.new_world"
+msgstr "Create new world"
+
+msgid "import.new_world.title"
+msgstr "Name of the new world"
+
+msgid "import.failed_partial"
+msgstr "The import stopped: a file could not be written. Notes imported: %d. Check that the world folder can be written to."
+
+msgid "settings.vault_dir"
+msgstr "Folder for worlds"
+
+msgid "settings.vault_dir.choose"
+msgstr "Choose…"
+
+msgid "settings.vault_dir.dialog_title"
+msgstr "Folder for worlds"
+
+msgid "settings.vault_dir.hint"
+msgstr "Applies on Save. Worlds are not moved; the old folder stays where it is."
+
+msgid "settings.vault.confirm.title"
+msgstr "Folder for worlds"
+
+msgid "settings.vault.confirm.message"
+msgstr "Use %s as the folder for worlds? Worlds are not moved. The old folder stays where it is."
+
+msgid "settings.vault.confirm.action"
+msgstr "Change folder"
+
+msgid "settings.vault.create.title"
+msgstr "Create folder?"
+
+msgid "settings.vault.create.message"
+msgstr "The folder %s does not exist. Create it?"
+
+msgid "settings.vault.create.action"
+msgstr "Create"
+
+msgid "vault.change.flush_failed"
+msgstr "The open world could not be saved, so the folder for worlds was not changed."
+
+msgid "vault.change.done"
+msgstr "Folder for worlds changed. World opened: %s"
+
+msgid "menu.about"
+msgstr "About…"
+
+msgid "start.subtitle"
+msgstr "Spatial canvas for notes and lore"
+
+msgid "start.worlds"
+msgstr "Worlds"
+
+msgid "start.open"
+msgstr "Open"
+
+msgid "start.create"
+msgstr "Create"
+
+msgid "start.import"
+msgstr "Import .tether…"
+
+msgid "start.settings"
+msgstr "Settings"
+
+msgid "start.about"
+msgstr "About"
+
+msgid "start.quit"
+msgstr "Exit"
+
+msgid "start.last_world"
+msgstr "Last opened"
+
+msgid "start.example_failed"
+msgstr "The example world could not be loaded. An empty world was created instead."
+
+msgid "worlds.example_name"
+msgstr "Example"
+
+msgid "about.title"
+msgstr "About"
+
+msgid "about.tab.about"
+msgstr "About"
+
+msgid "about.tab.whats_new"
+msgstr "What's new"
+
+msgid "about.close"
+msgstr "Close"
+
+msgid "about.version"
+msgstr "Version: %s"
+
+msgid "about.licenses"
+msgstr "Licenses"
+
+msgid "about.license.godot"
+msgstr "Godot Engine (also covers the built-in interface font)"
+
+msgid "about.license.lucide"
+msgstr "Lucide icons"
+
+msgid "about.license.show"
+msgstr "Show"
+
+msgid "about.license.hide"
+msgstr "Hide"
+
+msgid "about.license.missing"
+msgstr "The licence file is missing."
+
+msgid "about.whats_new.none"
+msgstr "There are no notes for this version."
+
+msgid "about.whats_new.heading"
+msgstr "What's new in %s"
+
+msgid "whats_new.1_0_0.worlds"
+msgstr "Worlds: keep several separate canvases in one worlds folder."
+
+msgid "whats_new.1_0_0.start_screen"
+msgstr "A start screen lists your worlds and opens the one you choose."
+
+msgid "whats_new.1_0_0.import"
+msgstr "A .tether file can be imported into the current world or into a new one."
+
+msgid "whats_new.1_0_0.example"
+msgstr "The Example world shows how notes, links and types work."
+
+msgid "whats_new.1_0_0.about"
+msgstr "The About window shows the version and the licences."
+
+msgid "menu.main_menu"
+msgstr "Main menu"
+
+msgid "menu.quit"
+msgstr "Quit (Ctrl+Q)"
+
+msgid "exit.flush_failed"
+msgstr "The world could not be saved, so nothing was closed. Check that the world folder can be written to and the disk is not full."
+
+msgid "menu.export_group"
+msgstr "Export"
+
+msgid "menu.export_all"
+msgstr "Export whole world…"
+
+msgid "menu.images_group"
+msgstr "Pictures"
+
+msgid "menu.insert_image"
+msgstr "Insert picture…"
+
+msgid "command.reason.no_editor"
+msgstr "Open a note for editing first"
+
+msgid "about.author"
+msgstr "Author: %s"
+
+msgid "about.guide"
+msgstr "Guide"
+
+msgid "guide.title"
+msgstr "Guide"
+
+msgid "guide.not_found"
+msgstr "Guide not found"

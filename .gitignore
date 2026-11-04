@@ -1,0 +1,18 @@
+# Godot
+.godot/
+.nomedia
+.import/
+export.cfg
+export_credentials.cfg
+
+# Imported translations
+*.translation
+
+# Mono-specific
+.mono/
+data_*/
+mono_crash.*.json
+
+# Export
+*.exe
+build/
