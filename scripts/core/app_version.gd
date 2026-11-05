@@ -18,6 +18,27 @@ static func whats_new_path(version: String) -> String:
 		return ""
 	return WHATS_NEW_DIR + version + ".md"
 
+static func all_versions() -> PackedStringArray:
+	var versions: Array[String] = []
+	var dir: DirAccess = DirAccess.open(WHATS_NEW_DIR)
+	if dir == null:
+		return PackedStringArray()
+	for file_name: String in dir.get_files():
+		var version: String = file_name.trim_suffix(".remap").get_basename()
+		if file_name.get_extension() == "md" and is_valid_version(version) and not versions.has(version):
+			versions.append(version)
+	versions.sort_custom(func(a: String, b: String) -> bool: return compare_versions(a, b) > 0)
+	return PackedStringArray(versions)
+
+static func compare_versions(a: String, b: String) -> int:
+	var pa: PackedStringArray = a.split(".")
+	var pb: PackedStringArray = b.split(".")
+	for i: int in range(mini(pa.size(), pb.size())):
+		var diff: int = pa[i].to_int() - pb[i].to_int()
+		if diff != 0:
+			return diff
+	return pa.size() - pb.size()
+
 static func whats_new_keys(version: String) -> PackedStringArray:
 	var keys: PackedStringArray = PackedStringArray()
 	var path: String = whats_new_path(version)

@@ -15,6 +15,7 @@ var _about_page: ScrollContainer = null
 var _whats_new_page: ScrollContainer = null
 var _whats_new_box: VBoxContainer = null
 var _guide_dialog: GuideDialog = null
+var _expanded_versions: Dictionary = {}
 
 func _init() -> void:
 	super()
@@ -149,13 +150,45 @@ func _lucide_notice() -> String:
 
 
 func _build_whats_new_page() -> void:
-	var version: String = AppVersion.current()
-	var keys: PackedStringArray = AppVersion.whats_new_keys(version)
+	var current: String = AppVersion.current()
+	var keys: PackedStringArray = AppVersion.whats_new_keys(current)
 	if keys.is_empty():
 		_whats_new_box.add_child(_make_label("about.whats_new.none", 13, MUTED_COLOR, true))
+	else:
+		_whats_new_box.add_child(_make_label(tr("about.whats_new.heading") % current, 15, TITLE_COLOR))
+		_add_note_lines(_whats_new_box, keys)
+	var earlier: PackedStringArray = PackedStringArray()
+	for version: String in AppVersion.all_versions():
+		if AppVersion.compare_versions(version, current) < 0 and not AppVersion.whats_new_keys(version).is_empty():
+			earlier.append(version)
+	if earlier.is_empty():
 		return
-	_whats_new_box.add_child(_make_label(tr("about.whats_new.heading") % version, 15, TITLE_COLOR))
+	_whats_new_box.add_child(_make_label("about.whats_new.earlier", 13, MUTED_COLOR))
+	for version: String in earlier:
+		_add_earlier_version(version)
+
+func _add_earlier_version(version: String) -> void:
+	var holder: VBoxContainer = VBoxContainer.new()
+	holder.add_theme_constant_override("separation", 6)
+	holder.visible = _expanded_versions.has(version)
+	var toggle: Button = _make_button(tr("about.whats_new.heading") % version, false)
+	toggle.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	toggle.toggle_mode = true
+	toggle.set_pressed_no_signal(holder.visible)
+	toggle.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 16.0, 8.0))
+	toggle.add_theme_stylebox_override("hover_pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 16.0, 8.0))
+	toggle.toggled.connect(func(open: bool) -> void:
+		holder.visible = open
+		if open:
+			_expanded_versions[version] = true
+		else:
+			_expanded_versions.erase(version))
+	_whats_new_box.add_child(toggle)
+	_add_note_lines(holder, AppVersion.whats_new_keys(version))
+	_whats_new_box.add_child(holder)
+
+func _add_note_lines(box: VBoxContainer, keys: PackedStringArray) -> void:
 	for key: String in keys:
 		var line: Label = _make_label("- " + tr(key), 13, TEXT_COLOR, true)
 		line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		_whats_new_box.add_child(line)
+		box.add_child(line)

@@ -38,7 +38,7 @@ func _init() -> void:
 	opacity_row.add_theme_constant_override("separation", 10)
 	_body.add_child(opacity_row)
 	opacity_row.add_child(_make_label("canvas_bg.opacity", 13, TEXT_COLOR))
-	_slider = HSlider.new()
+	_slider = StyledSlider.new()
 	_slider.min_value = 0.0
 	_slider.max_value = 100.0
 	_slider.step = 1.0

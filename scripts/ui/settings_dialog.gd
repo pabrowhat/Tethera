@@ -120,7 +120,7 @@ func _build_line_width() -> void:
 	_line_value = _make_label("", FONT_SIZE, MUTED_COLOR)
 	head.add_child(_line_value)
 
-	_line_slider = HSlider.new()
+	_line_slider = StyledSlider.new()
 	_line_slider.min_value = Preferences.LINE_WIDTH_MIN
 	_line_slider.max_value = Preferences.LINE_WIDTH_MAX
 	_line_slider.step = SLIDER_STEP

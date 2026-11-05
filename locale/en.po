@@ -1255,6 +1255,9 @@ msgstr "There are no notes for this version."
 msgid "about.whats_new.heading"
 msgstr "What's new in %s"
 
+msgid "about.whats_new.earlier"
+msgstr "Earlier versions"
+
 msgid "whats_new.1_0_0.worlds"
 msgstr "Worlds: keep several separate canvases in one worlds folder."
 
@@ -1275,6 +1278,12 @@ msgstr "The guide now explains pinning: Space + click pins a card, a plain click
 
 msgid "whats_new.1_0_1.linux_install"
 msgstr "The Linux install script now works with any folder name, including spaces and special characters."
+
+msgid "whats_new.1_0_1.history"
+msgstr "The What's new tab keeps the notes of earlier versions: open any version to read it."
+
+msgid "whats_new.1_0_1.sliders"
+msgstr "Sliders (line width, canvas background opacity) now match the rest of the interface."
 
 msgid "menu.main_menu"
 msgstr "Main menu"
