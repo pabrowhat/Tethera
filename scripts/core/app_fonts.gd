@@ -2,8 +2,8 @@ class_name AppFonts
 extends RefCounted
 
 const NOTE_FONTS_MSDF: bool = true
-const NOTE_FONT_NAMES: PackedStringArray = ["Segoe UI", "Inter", "Noto Sans", "Arial", "Liberation Sans", "sans-serif"]
-const MONO_FONT_NAMES: PackedStringArray = ["Cascadia Mono", "Consolas", "JetBrains Mono", "Courier New", "monospace"]
+const NOTE_FONT_NAMES: PackedStringArray = ["Segoe UI", "Inter", "SF Pro Text", "Helvetica Neue", "Noto Sans", "DejaVu Sans", "Arial", "Liberation Sans", "sans-serif"]
+const MONO_FONT_NAMES: PackedStringArray = ["Cascadia Mono", "Consolas", "JetBrains Mono", "SF Mono", "Menlo", "DejaVu Sans Mono", "Liberation Mono", "Courier New", "monospace"]
 
 const WEIGHT_REGULAR: int = 400
 const WEIGHT_BOLD: int = 700

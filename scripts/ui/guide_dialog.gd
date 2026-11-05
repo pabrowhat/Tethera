@@ -50,7 +50,7 @@ func _load_text() -> void:
 	if not FileAccess.file_exists(path):
 		_text_view.text = tr("guide.not_found")
 		return
-	_text_view.text = markdown_to_bbcode(FileAccess.get_file_as_string(path))
+	_text_view.text = markdown_to_bbcode(PlatformKeys.localize(FileAccess.get_file_as_string(path)))
 	_text_view.scroll_to_line(0)
 
 static func markdown_to_bbcode(markdown: String) -> String:

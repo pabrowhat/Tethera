@@ -41,7 +41,7 @@ var trash_files_dir: String = ""
 var trash_decor_dir: String = ""
 
 func _init(world_root: String) -> void:
-	root = world_root.replace("\\", "/")
+	root = world_root.replace("\\", "/") if OS.get_name() == "Windows" else world_root
 	if not root.ends_with("/"):
 		root += "/"
 	notes_dir = root + NOTES_FOLDER

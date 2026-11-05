@@ -16,3 +16,5 @@ mono_crash.*.json
 # Export
 *.exe
 build/
+# Local packaging files (not published)
+packaging/

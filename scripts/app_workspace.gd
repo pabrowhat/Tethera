@@ -146,6 +146,7 @@ func _ready() -> void:
 	navigator.transform_changed.connect(_on_navigator_transform_changed)
 
 	add_button.pressed.connect(_on_add_card_pressed)
+	_refresh_search_hint()
 	search_input.text_changed.connect(_search.on_search_input_changed)
 	search_input.text_submitted.connect(_search.on_search_text_submitted)
 	search_input.gui_input.connect(_search.on_search_input_gui_input)
@@ -330,8 +331,14 @@ func _on_settings_saved() -> void:
 	Localization.apply_saved()
 	_toast.show_message(tr("settings.saved"))
 
+func _refresh_search_hint() -> void:
+	if PlatformKeys.is_macos():
+		search_input.placeholder_text = PlatformKeys.localize(tr("topbar.search.placeholder"))
+
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and search_input != null:
+		_refresh_search_hint()
+	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
 		request_quit()
 	elif what == NOTIFICATION_APPLICATION_PAUSED:
 		_save_all_vault_data()
@@ -718,7 +725,7 @@ func _input(event: InputEvent) -> void:
 
 	if event is InputEventKey:
 		var quit_key: InputEventKey = event as InputEventKey
-		if quit_key.pressed and not quit_key.is_echo() and quit_key.is_command_or_control_pressed() and not quit_key.alt_pressed \
+		if quit_key.pressed and not quit_key.is_echo() and PlatformKeys.is_primary(quit_key) and not quit_key.alt_pressed \
 				and not quit_key.shift_pressed and (quit_key.keycode == KEY_Q or quit_key.physical_keycode == KEY_Q):
 			get_viewport().set_input_as_handled()
 			request_quit()
@@ -744,7 +751,7 @@ func _input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventKey and event.pressed and not event.is_echo():
-		var is_ctrl_cmd: bool = event.is_command_or_control_pressed()
+		var is_ctrl_cmd: bool = PlatformKeys.is_primary(event as InputEventKey)
 		var focus_owner: Control = get_viewport().gui_get_focus_owner()
 		var is_typing: bool = focus_owner is LineEdit or focus_owner is TextEdit
 
@@ -983,7 +990,7 @@ func _handle_zen_input(event: InputEvent) -> void:
 			return
 		sidebar_editor.exit_zen()
 		get_viewport().set_input_as_handled()
-	elif key.keycode == KEY_F11 or (is_enter and key.is_command_or_control_pressed()):
+	elif key.keycode == KEY_F11 or (is_enter and PlatformKeys.is_primary(key)):
 		sidebar_editor.exit_zen()
 		get_viewport().set_input_as_handled()
 
@@ -1178,13 +1185,13 @@ func _delete_cards(cards: Array[GraphCard], decor: Array[DecorNode] = []) -> voi
 
 	if not decor_ids.is_empty():
 		_history.record(tr("decor.history.delete") % (ids.size() + decor_ids.size()), _undo.restore_with_holder.bind(holder), _undo.remove_with_holder.bind(holder))
-		_toast.show_message(tr("decor.deleted") % (ids.size() + decor_ids.size()))
+		_toast.show_message(PlatformKeys.localize(tr("decor.deleted")) % (ids.size() + decor_ids.size()))
 	elif ids.size() == 1:
 		_history.record(tr("history.note.delete"), _undo.restore_with_holder.bind(holder), _undo.remove_with_holder.bind(holder))
-		_toast.show_message(tr("note.deleted"))
+		_toast.show_message(PlatformKeys.localize(tr("note.deleted")))
 	else:
 		_history.record(tr("history.notes.delete") % ids.size(), _undo.restore_with_holder.bind(holder), _undo.remove_with_holder.bind(holder))
-		_toast.show_message(tr("notes.deleted") % ids.size())
+		_toast.show_message(PlatformKeys.localize(tr("notes.deleted")) % ids.size())
 
 func _on_selection_changed() -> void:
 	_decor.refresh_selection_visuals()

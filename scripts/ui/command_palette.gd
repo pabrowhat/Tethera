@@ -189,7 +189,7 @@ func _input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey
 	if key.pressed:
 		var is_k: bool = key.keycode == KEY_K or key.physical_keycode == KEY_K
-		if is_k and key.is_command_or_control_pressed():
+		if is_k and PlatformKeys.is_primary(key):
 			if not key.is_echo():
 				cancel()
 			get_viewport().set_input_as_handled()

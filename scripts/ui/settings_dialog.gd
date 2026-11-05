@@ -228,14 +228,14 @@ func _open_vault_picker() -> void:
 func _on_vault_picked(status: bool, selected_paths: PackedStringArray, _filter_index: int) -> void:
 	_folder_dialog_open = false
 	if status and not selected_paths.is_empty():
-		_vault_dir = selected_paths[0].replace("\\", "/")
+		_vault_dir = WorldRegistry.normalize_path(selected_paths[0])
 		_show_vault_dir()
 
 func _vault_changed() -> bool:
 	return _same_dir_key(_vault_dir) != _same_dir_key(WorldRegistry.saved_vault_dir())
 
 func _same_dir_key(path: String) -> String:
-	return path.strip_edges().replace("\\", "/").trim_suffix("/").to_lower()
+	return WorldRegistry.path_key(path)
 
 
 func open_with_current() -> void:

@@ -51,8 +51,18 @@ static func is_safe_world_id(id: String) -> bool:
 		_id_re = RegEx.create_from_string(WORLD_ID_PATTERN)
 	return ProjectBundle.is_safe_id(id) and _id_re.search(id) != null
 
+static func normalize_path(path: String) -> String:
+	var clean: String = path.strip_edges()
+	if OS.get_name() == "Windows":
+		clean = clean.replace("\\", "/")
+	return clean
+
+static func path_key(path: String) -> String:
+	var key: String = normalize_path(path).trim_suffix("/")
+	return key if OS.get_name() == "Linux" or OS.get_name() == "FreeBSD" else key.to_lower()
+
 static func _check_shape(path: String) -> Dictionary:
-	var clean: String = path.strip_edges().replace("\\", "/")
+	var clean: String = normalize_path(path)
 	if clean == "" or clean.begins_with("res://") or clean.begins_with("user://") or not clean.is_absolute_path():
 		return {"ok": false, "path": "", "reason": REASON_NOT_ABSOLUTE}
 	for part: String in clean.split("/"):
@@ -69,8 +79,8 @@ static func check_vault_dir(path: String) -> Dictionary:
 	var clean: String = str(shape["path"])
 	if not DirAccess.dir_exists_absolute(clean):
 		return {"ok": false, "path": "", "reason": REASON_NOT_DIR}
-	var legacy: String = ProjectSettings.globalize_path(LegacyVaultCopy.SOURCE_DIR).replace("\\", "/")
-	if clean.to_lower().begins_with(legacy.to_lower()):
+	var legacy: String = path_key(ProjectSettings.globalize_path(LegacyVaultCopy.SOURCE_DIR)) + "/"
+	if path_key(clean + "/").begins_with(legacy):
 		return {"ok": false, "path": "", "reason": REASON_LEGACY_FOLDER}
 	if _inside_world(clean):
 		return {"ok": false, "path": "", "reason": REASON_WORLD_FOLDER}

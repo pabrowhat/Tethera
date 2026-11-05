@@ -770,7 +770,7 @@ func _gui_input(event: InputEvent) -> void:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
-				var is_ctrl: bool = Input.is_key_pressed(KEY_CTRL) or Input.is_key_pressed(KEY_META)
+				var is_ctrl: bool = PlatformKeys.primary_down()
 				var is_shift: bool = Input.is_key_pressed(KEY_SHIFT)
 				var is_space: bool = Input.is_key_pressed(KEY_SPACE)
 

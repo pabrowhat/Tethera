@@ -120,7 +120,7 @@ func commands() -> Array[Dictionary]:
 	return list
 
 func _command(id: int, text: String, hint: String = "", reason: String = "", group: String = GROUP_MENU, menu_only: bool = false) -> Dictionary:
-	return {"id": id, "text": text, "hint": hint, "reason": reason, "group": group, "menu_only": menu_only, "separator": false, "submenu": ""}
+	return {"id": id, "text": PlatformKeys.localize(text), "hint": PlatformKeys.hint(hint), "reason": reason, "group": group, "menu_only": menu_only, "separator": false, "submenu": ""}
 
 func _submenu(id: int, text: String, submenu_group: String) -> Dictionary:
 	var row: Dictionary = _command(id, text, "", "", GROUP_MENU, true)

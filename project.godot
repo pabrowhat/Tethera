@@ -20,6 +20,7 @@ boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=false
 boot_splash/use_filter=false
 config/icon="uid://bc5yjf3sdpcom"
+config/macos_native_icon="res://assets/icon_macos.icns"
 config/windows_native_icon="res://icon.ico"
 
 [display]
@@ -46,4 +47,5 @@ locale/translations=PackedStringArray("res://locale/en.po", "res://locale/ru.po"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_2d=2
