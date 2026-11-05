@@ -1270,6 +1270,12 @@ msgstr "The Example world shows how notes, links and types work."
 msgid "whats_new.1_0_0.about"
 msgstr "The About window shows the version and the licences."
 
+msgid "whats_new.1_0_1.guide"
+msgstr "The guide now explains pinning: Space + click pins a card, a plain click on empty canvas releases pinned cards."
+
+msgid "whats_new.1_0_1.linux_install"
+msgstr "The Linux install script now works with any folder name, including spaces and special characters."
+
 msgid "menu.main_menu"
 msgstr "Main menu"
 

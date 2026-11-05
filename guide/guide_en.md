@@ -23,6 +23,7 @@ Tethera is a canvas for notes and lore: notes and worlds are laid out as cards, 
 - A link is made by writing `[[Title]]` in the text. The link appears as soon as a note with that title exists.
 - `[[Title|Label]]` shows the label instead of the title.
 - A manual link (Ctrl+click between cards) does not depend on the text.
+- Space + click pins a card to the screen: it moves with the canvas until you unpin it with the same Space + click. A plain click on an empty part of the canvas releases all pinned cards.
 
 ## Types
 
