@@ -1,6 +1,20 @@
-# Tethera
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+    <img alt="Tethera: пространственный холст для заметок и лора" src="assets/banner-light.svg">
+  </picture>
+</p>
 
-[English](README.md)
+<p align="center">
+  <a href="https://github.com/pabrowhat/tethera/releases/latest"><img alt="Последний релиз" src="https://img.shields.io/github/v/release/pabrowhat/tethera?style=flat-square&color=6870FA&labelColor=242736"></a>
+  <img alt="Godot 4.7" src="https://img.shields.io/badge/Godot-4.7-6870FA?style=flat-square&labelColor=242736&logo=godotengine&logoColor=white">
+  <img alt="Windows, Linux, macOS" src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-6870FA?style=flat-square&labelColor=242736">
+  <img alt="Лицензия MIT" src="https://img.shields.io/badge/license-MIT-6870FA?style=flat-square&labelColor=242736">
+</p>
+
+<p align="center">
+  <a href="README.md">English</a>
+</p>
 
 Пространственный холст для заметок и лора: карточки, связи и картинки на бесконечной доске. Сделан на Godot 4.
 
