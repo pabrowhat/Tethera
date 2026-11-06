@@ -7,6 +7,8 @@ const DIALOG_WIDTH: float = 580.0
 const LICENSE_HEIGHT: float = 200.0
 const CONTENT_HEIGHT: float = 340.0
 const AUTHOR: String = "pabrowhat"
+const AVATAR_PATH: String = "res://assets/icon-pabrowhat.png"
+const AVATAR_SIZE: float = 64.0
 const GITHUB_URL: String = "https://github.com/pabrowhat/tethera"
 const SECTION_GAP: float = 8.0
 const LUCIDE_LICENSE_PATH: String = "res://assets/icons/LICENSE-lucide.txt"
@@ -103,10 +105,20 @@ func _build_about_page() -> void:
 	var author_row: HBoxContainer = HBoxContainer.new()
 	author_row.add_theme_constant_override("separation", 8)
 	box.add_child(author_row)
+	var avatar: TextureRect = TextureRect.new()
+	avatar.texture = load(AVATAR_PATH) as Texture2D
+	avatar.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	avatar.custom_minimum_size = Vector2(AVATAR_SIZE, AVATAR_SIZE)
+	avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	avatar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	author_row.add_child(avatar)
 	var author_label: Label = _make_label(tr("about.author") % AUTHOR, 13, TEXT_COLOR)
 	author_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	author_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	author_row.add_child(author_label)
 	var github_button: Button = _make_button("about.github", false)
+	github_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	github_button.pressed.connect(func() -> void: OS.shell_open(GITHUB_URL))
 	author_row.add_child(github_button)
 	var section_gap: Control = Control.new()

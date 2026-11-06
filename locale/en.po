@@ -1291,6 +1291,9 @@ msgstr "The About window has a link to the project on GitHub."
 msgid "whats_new.1_0_2.spacing"
 msgstr "Spacing in the About window is improved."
 
+msgid "whats_new.1_0_2.avatar"
+msgstr "The About window shows the author's avatar."
+
 msgid "menu.main_menu"
 msgstr "Main menu"
 

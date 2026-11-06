@@ -1291,6 +1291,9 @@ msgstr "В окне «О программе» есть ссылка на про�
 msgid "whats_new.1_0_2.spacing"
 msgstr "В окне «О программе» улучшены отступы."
 
+msgid "whats_new.1_0_2.avatar"
+msgstr "В окне «О программе» показан аватар автора."
+
 msgid "menu.main_menu"
 msgstr "Главное меню"
 
