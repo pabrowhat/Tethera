@@ -1332,3 +1332,147 @@ msgstr "Гайд"
 
 msgid "guide.not_found"
 msgstr "Гайд не найден"
+
+msgid "command.copy"
+msgstr "Копировать заметки"
+
+msgid "command.cut"
+msgstr "Вырезать заметки"
+
+msgid "command.paste"
+msgstr "Вставить заметки"
+
+msgid "command.duplicate"
+msgstr "Дублировать заметки"
+
+msgid "command.select_all"
+msgstr "Выделить все заметки"
+
+msgid "command.toggle_mode"
+msgstr "Переключить правку и просмотр"
+
+msgid "command.open_project_menu"
+msgstr "Открыть меню «Проект»"
+
+msgid "command.shortcuts"
+msgstr "Сочетания клавиш"
+
+msgid "command.reason.no_selection"
+msgstr "Сначала выделите заметку"
+
+msgid "command.reason.clipboard_empty"
+msgstr "Буфер пуст"
+
+msgid "clipboard.copied"
+msgstr "Скопировано: %d"
+
+msgid "clipboard.cut"
+msgstr "Вырезано: %d"
+
+msgid "clipboard.pasted"
+msgstr "Вставлено: %d"
+
+msgid "clipboard.duplicated"
+msgstr "Продублировано: %d"
+
+msgid "history.paste"
+msgstr "Вставка (%d)"
+
+msgid "history.cut"
+msgstr "Вырезание (%d)"
+
+msgid "history.duplicate"
+msgstr "Дублирование (%d)"
+
+msgid "shortcuts.title"
+msgstr "Сочетания клавиш"
+
+msgid "shortcuts.row.palette"
+msgstr "Палитра команд"
+
+msgid "shortcuts.row.new_note"
+msgstr "Новая заметка"
+
+msgid "shortcuts.row.toggle_mode"
+msgstr "Правка / просмотр в боковой панели"
+
+msgid "shortcuts.row.copy"
+msgstr "Копировать выделенные заметки"
+
+msgid "shortcuts.row.cut"
+msgstr "Вырезать выделенные заметки"
+
+msgid "shortcuts.row.paste"
+msgstr "Вставить заметки"
+
+msgid "shortcuts.row.duplicate"
+msgstr "Дублировать выделенные заметки"
+
+msgid "shortcuts.row.select_all"
+msgstr "Выделить все заметки"
+
+msgid "shortcuts.row.delete"
+msgstr "Удалить выделенное"
+
+msgid "shortcuts.row.undo"
+msgstr "Отменить"
+
+msgid "shortcuts.row.redo"
+msgstr "Повторить"
+
+msgid "shortcuts.row.project_menu"
+msgstr "Открыть меню «Проект»"
+
+msgid "shortcuts.row.save"
+msgstr "Сохранить мир"
+
+msgid "shortcuts.row.export_png"
+msgstr "Экспорт картинки холста"
+
+msgid "shortcuts.row.open"
+msgstr "Открыть файл .tether"
+
+msgid "shortcuts.row.search"
+msgstr "Поиск"
+
+msgid "shortcuts.row.focus"
+msgstr "Показать выделение или все заметки"
+
+msgid "shortcuts.row.rename"
+msgstr "Переименовать выделенную заметку"
+
+msgid "shortcuts.row.minimap"
+msgstr "Свернуть или развернуть миникарту"
+
+msgid "shortcuts.row.bookmark_jump"
+msgstr "Перейти к закладке"
+
+msgid "shortcuts.row.bookmark_set"
+msgstr "Поставить закладку"
+
+msgid "shortcuts.row.bookmark_clear"
+msgstr "Убрать закладку"
+
+msgid "shortcuts.row.zen"
+msgstr "Режим письма на весь экран"
+
+msgid "shortcuts.row.settings"
+msgstr "Настройки"
+
+msgid "shortcuts.row.main_menu"
+msgstr "Главное меню"
+
+msgid "shortcuts.row.quit"
+msgstr "Сохранить и выйти"
+
+msgid "shortcuts.row.escape"
+msgstr "Закрыть меню, поиск или боковую панель"
+
+msgid "whats_new.1_1_0.hotkeys"
+msgstr "Новые сочетания: Ctrl+N (новая заметка), Ctrl+E (правка / просмотр), Ctrl+A (выделить всё), Ctrl+D (дублировать) и P (меню «Проект»)."
+
+msgid "whats_new.1_1_0.clipboard"
+msgstr "Заметки можно копировать, вырезать и вставлять: Ctrl+C, Ctrl+X и Ctrl+V. Связи между скопированными заметками сохраняются."
+
+msgid "whats_new.1_1_0.shortcut_list"
+msgstr "В палитре Ctrl+K есть команда «Сочетания клавиш» со списком всех сочетаний."

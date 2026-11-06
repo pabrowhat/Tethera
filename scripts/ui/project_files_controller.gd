@@ -1,7 +1,7 @@
 class_name ProjectFilesController
 extends RefCounted
 
-enum MenuItem { OPEN, SAVE, EXPORT, EXPORT_PNG, UNDO, REDO, TYPES, CLEAN_IMAGES, TRASH_RESTORE, TRASH_EMPTY, TRASH_MENU, SETTINGS, ADD_DECOR, OPEN_FOLDER, RECENT, NEW_NOTE, SEARCH, TYPE_FILTER, CANVAS_BACKGROUND, ABOUT, MAIN_MENU, QUIT, EXPORT_MENU, IMAGES_MENU, EXPORT_ALL, INSERT_IMAGE }
+enum MenuItem { OPEN, SAVE, EXPORT, EXPORT_PNG, UNDO, REDO, TYPES, CLEAN_IMAGES, TRASH_RESTORE, TRASH_EMPTY, TRASH_MENU, SETTINGS, ADD_DECOR, OPEN_FOLDER, RECENT, NEW_NOTE, SEARCH, TYPE_FILTER, CANVAS_BACKGROUND, ABOUT, MAIN_MENU, QUIT, EXPORT_MENU, IMAGES_MENU, EXPORT_ALL, INSERT_IMAGE, COPY, PASTE, CUT, DUPLICATE, SELECT_ALL, TOGGLE_MODE, OPEN_PROJECT_MENU, SHORTCUTS }
 
 const GROUP_MENU: String = "menu"
 const GROUP_EXPORT: String = "export"
@@ -45,10 +45,10 @@ func build_project_menu() -> void:
 	_ws._project_popup = PopupList.new()
 	button.add_child(_ws._project_popup)
 	_ws._project_popup.item_chosen.connect(run_command)
-	button.pressed.connect(_open_project_menu)
+	button.pressed.connect(open_project_menu)
 	fill_project_menu()
 
-func _open_project_menu() -> void:
+func open_project_menu() -> void:
 	fill_project_menu()
 	_ws._project_popup.open_below(_ws._project_menu.get_global_rect(), PROJECT_MENU_WIDTH)
 
@@ -83,6 +83,7 @@ func commands() -> Array[Dictionary]:
 	var redo_text: String = tr("menu.redo.labeled") % redo_label if redo_label != "" else tr("menu.redo")
 	var insert_reason: String = "" if _ws.sidebar_editor.can_insert_image() else tr("command.reason.no_editor")
 	var trash_reason: String = tr("trash.none") if _ws._storage != null and _ws._storage.trash_file_count() == 0 else ""
+	var selection_reason: String = "" if _ws._selection.item_count() > 0 else tr("command.reason.no_selection")
 	var list: Array[Dictionary] = [
 		_command(MenuItem.MAIN_MENU, tr("menu.main_menu"), "Ctrl+M"),
 		_separator(GROUP_MENU),
@@ -113,7 +114,15 @@ func commands() -> Array[Dictionary]:
 		_command(MenuItem.CLEAN_IMAGES, tr("menu.clean_images"), "", "", GROUP_IMAGES),
 		_command(MenuItem.TRASH_RESTORE, tr("menu.trash_restore"), "", trash_reason, GROUP_TRASH),
 		_command(MenuItem.TRASH_EMPTY, tr("menu.trash_empty"), "", trash_reason, GROUP_TRASH),
-		_command(MenuItem.NEW_NOTE, tr("command.new_note"), "", "", GROUP_BAR),
+		_command(MenuItem.NEW_NOTE, tr("command.new_note"), "Ctrl+N", "", GROUP_BAR),
+		_command(MenuItem.COPY, tr("command.copy"), "Ctrl+C", selection_reason, GROUP_BAR),
+		_command(MenuItem.CUT, tr("command.cut"), "Ctrl+X", selection_reason, GROUP_BAR),
+		_command(MenuItem.PASTE, tr("command.paste"), "Ctrl+V", "" if not _ws._clipboard_ops.is_empty() else tr("command.reason.clipboard_empty"), GROUP_BAR),
+		_command(MenuItem.DUPLICATE, tr("command.duplicate"), "Ctrl+D", selection_reason, GROUP_BAR),
+		_command(MenuItem.SELECT_ALL, tr("command.select_all"), "Ctrl+A", "", GROUP_BAR),
+		_command(MenuItem.TOGGLE_MODE, tr("command.toggle_mode"), "Ctrl+E", "" if _ws.sidebar_editor.can_toggle_mode() else tr("command.reason.no_editor"), GROUP_BAR),
+		_command(MenuItem.OPEN_PROJECT_MENU, tr("command.open_project_menu"), "P", "", GROUP_BAR),
+		_command(MenuItem.SHORTCUTS, tr("command.shortcuts"), "", "", GROUP_BAR),
 		_command(MenuItem.SEARCH, tr("command.search"), "Ctrl+F", "", GROUP_BAR),
 		_command(MenuItem.TYPE_FILTER, tr("command.type_filter"), "", "", GROUP_BAR),
 	]
@@ -183,6 +192,22 @@ func run_command(id: int) -> void:
 			empty_trash_command()
 		MenuItem.NEW_NOTE:
 			_ws._on_add_card_pressed()
+		MenuItem.COPY:
+			_ws._clipboard_ops.copy()
+		MenuItem.CUT:
+			_ws._clipboard_ops.cut()
+		MenuItem.PASTE:
+			_ws._clipboard_ops.paste()
+		MenuItem.DUPLICATE:
+			_ws._clipboard_ops.duplicate()
+		MenuItem.SELECT_ALL:
+			_ws._clipboard_ops.select_all()
+		MenuItem.TOGGLE_MODE:
+			_ws.sidebar_editor.toggle_mode()
+		MenuItem.OPEN_PROJECT_MENU:
+			open_project_menu()
+		MenuItem.SHORTCUTS:
+			_ws._shortcuts_dialog.open_shortcuts()
 		MenuItem.SEARCH:
 			_ws.focus_search()
 		MenuItem.TYPE_FILTER:

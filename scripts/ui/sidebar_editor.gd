@@ -868,6 +868,16 @@ func _find_card_id_by_title(title: String) -> String:
 func _can_format() -> bool:
 	return not is_preview and is_instance_valid(current_card)
 
+func can_toggle_mode() -> bool:
+	return is_open and is_instance_valid(current_card) and single_view.visible
+
+func toggle_mode() -> void:
+	if not can_toggle_mode():
+		return
+	var want_preview: bool = not is_preview
+	mode_toggle.set_preview(want_preview, true)
+	_on_mode_toggled(want_preview)
+
 func can_insert_image() -> bool:
 	return _can_format()
 

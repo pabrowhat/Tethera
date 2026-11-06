@@ -1332,3 +1332,147 @@ msgstr "Guide"
 
 msgid "guide.not_found"
 msgstr "Guide not found"
+
+msgid "command.copy"
+msgstr "Copy notes"
+
+msgid "command.cut"
+msgstr "Cut notes"
+
+msgid "command.paste"
+msgstr "Paste notes"
+
+msgid "command.duplicate"
+msgstr "Duplicate notes"
+
+msgid "command.select_all"
+msgstr "Select all notes"
+
+msgid "command.toggle_mode"
+msgstr "Switch Edit / View"
+
+msgid "command.open_project_menu"
+msgstr "Open the Project menu"
+
+msgid "command.shortcuts"
+msgstr "Keyboard shortcuts"
+
+msgid "command.reason.no_selection"
+msgstr "Select a note first"
+
+msgid "command.reason.clipboard_empty"
+msgstr "The clipboard is empty"
+
+msgid "clipboard.copied"
+msgstr "Copied: %d"
+
+msgid "clipboard.cut"
+msgstr "Cut: %d"
+
+msgid "clipboard.pasted"
+msgstr "Pasted: %d"
+
+msgid "clipboard.duplicated"
+msgstr "Duplicated: %d"
+
+msgid "history.paste"
+msgstr "Paste (%d)"
+
+msgid "history.cut"
+msgstr "Cut (%d)"
+
+msgid "history.duplicate"
+msgstr "Duplicate (%d)"
+
+msgid "shortcuts.title"
+msgstr "Keyboard shortcuts"
+
+msgid "shortcuts.row.palette"
+msgstr "Command palette"
+
+msgid "shortcuts.row.new_note"
+msgstr "New note"
+
+msgid "shortcuts.row.toggle_mode"
+msgstr "Switch Edit / View in the side panel"
+
+msgid "shortcuts.row.copy"
+msgstr "Copy selected notes"
+
+msgid "shortcuts.row.cut"
+msgstr "Cut selected notes"
+
+msgid "shortcuts.row.paste"
+msgstr "Paste notes"
+
+msgid "shortcuts.row.duplicate"
+msgstr "Duplicate selected notes"
+
+msgid "shortcuts.row.select_all"
+msgstr "Select all notes"
+
+msgid "shortcuts.row.delete"
+msgstr "Delete selected"
+
+msgid "shortcuts.row.undo"
+msgstr "Undo"
+
+msgid "shortcuts.row.redo"
+msgstr "Redo"
+
+msgid "shortcuts.row.project_menu"
+msgstr "Open the Project menu"
+
+msgid "shortcuts.row.save"
+msgstr "Save the world"
+
+msgid "shortcuts.row.export_png"
+msgstr "Export a picture of the canvas"
+
+msgid "shortcuts.row.open"
+msgstr "Open a .tether file"
+
+msgid "shortcuts.row.search"
+msgstr "Search"
+
+msgid "shortcuts.row.focus"
+msgstr "Show the selection or all notes"
+
+msgid "shortcuts.row.rename"
+msgstr "Rename the selected note"
+
+msgid "shortcuts.row.minimap"
+msgstr "Collapse or expand the minimap"
+
+msgid "shortcuts.row.bookmark_jump"
+msgstr "Go to a bookmark"
+
+msgid "shortcuts.row.bookmark_set"
+msgstr "Set a bookmark"
+
+msgid "shortcuts.row.bookmark_clear"
+msgstr "Clear a bookmark"
+
+msgid "shortcuts.row.zen"
+msgstr "Full-screen writing mode"
+
+msgid "shortcuts.row.settings"
+msgstr "Settings"
+
+msgid "shortcuts.row.main_menu"
+msgstr "Main menu"
+
+msgid "shortcuts.row.quit"
+msgstr "Save and quit"
+
+msgid "shortcuts.row.escape"
+msgstr "Close the menu, search or side panel"
+
+msgid "whats_new.1_1_0.hotkeys"
+msgstr "New shortcuts: Ctrl+N (new note), Ctrl+E (Edit / View), Ctrl+A (select all), Ctrl+D (duplicate) and P (Project menu)."
+
+msgid "whats_new.1_1_0.clipboard"
+msgstr "Notes can be copied, cut and pasted with Ctrl+C, Ctrl+X and Ctrl+V. Links between the copied notes are kept."
+
+msgid "whats_new.1_1_0.shortcut_list"
+msgstr "The Ctrl+K palette has a \"Keyboard shortcuts\" command with the list of all shortcuts."

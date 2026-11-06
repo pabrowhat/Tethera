@@ -87,6 +87,8 @@ var _project_menu: Button = null
 var _project_popup: PopupList = null
 var _project_files: ProjectFilesController = null
 var _import: WorkspaceImport = null
+var _clipboard_ops: WorkspaceClipboard = null
+var _shortcuts_dialog: ShortcutsDialog = null
 var _search_popup: LinkAutocompletePopup = null
 var _search: CanvasSearch = null
 var _type_filter: TypeFilter = TypeFilter.new()
@@ -133,7 +135,8 @@ func _ready() -> void:
 	_layout = WorkspaceLayout.new(self)
 	_project_files = ProjectFilesController.new(self)
 	_import = WorkspaceImport.new(self)
-	_search = CanvasSearch.new(self)
+	_clipboard_ops = WorkspaceClipboard.new(self)
+	_search =CanvasSearch.new(self)
 	_sampler = CanvasColorSampler.new(self)
 	_world_flow = WorkspaceWorlds.new(self)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -271,6 +274,8 @@ func _ready() -> void:
 	$UI.add_child(_vault_dialog)
 	_world_prompt = WorldPromptDialog.new()
 	$UI.add_child(_world_prompt)
+	_shortcuts_dialog = ShortcutsDialog.new()
+	$UI.add_child(_shortcuts_dialog)
 	_palette = CommandPalette.new()
 	$UI.add_child(_palette)
 	_palette.setup(_project_files.palette_entries, _project_files.run_command)
@@ -526,6 +531,7 @@ func flush_world() -> bool:
 func _close_world() -> void:
 	_clear_canvas()
 	_history.clear()
+	_clipboard_ops.clear()
 	_note_counter = 1
 	_project_path = ""
 	_project_created = 0
@@ -821,6 +827,11 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
+		elif event.keycode == KEY_P and not is_ctrl_cmd and not event.alt_pressed and not event.shift_pressed and not is_typing and not _is_modal_open() and not PopupList.is_any_open():
+			_project_files.open_project_menu()
+			get_viewport().set_input_as_handled()
+			return
+
 		elif _bookmark_slot_for(event as InputEventKey) >= 0 and not is_typing and not _is_modal_open() and not PopupList.is_any_open():
 			var slot: int = _bookmark_slot_for(event as InputEventKey)
 			if event.alt_pressed:
@@ -910,6 +921,9 @@ func _handle_decor_input(event: InputEvent) -> bool:
 			return _decor.try_begin_from_press(press)
 	return false
 
+func _key_is(key: InputEventKey, code: Key) -> bool:
+	return key.keycode == code or key.physical_keycode == code
+
 func _handle_global_shortcut(key: InputEventKey, is_typing: bool) -> bool:
 	if (key.keycode == KEY_COMMA or key.physical_keycode == KEY_COMMA) and not key.shift_pressed:
 		open_settings()
@@ -920,6 +934,29 @@ func _handle_global_shortcut(key: InputEventKey, is_typing: bool) -> bool:
 	if (key.keycode == KEY_M or key.physical_keycode == KEY_M) and not key.shift_pressed:
 		_world_flow.go_to_main_menu()
 		return true
+	if not is_typing and not key.shift_pressed and not PopupList.is_any_open():
+		if _key_is(key, KEY_N):
+			_spawn_card_at_viewport_center()
+			return true
+		if _key_is(key, KEY_E):
+			if not sidebar_editor.can_toggle_mode():
+				return false
+			sidebar_editor.toggle_mode()
+			return true
+		if _key_is(key, KEY_C):
+			return _clipboard_ops.copy()
+		if _key_is(key, KEY_X):
+			_clipboard_ops.cut()
+			return _selection.item_count() == 0
+		if _key_is(key, KEY_V):
+			_clipboard_ops.paste()
+			return true
+		if _key_is(key, KEY_D):
+			_clipboard_ops.duplicate()
+			return true
+		if _key_is(key, KEY_A):
+			_clipboard_ops.select_all()
+			return true
 	match key.keycode:
 		KEY_Z:
 			if is_typing:
@@ -1167,7 +1204,7 @@ func _delete_card_by_id(id: String) -> void:
 		var single: Array[GraphCard] = [card]
 		_delete_cards(single)
 
-func _delete_cards(cards: Array[GraphCard], decor: Array[DecorNode] = []) -> void:
+func _delete_cards(cards: Array[GraphCard], decor: Array[DecorNode] = [], history_label: String = "") -> void:
 	var ids: Array[String] = []
 	for card: GraphCard in cards:
 		if is_instance_valid(card):
@@ -1183,7 +1220,9 @@ func _delete_cards(cards: Array[GraphCard], decor: Array[DecorNode] = []) -> voi
 	_undo.remove_cards(ids)
 	_undo.remove_decor(decor_ids)
 
-	if not decor_ids.is_empty():
+	if history_label != "":
+		_history.record(history_label, _undo.restore_with_holder.bind(holder), _undo.remove_with_holder.bind(holder))
+	elif not decor_ids.is_empty():
 		_history.record(tr("decor.history.delete") % (ids.size() + decor_ids.size()), _undo.restore_with_holder.bind(holder), _undo.remove_with_holder.bind(holder))
 		_toast.show_message(PlatformKeys.localize(tr("decor.deleted")) % (ids.size() + decor_ids.size()))
 	elif ids.size() == 1:
@@ -1656,6 +1695,7 @@ func _is_dialog_over_start() -> bool:
 		or (is_instance_valid(_canvas_bg_dialog) and _canvas_bg_dialog.is_open()) \
 		or (is_instance_valid(_vault_dialog) and _vault_dialog.is_open()) \
 		or (is_instance_valid(_world_prompt) and _world_prompt.is_open()) \
+		or (is_instance_valid(_shortcuts_dialog) and _shortcuts_dialog.is_open()) \
 		or (is_instance_valid(_palette) and _palette.is_open())
 
 func _is_modal_open() -> bool:

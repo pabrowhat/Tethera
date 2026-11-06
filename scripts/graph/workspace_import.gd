@@ -247,36 +247,7 @@ func _rename_clashing_titles(notes: Array[Dictionary]) -> int:
 		if is_instance_valid(card):
 			existing[card.title_label.text.strip_edges().to_lower()] = true
 
-	var taken: Dictionary = existing.duplicate()
-	for note: Dictionary in notes:
-		taken[str(note.get("title", "")).strip_edges().to_lower()] = true
-
-	var renames: Dictionary = {}
-	var renamed: int = 0
-	for note: Dictionary in notes:
-		var title: String = str(note.get("title", "")).strip_edges()
-		var key: String = title.to_lower()
-		if not existing.has(key):
-			continue
-		var counter: int = 2
-		var candidate: String = "%s (%d)" % [title, counter]
-		while taken.has(candidate.to_lower()):
-			counter += 1
-			candidate = "%s (%d)" % [title, counter]
-		taken[candidate.to_lower()] = true
-		note["title"] = candidate
-		if not renames.has(key):
-			renames[key] = candidate
-		renamed += 1
-
-	if renames.is_empty():
-		return 0
-	for note: Dictionary in notes:
-		var content: String = str(note.get("content", ""))
-		for old_key: String in renames:
-			content = WikiLink.replace_title(content, old_key, str(renames[old_key]))
-		note["content"] = content
-	return renamed
+	return NoteClipboard.rename_clashing_titles(notes, existing)
 
 
 func undo_import(holder: Dictionary) -> void:

@@ -25,6 +25,25 @@ Tethera is a canvas for notes and lore: notes and worlds are laid out as cards, 
 - A manual link (Ctrl+click between cards) does not depend on the text.
 - Space + click pins a card to the screen: it moves with the canvas until you unpin it with the same Space + click. A plain click on an empty part of the canvas releases all pinned cards.
 
+## Keyboard shortcuts
+
+Ctrl is Cmd on macOS. Shortcuts for notes do nothing while you type in a text field; there Ctrl+C, Ctrl+X, Ctrl+V and Ctrl+A work on the text.
+
+- **Ctrl+K**: command palette. It lists the commands, including "Keyboard shortcuts" with this list.
+- **Ctrl+N**: new note.
+- **Ctrl+E**: switch Edit / View in the side panel (only when a note is open).
+- **Ctrl+C**, **Ctrl+X**, **Ctrl+V**: copy, cut and paste the selected notes. The clipboard works only inside Tethera. Pasted notes get new ids and are shifted from the originals; links between the copied notes are kept, links to other notes are not. A copy of a note gets the title "Title (2)" if the title is taken.
+- **Ctrl+D**: duplicate the selected notes next to the originals. The clipboard is not changed.
+- **Ctrl+A**: select all notes.
+- **Delete**: delete the selected notes.
+- **Ctrl+Z**, **Ctrl+Y**: undo and redo. Paste, cut and duplicate are one step each.
+- **P**: open the "Project" menu. **Esc** closes it.
+- **Ctrl+S** save, **Ctrl+Shift+S** picture of the canvas, **Ctrl+O** open a `.tether`, **Ctrl+F** search, **Ctrl+,** settings, **Ctrl+M** main menu, **Ctrl+Q** save and quit.
+- **F** or **Home**: show the selection or all notes. **F2**: rename the selected note. **M**: collapse or expand the minimap.
+- **1-5**: go to a bookmark, **Shift+1-5** set it, **Alt+1-5** clear it.
+- **F11** or **Ctrl+Enter**: full-screen writing mode.
+- **Esc**: closes, in turn, search, a question window, a link being drawn, a selected link, the side panel.
+
 ## Types
 
 - Each world has the types Character, Event, Place, Faction and Item. You can rename, delete and create your own.
