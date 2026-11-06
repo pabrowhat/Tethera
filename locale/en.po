@@ -1494,3 +1494,6 @@ msgstr "New light theme: panels, menus, dialogs, the canvas and its dot grid, th
 
 msgid "whats_new.1_2_0.theme_setting"
 msgstr "Choose the theme in Settings. It applies on Save, with no restart. The colours you chose for notes do not change."
+
+msgid "whats_new.1_2_0.macos_vault_dialog"
+msgstr "Fixed: on macOS, the Vault folder dialog could get stuck after choosing a folder."
