@@ -16,9 +16,9 @@ const SCREEN_MARGIN: float = 8.0
 const ANCHOR_GAP: float = 4.0
 const FADE_DURATION: float = 0.12
 const OFF_ALPHA: float = 0.4
-const NO_TYPE_COLOR: Color = Color(0.55, 0.57, 0.65, 1.0)
-const TEXT_COLOR: Color = Color(0.9, 0.92, 0.96, 1.0)
-const ACTIVE_COLOR: Color = Color(0.62, 0.66, 1.0, 1.0)
+const NO_TYPE_COLOR: StringName = &"type.none"
+const TEXT_COLOR: StringName = &"text.primary"
+const ACTIVE_COLOR: StringName = &"accent.text"
 
 var _panel: PanelContainer = null
 var _search: LineEdit = null
@@ -42,10 +42,10 @@ func _init() -> void:
 	expand_icon = true
 	add_theme_constant_override("icon_max_width", 16)
 	add_theme_font_size_override("font_size", 13)
-	add_theme_color_override("font_color", TEXT_COLOR)
+	ThemeColors.bind_override(self, &"font_color", TEXT_COLOR)
 	pressed.connect(_toggle_panel)
 
-	_row_style = UiStyle.box(Color(0.0, 0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0, 0.0), 5, 0.0, 0.0)
+	_row_style = UiStyle.box(UiStyle.CLEAR, UiStyle.CLEAR, 5, 0.0, 0.0)
 	_row_style.set_border_width_all(0)
 	_row_hover_style = UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 5, 0.0, 0.0)
 	_row_hover_style.set_border_width_all(0)
@@ -56,7 +56,7 @@ func _init() -> void:
 	_panel.z_index = 100
 	_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 0.0)
 	var panel_style: StyleBoxFlat = UiStyle.box(PopupList.PANEL_BG, UiStyle.BORDER, 8, 8.0, 8.0)
-	panel_style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	ThemeColors.bind(panel_style, &"shadow_color", &"shadow")
 	panel_style.shadow_size = 12
 	panel_style.shadow_offset = Vector2(0.0, 4.0)
 	_panel.add_theme_stylebox_override("panel", panel_style)
@@ -89,6 +89,11 @@ func _init() -> void:
 	_scroll.add_child(_list)
 
 	set_process_input(false)
+	ThemeColors.watch(_on_theme_changed)
+
+func _on_theme_changed() -> void:
+	if _last_filter != null:
+		rebuild(_last_types, _last_filter)
 
 func _exit_tree() -> void:
 	_is_open = false
@@ -121,7 +126,7 @@ func rebuild(types: Array[EntityType], filter: TypeFilter) -> void:
 
 	for entity_type: EntityType in types:
 		_add_row(entity_type.id, entity_type.name, entity_type.color)
-	_add_row("", tr("filter.no_type"), NO_TYPE_COLOR)
+	_add_row("", tr("filter.no_type"), ThemeColors.color(NO_TYPE_COLOR))
 	_apply_search()
 	refresh_states(filter)
 
@@ -134,7 +139,7 @@ func refresh_states(filter: TypeFilter) -> void:
 		(_contents[type_id] as HBoxContainer).modulate.a = 1.0 if is_on else OFF_ALPHA
 
 	text = tr("filter.button") % [shown, _rows.size()]
-	add_theme_color_override("font_color", TEXT_COLOR if shown == _rows.size() else ACTIVE_COLOR)
+	ThemeColors.bind_override(self, &"font_color", TEXT_COLOR if shown == _rows.size() else ACTIVE_COLOR)
 
 func open() -> void:
 	if _is_open:
@@ -260,12 +265,12 @@ func _add_row(type_id: String, label: String, color: Color) -> void:
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_label.add_theme_font_size_override("font_size", 13)
-	name_label.add_theme_color_override("font_color", TEXT_COLOR)
+	ThemeColors.bind_override(name_label, &"font_color", TEXT_COLOR)
 	content.add_child(name_label)
 
 	var check: TextureRect = TextureRect.new()
 	check.texture = ICON_CHECK
-	check.modulate = TEXT_COLOR
+	ThemeColors.bind(check, &"modulate", TEXT_COLOR)
 	check.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	check.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	check.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)

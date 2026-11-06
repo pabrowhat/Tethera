@@ -3,8 +3,8 @@ extends Node2D
 
 signal link_anchored(to_id: String)
 
-@export var preview_connect_color: Color = Color("6870fa")
-@export var preview_disconnect_color: Color = Color("e74c3c")
+const PREVIEW_CONNECT_KEY: StringName = &"accent"
+const PREVIEW_DISCONNECT_KEY: StringName = &"link.preview_disconnect"
 @export var line_width: float = 2.5
 @export_group("Link Animation")
 @export var grow_duration: float = 0.45
@@ -48,6 +48,7 @@ const SELECTED_WIDTH_BOOST: float = 1.5
 
 func _ready() -> void:
 	RenderingServer.canvas_item_set_custom_rect(get_canvas_item(), true, INFINITE_BOUNDS)
+	ThemeColors.watch(queue_redraw)
 
 func setup(cards_map: Dictionary) -> void:
 	cards_by_id = cards_map
@@ -193,7 +194,7 @@ func _draw() -> void:
 		)
 
 	if is_drawing_preview:
-		var current_preview_color: Color = preview_disconnect_color if is_preview_disconnect else preview_connect_color
+		var current_preview_color: Color = ThemeColors.color(PREVIEW_DISCONNECT_KEY if is_preview_disconnect else PREVIEW_CONNECT_KEY)
 		draw_line(preview_from_pos, preview_to_pos, current_preview_color, effective_width, true)
 
 func _draw_link(from_id: String, to_id: String, progress: float, pulse: float, fade: float, base_width: float, style: String, selected: bool) -> void:

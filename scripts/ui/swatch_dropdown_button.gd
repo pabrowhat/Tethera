@@ -5,8 +5,8 @@ signal color_picked(color: Color)
 
 const POPUP_GAP: float = 6.0
 const STRIPE_HEIGHT: float = 3.0
-const POPUP_BG: Color = Color(0.0901961, 0.0980392, 0.137255, 1.0)
-const POPUP_BORDER: Color = Color(0.247059, 0.266667, 0.364706, 1.0)
+const POPUP_BG: StringName = &"surface.panel"
+const POPUP_BORDER: StringName = &"border"
 
 var _popup: PopupPanel = null
 var _grid: GridContainer = null
@@ -27,8 +27,8 @@ func _init() -> void:
 	_stripe.offset_bottom = -4.0
 
 	var panel_style: StyleBoxFlat = StyleBoxFlat.new()
-	panel_style.bg_color = POPUP_BG
-	panel_style.border_color = POPUP_BORDER
+	ThemeColors.bind(panel_style, &"bg_color", POPUP_BG)
+	ThemeColors.bind(panel_style, &"border_color", POPUP_BORDER)
 	panel_style.set_border_width_all(1)
 	panel_style.set_corner_radius_all(8)
 	panel_style.set_content_margin_all(10.0)
@@ -42,6 +42,9 @@ func _init() -> void:
 	add_child(_popup)
 
 	pressed.connect(_open_popup)
+
+func use_theme_stripe(key: StringName) -> void:
+	ThemeColors.bind(_stripe, &"color", key)
 
 func setup(glyph: String, icon_texture: Texture2D, preset_colors: Array[Color], swatch_shader: Shader, columns: int, stripe_color: Color) -> void:
 	text = glyph
@@ -73,6 +76,7 @@ func _rebuild_swatches() -> void:
 	SwatchPalette.build(_grid, colors, _swatch_shader, _on_swatch_pressed)
 
 func _on_swatch_pressed(color: Color) -> void:
+	ThemeColors.unbind(_stripe, &"color")
 	_stripe.color = color
 	_popup.hide()
 	color_picked.emit(color)

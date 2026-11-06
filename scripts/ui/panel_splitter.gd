@@ -6,8 +6,8 @@ signal drag_finished
 
 const HANDLE_WIDTH: float = 8.0
 const LINE_WIDTH: float = 2.0
-const IDLE_COLOR: Color = Color(0.192157, 0.207843, 0.286275, 1.0)
-const ACCENT_COLOR: Color = Color("6870fa")
+const IDLE_COLOR: StringName = &"border.soft"
+const ACCENT_COLOR: StringName = &"accent"
 const HIGHLIGHT_DURATION: float = 0.1
 
 var _highlight: float = 0.0
@@ -28,11 +28,12 @@ func is_dragging() -> bool:
 	return _is_dragging
 
 func _draw() -> void:
-	var line_color: Color = IDLE_COLOR.lerp(ACCENT_COLOR, _highlight)
+	var accent: Color = ThemeColors.color(ACCENT_COLOR)
+	var line_color: Color = ThemeColors.color(IDLE_COLOR).lerp(accent, _highlight)
 	var x: float = size.x - LINE_WIDTH
 	draw_rect(Rect2(x, 0.0, LINE_WIDTH, size.y), line_color)
 	if _highlight > 0.01:
-		draw_rect(Rect2(x - 3.0, 0.0, 3.0, size.y), Color(ACCENT_COLOR, 0.12 * _highlight))
+		draw_rect(Rect2(x - 3.0, 0.0, 3.0, size.y), Color(accent, 0.12 * _highlight))
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

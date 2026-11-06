@@ -4,6 +4,7 @@ uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
 uniform float strength : hint_range(0.0, 8.0) = 0.0;
 uniform float dim : hint_range(0.0, 1.0) = 0.0;
 uniform float vignette : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 shade_color : source_color;
 
 const vec2 RING_A[6] = vec2[6](
 	vec2(1.0, 0.0), vec2(0.5, 0.866), vec2(-0.5, 0.866),
@@ -33,6 +34,6 @@ void fragment() {
 
 	vec2 centered = (SCREEN_UV - vec2(0.5)) * vec2(1.0, 0.85);
 	float edge = smoothstep(0.3, 0.8, length(centered));
-	col *= 1.0 - dim - vignette * edge * 0.5;
+	col = mix(col, shade_color.rgb, clamp(dim + vignette * edge * 0.5, 0.0, 1.0));
 	COLOR = vec4(col, 1.0);
 }

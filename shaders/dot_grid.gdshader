@@ -1,7 +1,7 @@
 shader_type canvas_item;
 
-uniform vec4 bg_color : source_color = vec4(0.063, 0.067, 0.09, 1.0);
-uniform vec4 dot_color : source_color = vec4(0.24, 0.26, 0.35, 0.45);
+uniform vec4 bg_color : source_color;
+uniform vec4 dot_color : source_color;
 uniform float grid_spacing = 32.0;
 uniform float dot_radius = 1.2;
 uniform vec2 pan_offset = vec2(0.0);

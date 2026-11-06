@@ -27,7 +27,7 @@ func _init() -> void:
 	chevron.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	chevron.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	chevron.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	chevron.modulate = Color(0.7, 0.72, 0.8)
+	ThemeColors.bind(chevron, &"modulate", &"text.caption")
 	chevron.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
 	chevron.offset_left = -(CHEVRON_SIZE + 8.0)
 	chevron.offset_right = -8.0
@@ -41,7 +41,7 @@ func _init() -> void:
 
 	pressed.connect(_open_popup)
 
-func _make_style(background: Color, border: Color) -> StyleBoxFlat:
+func _make_style(background: StringName, border: StringName) -> StyleBoxFlat:
 	var style: StyleBoxFlat = UiStyle.box(background, border, 6, 10.0, 4.0)
 	style.content_margin_right = RIGHT_PADDING
 	return style

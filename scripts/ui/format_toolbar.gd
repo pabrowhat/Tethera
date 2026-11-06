@@ -14,14 +14,14 @@ const PRESS_SCALE: float = 0.95
 const PRESS_DURATION: float = 0.05
 const RELEASE_DURATION: float = 0.09
 
-const NORMAL_BG: Color = Color(0.141176, 0.152941, 0.211765, 1.0)
-const HOVER_BG: Color = Color(0.192157, 0.207843, 0.286275, 1.0)
-const PRESSED_BG: Color = Color(0.407843, 0.439216, 0.980392, 1.0)
-const BORDER: Color = Color(0.247059, 0.266667, 0.364706, 1.0)
-const TEXT: Color = Color(0.88, 0.89, 0.94, 1.0)
+const NORMAL_BG: StringName = &"control.normal"
+const HOVER_BG: StringName = &"control.hover"
+const PRESSED_BG: StringName = &"accent"
+const BORDER: StringName = &"border"
+const TEXT: StringName = &"text.primary"
 
 const PALETTE_COLUMNS: int = 6
-const DEFAULT_TEXT_STRIPE: Color = Color(0.88, 0.89, 0.94, 1.0)
+const DEFAULT_TEXT_STRIPE: StringName = &"text.primary"
 
 var _text_color_button: SwatchDropdownButton = null
 var _highlight_button: SwatchDropdownButton = null
@@ -58,15 +58,18 @@ func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
 	_text_color_button = SwatchDropdownButton.new()
 	_style_button(_text_color_button, "format.text_color")
 	_text_color_button.add_theme_font_override("font", AppFonts.note_bold())
-	_text_color_button.setup("A", null, palette_colors, swatch_shader, PALETTE_COLUMNS, DEFAULT_TEXT_STRIPE)
+	_text_color_button.setup("A", null, palette_colors, swatch_shader, PALETTE_COLUMNS, Color.WHITE)
+	_text_color_button.use_theme_stripe(DEFAULT_TEXT_STRIPE)
 	_text_color_button.color_picked.connect(_on_text_color_picked)
 	add_child(_text_color_button)
 	_attach_press_feedback(_text_color_button)
 
 	_highlight_button = SwatchDropdownButton.new()
 	_style_button(_highlight_button, "format.highlight")
-	var highlight_stripe: Color = palette_colors[mini(3, palette_colors.size() - 1)] if not palette_colors.is_empty() else DEFAULT_TEXT_STRIPE
+	var highlight_stripe: Color = palette_colors[mini(3, palette_colors.size() - 1)] if not palette_colors.is_empty() else Color.WHITE
 	_highlight_button.setup("", ICON_HIGHLIGHTER, palette_colors, swatch_shader, PALETTE_COLUMNS, highlight_stripe)
+	if palette_colors.is_empty():
+		_highlight_button.use_theme_stripe(DEFAULT_TEXT_STRIPE)
 	_highlight_button.color_picked.connect(_on_highlight_picked)
 	add_child(_highlight_button)
 	_attach_press_feedback(_highlight_button)
@@ -105,18 +108,18 @@ func _style_button(button: Button, tooltip: String) -> void:
 	button.focus_mode = Control.FOCUS_NONE
 	button.tooltip_text = tooltip
 	button.add_theme_font_size_override("font_size", 13)
-	button.add_theme_color_override("font_color", TEXT)
-	button.add_theme_color_override("font_hover_color", Color.WHITE)
-	button.add_theme_color_override("font_pressed_color", Color.WHITE)
+	ThemeColors.bind_override(button, &"font_color", TEXT)
+	ThemeColors.bind_override(button, &"font_hover_color", &"text.strong")
+	ThemeColors.bind_override(button, &"font_pressed_color", &"text.on_accent")
 	button.add_theme_stylebox_override("normal", _make_style(NORMAL_BG, BORDER))
 	button.add_theme_stylebox_override("hover", _make_style(HOVER_BG, BORDER))
 	button.add_theme_stylebox_override("pressed", _make_style(PRESSED_BG, PRESSED_BG))
 	button.add_theme_stylebox_override("disabled", _make_style(NORMAL_BG, BORDER))
 
-func _make_style(background: Color, border: Color) -> StyleBoxFlat:
+func _make_style(background: StringName, border: StringName) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = background
-	style.border_color = border
+	ThemeColors.bind(style, &"bg_color", background)
+	ThemeColors.bind(style, &"border_color", border)
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(6)
 	style.content_margin_left = 6.0
@@ -129,7 +132,7 @@ func _make_separator() -> Control:
 	var separator: ColorRect = ColorRect.new()
 	separator.custom_minimum_size = Vector2(1.0, 18.0)
 	separator.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	separator.color = BORDER
+	ThemeColors.bind(separator, &"color", BORDER)
 	separator.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return separator
 

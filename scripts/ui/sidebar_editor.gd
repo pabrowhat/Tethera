@@ -138,6 +138,7 @@ func _ready() -> void:
 	close_button.pressed.connect(close_sidebar)
 	zen_button.pressed.connect(toggle_zen)
 	set_process(false)
+	_bind_scene_colors()
 	delete_button.pressed.connect(_on_delete_pressed)
 	image_button.pressed.connect(_on_image_button_pressed)
 	title_input.text_changed.connect(_on_title_changed)
@@ -148,7 +149,7 @@ func _ready() -> void:
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.clip_text = true
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	title_label.add_theme_color_override("font_color", Color.WHITE)
+	ThemeColors.bind_override(title_label, &"font_color", &"text.strong")
 	title_label.add_theme_font_size_override("font_size", DOCK_TITLE_FONT)
 	header_row.add_child(title_label)
 	header_row.move_child(title_label, title_input.get_index() + 1)
@@ -673,6 +674,27 @@ func _zen_rect() -> Rect2:
 	var pad_size: Vector2 = Vector2(width, view_size.y * ZEN_HEIGHT_RATIO)
 	return Rect2((view_size - pad_size) * 0.5, pad_size)
 
+func _bind_scene_colors() -> void:
+	var dock: StyleBoxFlat = get_theme_stylebox(&"panel") as StyleBoxFlat
+	ThemeColors.bind(dock, &"bg_color", &"surface.panel")
+	ThemeColors.bind(dock, &"border_color", &"border.soft")
+	var input: StyleBoxFlat = title_input.get_theme_stylebox(&"normal") as StyleBoxFlat
+	ThemeColors.bind(input, &"bg_color", UiStyle.BG_NORMAL)
+	ThemeColors.bind(input, &"border_color", UiStyle.BORDER)
+	var content: StyleBoxFlat = content_edit.get_theme_stylebox(&"normal") as StyleBoxFlat
+	ThemeColors.bind(content, &"bg_color", &"surface.sunken")
+	ThemeColors.bind(content, &"border_color", &"border.soft")
+	var preview: StyleBoxFlat = preview_label.get_theme_stylebox(&"normal") as StyleBoxFlat
+	ThemeColors.bind(preview, &"bg_color", &"surface.sunken")
+	ThemeColors.bind(preview, &"border_color", &"border.soft")
+	ThemeColors.bind(delete_button.get_theme_stylebox(&"hover"), &"bg_color", UiStyle.BG_NORMAL, 0.6)
+	ThemeColors.bind_override(title_input, &"font_color", &"text.strong")
+	ThemeColors.bind_override(content_edit, &"font_color", &"text.primary")
+	ThemeColors.bind_override(preview_label, &"default_color", &"text.primary")
+	ThemeColors.bind_override(delete_button, &"font_color", &"danger.text")
+	ThemeColors.bind_override(delete_button, &"font_pressed_color", &"danger.text_pressed")
+	ThemeColors.bind_override(delete_button, &"font_hover_color", &"danger.text_hover")
+
 func _apply_zen_rect(rect: Rect2) -> void:
 	pivot_offset = rect.size * 0.5
 	size = rect.size
@@ -688,11 +710,11 @@ func _apply_zen_look(on: bool) -> void:
 		_dock_style = get_theme_stylebox("panel")
 	if on:
 		var pad_style: StyleBoxFlat = StyleBoxFlat.new()
-		pad_style.bg_color = Color(0.0901961, 0.0980392, 0.137255, 1.0)
-		pad_style.border_color = Color(0.247059, 0.266667, 0.364706, 1.0)
+		ThemeColors.bind(pad_style, &"bg_color", &"surface.panel")
+		ThemeColors.bind(pad_style, &"border_color", &"border")
 		pad_style.set_border_width_all(1)
 		pad_style.set_corner_radius_all(14)
-		pad_style.shadow_color = Color(0.0, 0.0, 0.0, 0.5)
+		ThemeColors.bind(pad_style, &"shadow_color", &"shadow")
 		pad_style.shadow_size = 28
 		add_theme_stylebox_override("panel", pad_style)
 	else:

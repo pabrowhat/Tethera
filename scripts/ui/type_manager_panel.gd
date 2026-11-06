@@ -16,9 +16,9 @@ signal field_remove_requested(type_id: String, field_key: String)
 
 const ICON_X: Texture2D = preload("res://assets/icons/x.svg")
 const ICON_PLUS: Texture2D = preload("res://assets/icons/plus.svg")
-const CAPTION_COLOR: Color = Color(0.7, 0.72, 0.8)
-const DIM_COLOR: Color = Color(0.55, 0.58, 0.7)
-const BODY_BG: Color = Color(0.0705882, 0.0745098, 0.105882, 1.0)
+const CAPTION_COLOR: StringName = &"text.caption"
+const DIM_COLOR: StringName = &"text.dim"
+const BODY_BG: StringName = &"surface.sunken"
 const KIND_KEYS: Array[String] = ["type.field.kind.text", "type.field.kind.number", "type.field.kind.date", "type.field.kind.list"]
 
 var _registry: EntityTypeRegistry = null
@@ -44,7 +44,7 @@ func _init() -> void:
 	title.text = "type.manager.title"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.add_theme_font_size_override("font_size", 15)
-	title.add_theme_color_override("font_color", Color.WHITE)
+	ThemeColors.bind_override(title, &"font_color", &"text.strong")
 	header.add_child(title)
 
 	var close_button: Button = Button.new()
@@ -119,7 +119,7 @@ func _rebuild() -> void:
 		empty_label.text = "type.manager.empty"
 		empty_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		empty_label.add_theme_font_size_override("font_size", 12)
-		empty_label.add_theme_color_override("font_color", DIM_COLOR)
+		ThemeColors.bind_override(empty_label, &"font_color", DIM_COLOR)
 		_list.add_child(empty_label)
 		return
 
@@ -158,7 +158,7 @@ func _make_type_header(entity_type: EntityType) -> Button:
 	count_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	count_label.add_theme_font_size_override("font_size", 12)
-	count_label.add_theme_color_override("font_color", DIM_COLOR)
+	ThemeColors.bind_override(count_label, &"font_color", DIM_COLOR)
 	button.add_child(count_label)
 	return button
 
@@ -201,7 +201,7 @@ func _make_type_body(entity_type: EntityType) -> PanelContainer:
 		var none_label: Label = Label.new()
 		none_label.text = "type.field.none"
 		none_label.add_theme_font_size_override("font_size", 12)
-		none_label.add_theme_color_override("font_color", DIM_COLOR)
+		ThemeColors.bind_override(none_label, &"font_color", DIM_COLOR)
 		box.add_child(none_label)
 	for field: FieldDef in active:
 		box.add_child(_make_field_row(type_id, field))
@@ -232,7 +232,7 @@ func _make_field_row(type_id: String, field: FieldDef) -> HBoxContainer:
 	var kind_label: Label = Label.new()
 	kind_label.text = tr(KIND_KEYS[int(field.kind)])
 	kind_label.add_theme_font_size_override("font_size", 12)
-	kind_label.add_theme_color_override("font_color", DIM_COLOR)
+	ThemeColors.bind_override(kind_label, &"font_color", DIM_COLOR)
 	row.add_child(kind_label)
 
 	row.add_child(_make_icon_button(ICON_X, "type.field.remove", func() -> void: field_remove_requested.emit(type_id, field_key)))
@@ -271,9 +271,9 @@ func _make_icon_button(icon: Texture2D, tooltip: String, on_pressed: Callable) -
 	button.pressed.connect(on_pressed)
 	return button
 
-func _make_header_style(accent: Color, background: Color) -> StyleBoxFlat:
+func _make_header_style(accent: Color, background: StringName) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = background
+	ThemeColors.bind(style, &"bg_color", background)
 	style.border_color = accent
 	style.border_width_left = 5
 	style.set_corner_radius_all(6)

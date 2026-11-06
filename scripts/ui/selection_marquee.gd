@@ -1,8 +1,8 @@
 class_name SelectionMarquee
 extends Control
 
-const FILL_COLOR: Color = Color(0.41, 0.44, 0.98, 0.12)
-const BORDER_COLOR: Color = Color(0.41, 0.44, 0.98, 0.8)
+const FILL_ALPHA: float = 0.12
+const BORDER_ALPHA: float = 0.8
 
 var _screen_rect: Rect2 = Rect2()
 var _has_rect: bool = false
@@ -24,5 +24,5 @@ func hide_rect() -> void:
 func _draw() -> void:
 	if not _has_rect:
 		return
-	draw_rect(_screen_rect, FILL_COLOR, true)
-	draw_rect(_screen_rect, BORDER_COLOR, false, 1.0)
+	draw_rect(_screen_rect, ThemeColors.faded(&"accent", FILL_ALPHA), true)
+	draw_rect(_screen_rect, ThemeColors.faded(&"accent", BORDER_ALPHA), false, 1.0)

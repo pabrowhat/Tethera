@@ -22,7 +22,7 @@ func _init() -> void:
 	_text_view.focus_mode = Control.FOCUS_CLICK
 	AppFonts.apply_note_fonts(_text_view)
 	_text_view.add_theme_font_size_override("normal_font_size", FONT_SIZE)
-	_text_view.add_theme_color_override("default_color", TEXT_COLOR)
+	ThemeColors.bind_override(_text_view, &"default_color", TEXT_COLOR)
 	_body.add_child(_text_view)
 	var footer: HBoxContainer = HBoxContainer.new()
 	footer.alignment = BoxContainer.ALIGNMENT_END

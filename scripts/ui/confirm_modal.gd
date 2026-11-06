@@ -15,8 +15,28 @@ var _tween: Tween = null
 func _ready() -> void:
 	visible = false
 	modulate.a = 0.0
+	_bind_scene_colors()
 	cancel_button.pressed.connect(_on_cancel_pressed)
 	confirm_button.pressed.connect(_on_confirm_pressed)
+
+func _bind_scene_colors() -> void:
+	ThemeColors.bind(self, &"color", &"overlay.modal")
+	var card: StyleBoxFlat = panel.get_theme_stylebox(&"panel") as StyleBoxFlat
+	ThemeColors.bind(card, &"bg_color", &"surface.panel")
+	ThemeColors.bind(card, &"border_color", &"border")
+	ThemeColors.bind(card, &"shadow_color", &"shadow")
+	ThemeColors.bind(cancel_button.get_theme_stylebox(&"normal"), &"bg_color", &"control.normal")
+	ThemeColors.bind(cancel_button.get_theme_stylebox(&"hover"), &"bg_color", &"control.hover")
+	ThemeColors.bind(cancel_button.get_theme_stylebox(&"pressed"), &"bg_color", &"accent")
+	ThemeColors.bind(confirm_button.get_theme_stylebox(&"normal"), &"bg_color", &"danger.fill")
+	ThemeColors.bind(confirm_button.get_theme_stylebox(&"hover"), &"bg_color", &"danger.fill_hover")
+	ThemeColors.bind(confirm_button.get_theme_stylebox(&"pressed"), &"bg_color", &"danger.fill_pressed")
+	ThemeColors.bind_override(title_label, &"font_color", &"text.strong")
+	ThemeColors.bind_override(message_label, &"font_color", &"text.muted")
+	ThemeColors.bind_override(cancel_button, &"font_color", &"text.primary")
+	ThemeColors.bind_override(confirm_button, &"font_color", &"text.on_accent")
+	ThemeColors.bind_override(confirm_button, &"font_hover_color", &"text.on_accent")
+	ThemeColors.bind_override(confirm_button, &"font_pressed_color", &"text.on_accent")
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

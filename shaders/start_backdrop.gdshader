@@ -2,9 +2,11 @@ shader_type canvas_item;
 
 uniform vec2 rect_size = vec2(1280.0, 720.0);
 uniform float speed = 1.0;
-uniform vec4 base_color : source_color = vec4(0.045, 0.05, 0.085, 1.0);
-uniform vec4 glow_a : source_color = vec4(0.408, 0.439, 0.98, 1.0);
-uniform vec4 glow_b : source_color = vec4(0.2, 0.62, 0.72, 1.0);
+uniform vec4 base_color : source_color;
+uniform vec4 glow_a : source_color;
+uniform vec4 glow_b : source_color;
+uniform vec4 star_color : source_color;
+uniform vec4 vignette_color : source_color;
 
 float hash(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -39,8 +41,8 @@ void fragment() {
 	float n = fbm(uv * 1.8 + 2.0 * q + vec2(t * 2.0, -t));
 
 	vec3 col = base_color.rgb;
-	col += glow_a.rgb * smoothstep(0.3, 0.8, n) * 0.5;
-	col += glow_b.rgb * smoothstep(0.45, 0.95, q.x * q.y * 2.2) * 0.3;
+	col = mix(col, glow_a.rgb, smoothstep(0.3, 0.8, n) * 0.5);
+	col = mix(col, glow_b.rgb, smoothstep(0.45, 0.95, q.x * q.y * 2.2) * 0.3);
 
 	vec2 grid = uv * 38.0;
 	vec2 cell = floor(grid);
@@ -49,8 +51,8 @@ void fragment() {
 	vec2 offset = (vec2(hash(cell + 3.1), hash(cell + 7.7)) - 0.5) * 0.5;
 	float star = step(0.93, h) * smoothstep(0.12, 0.0, length(local - offset));
 	star *= 0.5 + 0.5 * sin(TIME * speed * (1.0 + h * 2.0) + h * 40.0);
-	col += vec3(0.8, 0.85, 1.0) * star * 0.6;
+	col = mix(col, star_color.rgb, star * 0.6);
 
-	col *= 1.0 - smoothstep(0.35, 0.95, length(UV - 0.5) * 1.25) * 0.55;
+	col = mix(col, vignette_color.rgb, smoothstep(0.35, 0.95, length(UV - 0.5) * 1.25) * 0.55);
 	COLOR = vec4(col, 1.0);
 }

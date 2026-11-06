@@ -11,8 +11,8 @@ const MAX_PIXELS: float = 8192.0 * 4096.0
 const PADDING: float = 80.0
 const DRAW_TIMEOUT_MS: int = 2000
 
-const FALLBACK_BG: Color = Color(0.0627451, 0.0666667, 0.0901961, 1.0)
-const FALLBACK_DOT: Color = Color(0.24, 0.26, 0.35, 0.45)
+const BACKGROUND_KEY: StringName = &"canvas.background"
+const DOT_KEY: StringName = &"canvas.dot"
 const FALLBACK_SPACING: float = 32.0
 const FALLBACK_DOT_RADIUS: float = 1.2
 
@@ -105,8 +105,8 @@ func _make_backdrop_material(source: Material, region_origin: Vector2, px_per_un
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = GRID_SHADER
 
-	var bg_color: Color = FALLBACK_BG
-	var dot_color: Color = FALLBACK_DOT
+	var bg_color: Color = ThemeColors.color(BACKGROUND_KEY)
+	var dot_color: Color = ThemeColors.color(DOT_KEY)
 	var spacing: float = FALLBACK_SPACING
 	var dot_radius: float = FALLBACK_DOT_RADIUS
 	if source is ShaderMaterial:

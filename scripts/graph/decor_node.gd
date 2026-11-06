@@ -13,10 +13,10 @@ const HANDLE_GRAB_RADIUS_PX: float = 11.0
 const ROTATE_OFFSET_PX: float = 30.0
 const OUTLINE_WIDTH_PX: float = 2.0
 
-const OUTLINE_COLOR: Color = Color(0.45, 0.62, 1.0, 1.0)
-const HANDLE_FILL: Color = Color(0.1, 0.12, 0.18, 1.0)
-const PLACEHOLDER_FILL: Color = Color(0.16, 0.17, 0.23, 0.85)
-const PLACEHOLDER_LINE: Color = Color(0.55, 0.4, 0.4, 1.0)
+const OUTLINE_COLOR: StringName = &"decor.outline"
+const HANDLE_FILL: StringName = &"decor.handle"
+const PLACEHOLDER_FILL: StringName = &"decor.placeholder"
+const PLACEHOLDER_LINE: StringName = &"decor.placeholder_line"
 
 var decor_id: String = ""
 var image_path: String = ""
@@ -33,6 +33,7 @@ var _handle_shapes: Array[RoundedShape] = []
 
 func _init() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	ThemeColors.watch(queue_redraw)
 
 func apply_item(item: DecorItem) -> void:
 	decor_id = item.id
@@ -94,21 +95,21 @@ func _draw() -> void:
 	if _texture != null:
 		draw_texture_rect(_texture, rect, false)
 	else:
-		draw_rect(rect, PLACEHOLDER_FILL, true)
-		draw_line(rect.position, rect.end, PLACEHOLDER_LINE, 2.0)
-		draw_line(Vector2(rect.end.x, rect.position.y), Vector2(rect.position.x, rect.end.y), PLACEHOLDER_LINE, 2.0)
+		draw_rect(rect, ThemeColors.color(PLACEHOLDER_FILL), true)
+		draw_line(rect.position, rect.end, ThemeColors.color(PLACEHOLDER_LINE), 2.0)
+		draw_line(Vector2(rect.end.x, rect.position.y), Vector2(rect.position.x, rect.end.y), ThemeColors.color(PLACEHOLDER_LINE), 2.0)
 	if not is_selected:
 		_show_handles(false)
 		return
 
 	var unit: float = 1.0 / screen_scale()
-	draw_rect(rect, OUTLINE_COLOR, false, OUTLINE_WIDTH_PX * unit)
+	draw_rect(rect, ThemeColors.color(OUTLINE_COLOR), false, OUTLINE_WIDTH_PX * unit)
 	if not show_handles:
 		_show_handles(false)
 		return
 	var top: Vector2 = Vector2(0.0, -box_size.y / 2.0)
 	var knob: Vector2 = rotate_handle_position()
-	draw_line(top, knob, OUTLINE_COLOR, OUTLINE_WIDTH_PX * unit)
+	draw_line(top, knob, ThemeColors.color(OUTLINE_COLOR), OUTLINE_WIDTH_PX * unit)
 	_show_handles(true)
 	for corner: int in 4:
 		_place_handle(_handle_shapes[corner], corner_position(corner), unit)
@@ -128,7 +129,7 @@ func _show_handles(active: bool) -> void:
 func _place_handle(shape: RoundedShape, at: Vector2, unit: float) -> void:
 	var outer: float = (HANDLE_RADIUS_PX + OUTLINE_WIDTH_PX * 0.5) * unit
 	shape.place_centered(at, outer * 2.0)
-	shape.set_style(HANDLE_FILL, OUTLINE_COLOR, OUTLINE_WIDTH_PX * unit)
+	shape.set_style(ThemeColors.color(HANDLE_FILL), ThemeColors.color(OUTLINE_COLOR), OUTLINE_WIDTH_PX * unit)
 
 func corner_position(corner: int) -> Vector2:
 	var half: Vector2 = box_size / 2.0

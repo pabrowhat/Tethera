@@ -10,7 +10,7 @@ signal settings_requested
 signal about_requested
 signal quit_requested
 
-const BACKGROUND: Color = Color(0.07, 0.075, 0.1, 1.0)
+const BACKGROUND: StringName = &"start.background"
 const CONTENT_WIDTH: float = 640.0
 const LIST_HEIGHT: float = 320.0
 const ROW_HEIGHT: float = 48.0
@@ -31,10 +31,11 @@ var _open_button: Button = null
 var _error_label: Label = null
 var _row_by_id: Dictionary = {}
 var _backdrop: ColorRect = null
+var _backdrop_material: ShaderMaterial = null
 var _usable_count: int = 0
 
 func _init() -> void:
-	color = BACKGROUND
+	ThemeColors.bind(self, &"color", BACKGROUND)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -44,9 +45,11 @@ func _init() -> void:
 	_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var backdrop_material: ShaderMaterial = ShaderMaterial.new()
 	backdrop_material.shader = BACKDROP_SHADER
+	_backdrop_material = backdrop_material
 	_backdrop.material = backdrop_material
 	_backdrop.resized.connect(_on_backdrop_resized)
 	add_child(_backdrop)
+	ThemeColors.watch(_apply_theme_colors)
 
 	var center: CenterContainer = CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -103,6 +106,13 @@ func _init() -> void:
 	footer.add_child(quit_button)
 
 	set_process_input(false)
+
+func _apply_theme_colors() -> void:
+	_backdrop_material.set_shader_parameter("base_color", ThemeColors.color(&"start.base"))
+	_backdrop_material.set_shader_parameter("glow_a", ThemeColors.color(&"start.glow_a"))
+	_backdrop_material.set_shader_parameter("glow_b", ThemeColors.color(&"start.glow_b"))
+	_backdrop_material.set_shader_parameter("star_color", ThemeColors.color(&"start.star"))
+	_backdrop_material.set_shader_parameter("vignette_color", ThemeColors.color(&"start.vignette"))
 
 func _on_backdrop_resized() -> void:
 	(_backdrop.material as ShaderMaterial).set_shader_parameter("rect_size", _backdrop.size)
@@ -180,8 +190,8 @@ func _make_row(world: Dictionary, now: int) -> HBoxContainer:
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_stylebox_override("normal", UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BG_NORMAL, 6, 12.0, 6.0))
 	row.add_theme_stylebox_override("hover", UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 6, 12.0, 6.0))
-	row.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 12.0, 6.0))
-	row.add_theme_stylebox_override("hover_pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 12.0, 6.0))
+	row.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT_TINT, UiStyle.ACCENT, 6, 12.0, 6.0))
+	row.add_theme_stylebox_override("hover_pressed", UiStyle.box(UiStyle.ACCENT_TINT, UiStyle.ACCENT, 6, 12.0, 6.0))
 	row.add_theme_stylebox_override("disabled", UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BG_NORMAL, 6, 12.0, 6.0))
 
 	var line: HBoxContainer = HBoxContainer.new()
@@ -295,11 +305,11 @@ func _input(event: InputEvent) -> void:
 			return
 	get_viewport().set_input_as_handled()
 
-func _make_label(text: String, font_size: int, text_color: Color, wrap: bool = false) -> Label:
+func _make_label(text: String, font_size: int, text_color: StringName, wrap: bool = false) -> Label:
 	var label: Label = Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", text_color)
+	ThemeColors.bind_override(label, &"font_color", text_color)
 	if wrap:
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
@@ -311,16 +321,16 @@ func _make_button(text: String, primary: bool) -> Button:
 	button.custom_minimum_size = Vector2(0.0, 36.0)
 	button.add_theme_font_size_override("font_size", 13)
 	if primary:
-		button.add_theme_color_override("font_color", ModalDialog.TITLE_COLOR)
-		button.add_theme_color_override("font_hover_color", ModalDialog.TITLE_COLOR)
-		button.add_theme_color_override("font_pressed_color", ModalDialog.TITLE_COLOR)
-		button.add_theme_color_override("font_disabled_color", Color(1.0, 1.0, 1.0, 0.4))
+		ThemeColors.bind_override(button, &"font_color", &"text.on_accent")
+		ThemeColors.bind_override(button, &"font_hover_color", &"text.on_accent")
+		ThemeColors.bind_override(button, &"font_pressed_color", &"text.on_accent")
+		ThemeColors.bind_override(button, &"font_disabled_color", &"text.disabled")
 		button.add_theme_stylebox_override("normal", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT_SOFT, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("hover", UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("disabled", UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BG_NORMAL, 6, 16.0, 8.0))
 	else:
-		button.add_theme_color_override("font_color", ModalDialog.TEXT_COLOR)
+		ThemeColors.bind_override(button, &"font_color", ModalDialog.TEXT_COLOR)
 		button.add_theme_stylebox_override("normal", UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BG_NORMAL, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("hover", UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 6, 16.0, 8.0))
 	return button

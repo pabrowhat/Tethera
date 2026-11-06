@@ -7,21 +7,17 @@
 [ext_resource type="Texture2D" uid="uid://cw5r8tpd7v0qu" path="res://assets/icons/maximize-2.svg" id="icon_zen"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.0901961, 0.0980392, 0.137255, 1)
 border_width_left = 1
-border_color = Color(0.192157, 0.207843, 0.286275, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input"]
 content_margin_left = 10.0
 content_margin_top = 8.0
 content_margin_right = 10.0
 content_margin_bottom = 8.0
-bg_color = Color(0.141176, 0.152941, 0.211765, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.247059, 0.266667, 0.364706, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -32,12 +28,10 @@ content_margin_left = 12.0
 content_margin_top = 10.0
 content_margin_right = 12.0
 content_margin_bottom = 10.0
-bg_color = Color(0.0705882, 0.0745098, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.192157, 0.207843, 0.286275, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -48,12 +42,10 @@ content_margin_left = 18.0
 content_margin_top = 16.0
 content_margin_right = 18.0
 content_margin_bottom = 16.0
-bg_color = Color(0.0705882, 0.0745098, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.192157, 0.207843, 0.286275, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -66,7 +58,6 @@ content_margin_bottom = 8.0
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_del_hover"]
 content_margin_top = 8.0
 content_margin_bottom = 8.0
-bg_color = Color(0.141176, 0.152941, 0.211765, 0.6)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -101,7 +92,6 @@ theme_override_constants/separation = 10
 [node name="TitleInput" type="LineEdit" parent="MarginContainer/VBoxContainer/Header" unique_id=256845028]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBoxFlat_input")
 theme_override_styles/focus = SubResource("StyleBoxFlat_input")
@@ -161,7 +151,6 @@ size_flags_vertical = 3
 [node name="ContentEdit" type="TextEdit" parent="MarginContainer/VBoxContainer/ContentStack" unique_id=219841727]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.88, 0.89, 0.94, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_content")
 theme_override_styles/focus = SubResource("StyleBoxFlat_content")
@@ -173,7 +162,6 @@ visible = false
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 2
-theme_override_colors/default_color = Color(0.88, 0.89, 0.94, 1)
 theme_override_font_sizes/normal_font_size = 16
 theme_override_font_sizes/bold_font_size = 16
 theme_override_font_sizes/bold_italics_font_size = 16
@@ -190,9 +178,6 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
-theme_override_colors/font_color = Color(0.85, 0.35, 0.35, 0.85)
-theme_override_colors/font_pressed_color = Color(0.9, 0.25, 0.25, 1)
-theme_override_colors/font_hover_color = Color(1, 0.45, 0.45, 1)
 theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("StyleBoxEmpty_del")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_del")

@@ -6,9 +6,9 @@ signal field_edited(field_key: String, value: Variant)
 signal follow_type_color_requested
 
 const ICON_FOLLOW: Texture2D = preload("res://assets/icons/rotate-ccw.svg")
-const CAPTION_COLOR: Color = Color(0.7, 0.72, 0.8)
-const ERROR_COLOR: Color = Color(0.93, 0.47, 0.44)
-const READ_COLOR: Color = Color(0.82, 0.84, 0.9)
+const CAPTION_COLOR: StringName = &"text.caption"
+const ERROR_COLOR: StringName = &"error.text"
+const READ_COLOR: StringName = &"text.primary"
 const MAX_FIELDS_HEIGHT: float = 190.0
 const KIND_PLACEHOLDER_KEYS: Dictionary = {
 	FieldDef.Kind.DATE: "type.field.date_hint",
@@ -35,7 +35,7 @@ func _init() -> void:
 	var caption: Label = Label.new()
 	caption.text = "type.section.title"
 	caption.add_theme_font_size_override("font_size", 12)
-	caption.add_theme_color_override("font_color", CAPTION_COLOR)
+	ThemeColors.bind_override(caption, &"font_color", CAPTION_COLOR)
 	_row.add_child(caption)
 
 	_picker = DropdownButton.new()
@@ -140,7 +140,7 @@ func _make_read_line(field: FieldDef, shown: String) -> Label:
 	line.text = tr("type.field.read_line") % [field.label, shown]
 	line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	line.add_theme_font_size_override("font_size", 13)
-	line.add_theme_color_override("font_color", READ_COLOR)
+	ThemeColors.bind_override(line, &"font_color", READ_COLOR)
 	return line
 
 func _make_field_row(field: FieldDef) -> VBoxContainer:
@@ -151,7 +151,7 @@ func _make_field_row(field: FieldDef) -> VBoxContainer:
 	label.text = field.label
 	label.clip_text = true
 	label.add_theme_font_size_override("font_size", 12)
-	label.add_theme_color_override("font_color", CAPTION_COLOR)
+	ThemeColors.bind_override(label, &"font_color", CAPTION_COLOR)
 	box.add_child(label)
 
 	var edit: LineEdit = LineEdit.new()
@@ -164,7 +164,7 @@ func _make_field_row(field: FieldDef) -> VBoxContainer:
 	error.visible = false
 	error.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	error.add_theme_font_size_override("font_size", 11)
-	error.add_theme_color_override("font_color", ERROR_COLOR)
+	ThemeColors.bind_override(error, &"font_color", ERROR_COLOR)
 	box.add_child(error)
 
 	edit.text_changed.connect(_on_field_text_changed.bind(field, error))

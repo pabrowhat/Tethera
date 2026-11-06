@@ -7,9 +7,9 @@ const SHOW_DURATION: float = 0.18
 const HIDE_DURATION: float = 0.25
 const DEFAULT_HOLD: float = 2.2
 const WARNING_HOLD: float = 3.8
-const BACKGROUND: Color = Color(0.141176, 0.152941, 0.211765, 0.96)
-const WARNING_BORDER: Color = Color(0.905882, 0.298039, 0.235294, 0.9)
-const TEXT_COLOR: Color = Color(0.88, 0.89, 0.94, 1.0)
+const BACKGROUND: StringName = &"toast.background"
+const WARNING_BORDER: StringName = &"warning.border"
+const TEXT_COLOR: StringName = &"text.primary"
 
 var _panel: PanelContainer = null
 var _label: Label = null
@@ -32,7 +32,7 @@ func _ready() -> void:
 	_label = Label.new()
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_label.add_theme_font_size_override("font_size", 13)
-	_label.add_theme_color_override("font_color", TEXT_COLOR)
+	ThemeColors.bind_override(_label, &"font_color", TEXT_COLOR)
 	_panel.add_child(_label)
 
 func _notification(what: int) -> void:
@@ -47,7 +47,7 @@ func show_message(text: String, warning: bool = false, hold: float = 0.0) -> voi
 	_kill_tween()
 
 	_label.text = text
-	_style.border_color = WARNING_BORDER if warning else UiStyle.BORDER
+	ThemeColors.bind(_style, &"border_color", WARNING_BORDER if warning else UiStyle.BORDER)
 	_refit()
 	visible = true
 

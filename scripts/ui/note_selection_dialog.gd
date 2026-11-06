@@ -40,7 +40,7 @@ var _rows: Dictionary = {}
 var _boxes: Dictionary = {}
 var _marks: Dictionary = {}
 
-var _row_style: StyleBoxFlat = UiStyle.box(Color(0.0, 0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0, 0.0), 5, 0.0, 0.0)
+var _row_style: StyleBoxFlat = UiStyle.box(UiStyle.CLEAR, UiStyle.CLEAR, 5, 0.0, 0.0)
 var _row_hover_style: StyleBoxFlat = UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 5, 0.0, 0.0)
 var _box_off_style: StyleBoxFlat = UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BORDER, 4, 0.0, 0.0)
 var _box_on_style: StyleBoxFlat = UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 4, 0.0, 0.0)
@@ -219,7 +219,7 @@ func _make_checkbox() -> PanelContainer:
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var tick: TextureRect = TextureRect.new()
 	tick.texture = ICON_CHECK
-	tick.modulate = TITLE_COLOR
+	ThemeColors.bind(tick, &"modulate", &"text.on_accent")
 	tick.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tick.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	tick.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -277,13 +277,13 @@ func _refresh() -> void:
 			duplicates += 1
 		if is_duplicate:
 			mark.text = "select.row.duplicate"
-			mark.add_theme_color_override("font_color", WARNING_COLOR)
+			ThemeColors.bind_override(mark, &"font_color", WARNING_COLOR)
 		elif is_linked:
 			mark.text = "select.row.linked"
-			mark.add_theme_color_override("font_color", UiStyle.ACCENT)
+			ThemeColors.bind_override(mark, &"font_color", UiStyle.ACCENT)
 		else:
 			mark.text = str(_type_names.get(str(note.get("type", "")), ""))
-			mark.add_theme_color_override("font_color", MUTED_COLOR)
+			ThemeColors.bind_override(mark, &"font_color", MUTED_COLOR)
 
 	_set_checked(_linked_box, _include_linked, false)
 	_linked_group.visible = linked_count > 0

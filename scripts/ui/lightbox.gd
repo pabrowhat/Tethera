@@ -3,7 +3,7 @@ extends ColorRect
 
 signal closed
 
-const BACKDROP_COLOR: Color = Color(0.0, 0.0, 0.0, 0.82)
+const BACKDROP_COLOR: StringName = &"overlay.lightbox"
 const SCREEN_FILL: float = 0.9
 const MAX_UPSCALE: float = 3.0
 const FADE_IN_DURATION: float = 0.15
@@ -26,7 +26,7 @@ var _dragging: bool = false
 var _press_origin: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	color = BACKDROP_COLOR
+	ThemeColors.bind(self, &"color", BACKDROP_COLOR)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	visible = false

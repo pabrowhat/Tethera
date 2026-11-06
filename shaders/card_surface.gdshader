@@ -1,9 +1,9 @@
 shader_type canvas_item;
 
 uniform vec2 rect_size = vec2(180.0, 100.0);
-uniform vec4 bg_color : source_color = vec4(0.094, 0.102, 0.141, 1.0);
-uniform vec4 bg_color2 : source_color = vec4(0.094, 0.102, 0.141, 1.0);
-uniform vec4 border_color : source_color = vec4(0.192, 0.208, 0.286, 1.0);
+uniform vec4 bg_color : source_color;
+uniform vec4 bg_color2 : source_color;
+uniform vec4 border_color : source_color;
 uniform float border_thickness = 2.0;
 uniform float corner_radius = 8.0;
 uniform sampler2D bg_texture : source_color, filter_linear_mipmap, repeat_disable;

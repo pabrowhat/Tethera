@@ -5,11 +5,11 @@ signal color_previewed(color: Color)
 signal color_committed(color: Color)
 
 const BUTTON_SIZE: Vector2 = Vector2(24.0, 24.0)
-const IDLE_COLOR: Color = Color(0.0, 0.0, 0.0, 0.0)
-const PLUS_COLOR: Color = Color(0.85, 0.87, 0.95, 1.0)
+const IDLE_COLOR: Color = Color.TRANSPARENT
+const PLUS_COLOR: StringName = &"text.caption"
 const POPUP_GAP: float = 6.0
-const POPUP_BG: Color = Color(0.0901961, 0.0980392, 0.137255, 1.0)
-const POPUP_BORDER: Color = Color(0.247059, 0.266667, 0.364706, 1.0)
+const POPUP_BG: StringName = &"surface.panel"
+const POPUP_BORDER: StringName = &"border"
 
 var _material: ShaderMaterial = null
 var _plus_label: Label = null
@@ -47,15 +47,15 @@ func setup(swatch_shader: Shader, preset_colors: Array[Color]) -> void:
 	_plus_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_plus_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_plus_label.add_theme_font_size_override("font_size", 16)
-	_plus_label.add_theme_color_override("font_color", PLUS_COLOR)
+	ThemeColors.bind_override(_plus_label, &"font_color", PLUS_COLOR)
 	add_child(_plus_label)
 
 	_picker = ColorPickerPanel.new()
 	_picker.color_changed.connect(_on_picker_color_changed)
 
 	var popup_style: StyleBoxFlat = StyleBoxFlat.new()
-	popup_style.bg_color = POPUP_BG
-	popup_style.border_color = POPUP_BORDER
+	ThemeColors.bind(popup_style, &"bg_color", POPUP_BG)
+	ThemeColors.bind(popup_style, &"border_color", POPUP_BORDER)
 	popup_style.set_border_width_all(1)
 	popup_style.set_corner_radius_all(10)
 	popup_style.set_content_margin_all(12.0)

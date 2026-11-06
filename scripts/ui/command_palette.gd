@@ -4,9 +4,6 @@ extends ModalDialog
 const PALETTE_WIDTH: float = 520.0
 const LIST_HEIGHT: float = 320.0
 const ROW_HEIGHT: float = 30.0
-const ROW_TEXT_COLOR: Color = Color(0.88, 0.89, 0.94, 1.0)
-const ROW_HINT_COLOR: Color = Color(0.6, 0.63, 0.74, 1.0)
-const ROW_DISABLED_COLOR: Color = Color(0.45, 0.47, 0.58, 1.0)
 
 var _source: Callable = Callable()
 var _runner: Callable = Callable()
@@ -26,7 +23,7 @@ func _init() -> void:
 	super()
 	_set_card_width(PALETTE_WIDTH)
 
-	_row_style = UiStyle.box(Color(0.0, 0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0, 0.0), 5, 0.0, 0.0)
+	_row_style = UiStyle.box(UiStyle.CLEAR, UiStyle.CLEAR, 5, 0.0, 0.0)
 	_row_style.set_border_width_all(0)
 	_row_active_style = UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 5, 0.0, 0.0)
 	_row_active_style.set_border_width_all(0)
@@ -131,7 +128,6 @@ func _make_row(entry: Dictionary, index: int) -> Button:
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_font_size_override("font_size", 13)
-	label.add_theme_color_override("font_color", ROW_DISABLED_COLOR if disabled else ROW_TEXT_COLOR)
 	box.add_child(label)
 
 	var side_text: String = reason if disabled else str(entry.get("hint", ""))
@@ -140,9 +136,9 @@ func _make_row(entry: Dictionary, index: int) -> Button:
 		side.text = side_text
 		side.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		side.add_theme_font_size_override("font_size", 12)
-		side.add_theme_color_override("font_color", ROW_DISABLED_COLOR if disabled else ROW_HINT_COLOR)
 		box.add_child(side)
 
+	UiStyle.paint_row_text(row, disabled, false)
 	row.mouse_entered.connect(_on_row_hovered.bind(index))
 	row.pressed.connect(_run.bind(index))
 	return row
@@ -160,9 +156,11 @@ func _next_enabled(from: int, step: int) -> int:
 
 func _refresh_selection() -> void:
 	for index: int in _rows.size():
-		var style: StyleBoxFlat = _row_active_style if index == _selected else _row_style
+		var active: bool = index == _selected
+		var style: StyleBoxFlat = _row_active_style if active else _row_style
 		for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 			_rows[index].add_theme_stylebox_override(state, style)
+		UiStyle.paint_row_text(_rows[index], _rows[index].disabled, active)
 	if _selected >= 0 and _selected < _rows.size():
 		_scroll.ensure_control_visible(_rows[_selected])
 

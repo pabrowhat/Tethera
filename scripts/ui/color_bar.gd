@@ -12,9 +12,9 @@ const PUNCH_SCALE: float = 1.1
 const PUNCH_UP_DURATION: float = 0.06
 const PUNCH_DOWN_DURATION: float = 0.1
 const CLEAR_DURATION: float = 0.09
-const EMPTY_RING_COLOR: Color = Color(0.36, 0.39, 0.52, 0.55)
+const EMPTY_RING_COLOR: StringName = &"swatch.empty_ring"
 const EMPTY_RING_WIDTH: float = 1.5
-const ICON_COLOR: Color = Color(0.85, 0.87, 0.95, 1.0)
+const ICON_COLOR: StringName = &"text.caption"
 const ICON_PIPETTE: Texture2D = preload("res://assets/icons/pipette.svg")
 const PIPETTE_ICON_SIZE: int = 14
 
@@ -59,6 +59,7 @@ func setup(preset_colors: Array[Color], swatch_shader: Shader) -> void:
 
 	PaletteStore.instance().changed.connect(_refresh_slots)
 	_refresh_slots()
+	ThemeColors.watch(_apply_theme_colors)
 
 func set_active_color(color: Color) -> void:
 	_active_color = color
@@ -91,7 +92,7 @@ func _make_eyedropper_button() -> Button:
 	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	button.add_theme_constant_override("icon_max_width", PIPETTE_ICON_SIZE)
 	for color_name: String in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"]:
-		button.add_theme_color_override(color_name, ICON_COLOR)
+		ThemeColors.bind_override(button, StringName(color_name), ICON_COLOR)
 	return button
 
 func _make_slot_button(index: int) -> Button:
@@ -112,7 +113,7 @@ func _make_slot_button(index: int) -> Button:
 	button.add_child(swatch)
 
 	var ring: RoundedShape = RoundedShape.new()
-	ring.set_style(Color(0.0, 0.0, 0.0, 0.0), EMPTY_RING_COLOR, EMPTY_RING_WIDTH)
+	ring.set_style(Color.TRANSPARENT, ThemeColors.color(EMPTY_RING_COLOR), EMPTY_RING_WIDTH)
 	ring.place_centered(Vector2(SWATCH_SIZE, SWATCH_SIZE) * 0.5, (SWATCH_SIZE * 0.5 - 3.0 + EMPTY_RING_WIDTH * 0.5) * 2.0)
 	button.add_child(ring)
 	_slot_rings.append(ring)
@@ -123,6 +124,10 @@ func _make_slot_button(index: int) -> Button:
 	_slot_materials.append(slot_material)
 	return button
 
+
+func _apply_theme_colors() -> void:
+	for ring: RoundedShape in _slot_rings:
+		ring.set_style(Color.TRANSPARENT, ThemeColors.color(EMPTY_RING_COLOR), EMPTY_RING_WIDTH)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and not _slot_buttons.is_empty():

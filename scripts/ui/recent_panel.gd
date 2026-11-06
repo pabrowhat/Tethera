@@ -9,8 +9,8 @@ const ROW_HEIGHT: float = 28.0
 const SCREEN_MARGIN: float = 8.0
 const ANCHOR_GAP: float = 4.0
 const FADE_DURATION: float = 0.12
-const TEXT_COLOR: Color = Color(0.9, 0.92, 0.96, 1.0)
-const DIM_COLOR: Color = Color(0.62, 0.65, 0.72, 1.0)
+const TEXT_COLOR: StringName = &"text.primary"
+const DIM_COLOR: StringName = &"text.muted"
 
 var _panel: PanelContainer = null
 var _scroll: ScrollContainer = null
@@ -26,7 +26,7 @@ var _now_source: Callable = Callable()
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	_row_style = UiStyle.box(Color(0.0, 0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0, 0.0), 5, 0.0, 0.0)
+	_row_style = UiStyle.box(UiStyle.CLEAR, UiStyle.CLEAR, 5, 0.0, 0.0)
 	_row_style.set_border_width_all(0)
 	_row_hover_style = UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 5, 0.0, 0.0)
 	_row_hover_style.set_border_width_all(0)
@@ -37,7 +37,7 @@ func _init() -> void:
 	_panel.z_index = 100
 	_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 0.0)
 	var panel_style: StyleBoxFlat = UiStyle.box(PopupList.PANEL_BG, UiStyle.BORDER, 8, 8.0, 8.0)
-	panel_style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	ThemeColors.bind(panel_style, &"shadow_color", &"shadow")
 	panel_style.shadow_size = 12
 	panel_style.shadow_offset = Vector2(0.0, 4.0)
 	_panel.add_theme_stylebox_override("panel", panel_style)
@@ -125,7 +125,7 @@ func _rebuild() -> void:
 		var empty: Label = Label.new()
 		empty.text = "recent.empty"
 		empty.add_theme_font_size_override("font_size", 13)
-		empty.add_theme_color_override("font_color", DIM_COLOR)
+		ThemeColors.bind_override(empty, &"font_color", DIM_COLOR)
 		_list.add_child(empty)
 		return
 
@@ -159,14 +159,14 @@ func _add_row(card_id: String, title: String, time_text: String) -> void:
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_label.add_theme_font_size_override("font_size", 13)
-	name_label.add_theme_color_override("font_color", TEXT_COLOR)
+	ThemeColors.bind_override(name_label, &"font_color", TEXT_COLOR)
 	content.add_child(name_label)
 
 	var time_label: Label = Label.new()
 	time_label.text = time_text
 	time_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	time_label.add_theme_font_size_override("font_size", 12)
-	time_label.add_theme_color_override("font_color", DIM_COLOR)
+	ThemeColors.bind_override(time_label, &"font_color", DIM_COLOR)
 	content.add_child(time_label)
 
 	_list.add_child(row)

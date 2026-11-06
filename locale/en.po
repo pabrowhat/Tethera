@@ -688,6 +688,18 @@ msgstr "Русский"
 msgid "settings.language.hint"
 msgstr "Auto follows the language of the system. The change applies at once."
 
+msgid "settings.theme"
+msgstr "Theme"
+
+msgid "settings.theme.dark"
+msgstr "Dark"
+
+msgid "settings.theme.light"
+msgstr "Light"
+
+msgid "settings.theme.hint"
+msgstr "The theme changes the colours of the whole interface and the canvas. The colours you chose for notes stay."
+
 msgid "confirm.delete"
 msgstr "Delete"
 
@@ -1476,3 +1488,9 @@ msgstr "Notes can be copied, cut and pasted with Ctrl+C, Ctrl+X and Ctrl+V. Link
 
 msgid "whats_new.1_1_0.shortcut_list"
 msgstr "The Ctrl+K palette has a \"Keyboard shortcuts\" command with the list of all shortcuts."
+
+msgid "whats_new.1_2_0.light_theme"
+msgstr "New light theme: panels, menus, dialogs, the canvas and its dot grid, the start screen and the PNG export follow it."
+
+msgid "whats_new.1_2_0.theme_setting"
+msgstr "Choose the theme in Settings. It applies on Save, with no restart. The colours you chose for notes do not change."

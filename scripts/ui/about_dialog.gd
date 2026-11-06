@@ -36,8 +36,7 @@ func _init() -> void:
 		var button: Button = _make_button("about.tab.about" if tab == Tab.ABOUT else "about.tab.whats_new", false)
 		button.toggle_mode = true
 		button.button_group = _tab_group
-		button.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 16.0, 8.0))
-		button.add_theme_stylebox_override("hover_pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 16.0, 8.0))
+		_style_toggle(button)
 		button.pressed.connect(_show_tab.bind(tab))
 		tabs.add_child(button)
 		_tab_buttons.append(button)
@@ -200,8 +199,7 @@ func _add_earlier_version(version: String) -> void:
 	toggle.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	toggle.toggle_mode = true
 	toggle.set_pressed_no_signal(holder.visible)
-	toggle.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 16.0, 8.0))
-	toggle.add_theme_stylebox_override("hover_pressed", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT, 6, 16.0, 8.0))
+	_style_toggle(toggle)
 	toggle.toggled.connect(func(open: bool) -> void:
 		holder.visible = open
 		if open:

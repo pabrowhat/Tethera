@@ -41,12 +41,12 @@ func open_shortcuts() -> void:
 		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		text.add_theme_font_size_override("font_size", 13)
-		text.add_theme_color_override("font_color", TEXT_COLOR)
+		ThemeColors.bind_override(text, &"font_color", TEXT_COLOR)
 		line.add_child(text)
 		var keys: Label = Label.new()
 		keys.text = PlatformKeys.hint(str(entry["keys"]))
 		keys.add_theme_font_size_override("font_size", 12)
-		keys.add_theme_color_override("font_color", MUTED_COLOR)
+		ThemeColors.bind_override(keys, &"font_color", MUTED_COLOR)
 		line.add_child(keys)
 		_list.add_child(line)
 	open()

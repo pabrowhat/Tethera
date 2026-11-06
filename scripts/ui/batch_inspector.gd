@@ -8,8 +8,8 @@ signal delete_requested
 signal eyedropper_requested
 
 const ICON_X: Texture2D = preload("res://assets/icons/x.svg")
-const SURFACE_COLOR: Color = Color(0.141176, 0.152941, 0.211765, 1.0)
-const BORDER_COLOR: Color = Color(0.247059, 0.266667, 0.364706, 1.0)
+const SURFACE_COLOR: StringName = &"control.normal"
+const BORDER_COLOR: StringName = &"border"
 
 var _header: Label = null
 var _count: int = 0
@@ -24,7 +24,7 @@ func _init() -> void:
 
 	_header = Label.new()
 	_header.add_theme_font_size_override("font_size", 15)
-	_header.add_theme_color_override("font_color", Color.WHITE)
+	ThemeColors.bind_override(_header, &"font_color", &"text.strong")
 	add_child(_header)
 
 	var scroll: ScrollContainer = ScrollContainer.new()
@@ -40,7 +40,7 @@ func _init() -> void:
 	var palette_caption: Label = Label.new()
 	palette_caption.text = "batch.palette_caption"
 	palette_caption.add_theme_font_size_override("font_size", 12)
-	palette_caption.add_theme_color_override("font_color", Color(0.7, 0.72, 0.8))
+	ThemeColors.bind_override(palette_caption, &"font_color", &"text.caption")
 	add_child(palette_caption)
 
 	_palette_row = HBoxContainer.new()
@@ -50,12 +50,12 @@ func _init() -> void:
 	_delete_button = Button.new()
 	_delete_button.focus_mode = Control.FOCUS_NONE
 	_delete_button.add_theme_font_size_override("font_size", 13)
-	_delete_button.add_theme_color_override("font_color", Color(0.85, 0.35, 0.35, 0.85))
-	_delete_button.add_theme_color_override("font_pressed_color", Color(0.9, 0.25, 0.25, 1.0))
-	_delete_button.add_theme_color_override("font_hover_color", Color(1.0, 0.45, 0.45, 1.0))
-	_delete_button.add_theme_stylebox_override("normal", _make_delete_style(Color(0, 0, 0, 0)))
-	_delete_button.add_theme_stylebox_override("pressed", _make_delete_style(Color(0, 0, 0, 0)))
-	_delete_button.add_theme_stylebox_override("hover", _make_delete_style(Color(0.141176, 0.152941, 0.211765, 0.6)))
+	ThemeColors.bind_override(_delete_button, &"font_color", &"danger.text")
+	ThemeColors.bind_override(_delete_button, &"font_pressed_color", &"danger.text_pressed")
+	ThemeColors.bind_override(_delete_button, &"font_hover_color", &"danger.text_hover")
+	_delete_button.add_theme_stylebox_override("normal", _make_delete_style(UiStyle.CLEAR))
+	_delete_button.add_theme_stylebox_override("pressed", _make_delete_style(UiStyle.CLEAR))
+	_delete_button.add_theme_stylebox_override("hover", _make_delete_style(UiStyle.BG_NORMAL, 0.6))
 	_delete_button.pressed.connect(func() -> void: delete_requested.emit())
 	add_child(_delete_button)
 
@@ -116,16 +116,16 @@ func _make_chip(card: GraphCard) -> HBoxContainer:
 	remove_button.custom_minimum_size = Vector2(32, 32)
 	remove_button.focus_mode = Control.FOCUS_NONE
 	remove_button.tooltip_text = "batch.remove_chip"
-	remove_button.add_theme_stylebox_override("normal", _make_chip_style(BORDER_COLOR, SURFACE_COLOR, 0))
-	remove_button.add_theme_stylebox_override("hover", _make_chip_style(BORDER_COLOR, BORDER_COLOR, 0))
+	remove_button.add_theme_stylebox_override("normal", _make_chip_style(ThemeColors.color(BORDER_COLOR), SURFACE_COLOR, 0))
+	remove_button.add_theme_stylebox_override("hover", _make_chip_style(ThemeColors.color(BORDER_COLOR), BORDER_COLOR, 0))
 	remove_button.pressed.connect(func() -> void: chip_remove_requested.emit(card_id))
 	row.add_child(remove_button)
 
 	return row
 
-func _make_chip_style(accent: Color, bg: Color, accent_width: int = 4) -> StyleBoxFlat:
+func _make_chip_style(accent: Color, bg: StringName, accent_width: int = 4) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = bg
+	ThemeColors.bind(style, &"bg_color", bg)
 	style.border_color = accent.lightened(0.25)
 	style.border_width_left = accent_width
 	style.set_corner_radius_all(6)
@@ -135,9 +135,9 @@ func _make_chip_style(accent: Color, bg: Color, accent_width: int = 4) -> StyleB
 	style.content_margin_bottom = 6.0
 	return style
 
-func _make_delete_style(bg: Color) -> StyleBoxFlat:
+func _make_delete_style(bg: StringName, alpha: float = -1.0) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = bg
+	ThemeColors.bind(style, &"bg_color", bg, alpha)
 	style.set_corner_radius_all(6)
 	style.content_margin_top = 8.0
 	style.content_margin_bottom = 8.0

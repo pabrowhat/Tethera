@@ -4,16 +4,16 @@ extends Control
 const ICON: Texture2D = preload("res://assets/icons/pipette.svg")
 const ICON_SIZE: float = 30.0
 const ICON_TIP: Vector2 = Vector2(2.0, 22.0) / 24.0
-const ICON_OUTLINE: Color = Color(0.0, 0.0, 0.0, 0.85)
+const ICON_OUTLINE: StringName = &"marker.outline"
 const RING_OFFSET: Vector2 = Vector2(30.0, 28.0)
 const RING_RADIUS: float = 16.0
 const RING_BORDER: float = 3.0
 const RIPPLE_DURATION: float = 0.35
 const RIPPLE_START_RADIUS: float = 8.0
 const RIPPLE_END_RADIUS: float = 58.0
-const NO_COLOR_RING: Color = Color(0.6, 0.63, 0.75, 0.9)
+const NO_COLOR_RING: StringName = &"marker.none"
 const NO_COLOR_WIDTH: float = 2.0
-const RING_HALO: Color = Color(0.0, 0.0, 0.0, 0.55)
+const RING_HALO: StringName = &"marker.halo"
 
 var _active: bool = false
 var _sampler: Callable = Callable()
@@ -95,12 +95,12 @@ func _draw() -> void:
 	_ring.visible = true
 	if _hover_color == null:
 		_ring.place_centered(center, (RING_RADIUS + NO_COLOR_WIDTH * 0.5) * 2.0)
-		_ring.set_style(Color(NO_COLOR_RING, 0.0), NO_COLOR_RING, NO_COLOR_WIDTH)
+		_ring.set_style(ThemeColors.faded(NO_COLOR_RING, 0.0), ThemeColors.color(NO_COLOR_RING), NO_COLOR_WIDTH)
 		_ring.clear_inner()
-		draw_line(center + Vector2(-7.0, 7.0), center + Vector2(7.0, -7.0), NO_COLOR_RING, 2.0, true)
+		draw_line(center + Vector2(-7.0, 7.0), center + Vector2(7.0, -7.0), ThemeColors.color(NO_COLOR_RING), 2.0, true)
 	else:
 		_ring.place_centered(center, (RING_RADIUS + RING_BORDER) * 2.0)
-		_ring.set_style(Color.WHITE, RING_HALO, RING_BORDER)
+		_ring.set_style(Color.WHITE, ThemeColors.color(RING_HALO), RING_BORDER)
 		_ring.set_inner(_hover_color as Color, RING_BORDER * 2.0)
 
 	_draw_pipette_cursor()
@@ -119,5 +119,5 @@ func _draw_ripple(ripple: Dictionary) -> void:
 func _draw_pipette_cursor() -> void:
 	var rect: Rect2 = Rect2(_mouse_pos - ICON_TIP * ICON_SIZE, Vector2(ICON_SIZE, ICON_SIZE))
 	for outline_offset: Vector2 in [Vector2(-1.5, 0.0), Vector2(1.5, 0.0), Vector2(0.0, -1.5), Vector2(0.0, 1.5)]:
-		draw_texture_rect(ICON, Rect2(rect.position + outline_offset, rect.size), false, ICON_OUTLINE)
+		draw_texture_rect(ICON, Rect2(rect.position + outline_offset, rect.size), false, ThemeColors.color(ICON_OUTLINE))
 	draw_texture_rect(ICON, rect, false, Color.WHITE)

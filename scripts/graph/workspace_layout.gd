@@ -20,7 +20,7 @@ func build_menu() -> void:
 	_button.focus_mode = Control.FOCUS_NONE
 	_button.custom_minimum_size = Vector2(110.0, 36.0)
 	_button.add_theme_font_size_override("font_size", 13)
-	_button.add_theme_color_override("font_color", Color(0.9, 0.92, 0.96))
+	ThemeColors.bind_override(_button, &"font_color", &"text.primary")
 	var bar: HBoxContainer = _ws.get_node("UI/TopBar")
 	bar.add_child(_button)
 	bar.move_child(_button, _ws._filter_panel.get_index())

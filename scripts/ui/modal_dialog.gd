@@ -3,11 +3,11 @@ extends ColorRect
 
 signal canceled
 
-const BACKDROP: Color = Color(0.04, 0.04, 0.06, 0.65)
-const TITLE_COLOR: Color = Color(1.0, 1.0, 1.0, 1.0)
-const TEXT_COLOR: Color = Color(0.85, 0.86, 0.9, 1.0)
-const MUTED_COLOR: Color = Color(0.65, 0.68, 0.78, 1.0)
-const WARNING_COLOR: Color = Color(0.95, 0.62, 0.3, 1.0)
+const BACKDROP: StringName = &"overlay.modal"
+const TITLE_COLOR: StringName = &"text.strong"
+const TEXT_COLOR: StringName = &"text.primary"
+const MUTED_COLOR: StringName = &"text.muted"
+const WARNING_COLOR: StringName = &"warning.text"
 const OPEN_DURATION: float = 0.2
 const CLOSE_DURATION: float = 0.12
 
@@ -19,7 +19,7 @@ var _tween: Tween = null
 var _is_open: bool = false
 
 func _init() -> void:
-	color = BACKDROP
+	ThemeColors.bind(self, &"color", BACKDROP)
 	visible = false
 	modulate.a = 0.0
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -32,7 +32,7 @@ func _init() -> void:
 
 	_card = PanelContainer.new()
 	var card_style: StyleBoxFlat = UiStyle.box(PopupList.PANEL_BG, UiStyle.BORDER, 10, 0.0, 0.0)
-	card_style.shadow_color = Color(0.0, 0.0, 0.0, 0.5)
+	ThemeColors.bind(card_style, &"shadow_color", &"shadow")
 	card_style.shadow_size = 18
 	card_style.shadow_offset = Vector2(0.0, 8.0)
 	_card.add_theme_stylebox_override("panel", card_style)
@@ -118,14 +118,20 @@ func _input(event: InputEvent) -> void:
 		_on_cancel_requested()
 		get_viewport().set_input_as_handled()
 
-func _make_label(text: String, font_size: int, text_color: Color, wrap: bool = false) -> Label:
+func _make_label(text: String, font_size: int, text_color: StringName, wrap: bool = false) -> Label:
 	var label: Label = Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", text_color)
+	ThemeColors.bind_override(label, &"font_color", text_color)
 	if wrap:
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
+
+func _style_toggle(button: Button) -> void:
+	button.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT_TINT, UiStyle.ACCENT, 6, 16.0, 8.0))
+	button.add_theme_stylebox_override("hover_pressed", UiStyle.box(UiStyle.ACCENT_TINT, UiStyle.ACCENT, 6, 16.0, 8.0))
+	ThemeColors.bind_override(button, &"font_pressed_color", TITLE_COLOR)
+	ThemeColors.bind_override(button, &"font_hover_pressed_color", TITLE_COLOR)
 
 func _make_button(text: String, primary: bool) -> Button:
 	var button: Button = Button.new()
@@ -134,16 +140,16 @@ func _make_button(text: String, primary: bool) -> Button:
 	button.custom_minimum_size = Vector2(0.0, 34.0)
 	button.add_theme_font_size_override("font_size", 13)
 	if primary:
-		button.add_theme_color_override("font_color", TITLE_COLOR)
-		button.add_theme_color_override("font_hover_color", TITLE_COLOR)
-		button.add_theme_color_override("font_pressed_color", TITLE_COLOR)
-		button.add_theme_color_override("font_disabled_color", Color(1.0, 1.0, 1.0, 0.4))
+		ThemeColors.bind_override(button, &"font_color", &"text.on_accent")
+		ThemeColors.bind_override(button, &"font_hover_color", &"text.on_accent")
+		ThemeColors.bind_override(button, &"font_pressed_color", &"text.on_accent")
+		ThemeColors.bind_override(button, &"font_disabled_color", &"text.disabled")
 		button.add_theme_stylebox_override("normal", UiStyle.box(UiStyle.ACCENT_SOFT, UiStyle.ACCENT_SOFT, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("hover", UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("pressed", UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("disabled", UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BG_NORMAL, 6, 16.0, 8.0))
 	else:
-		button.add_theme_color_override("font_color", TEXT_COLOR)
+		ThemeColors.bind_override(button, &"font_color", TEXT_COLOR)
 		button.add_theme_stylebox_override("normal", UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BG_NORMAL, 6, 16.0, 8.0))
 		button.add_theme_stylebox_override("hover", UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 6, 16.0, 8.0))
 	return button

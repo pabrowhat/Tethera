@@ -37,7 +37,7 @@ func build_project_menu() -> void:
 	button.focus_mode = Control.FOCUS_NONE
 	button.custom_minimum_size = Vector2(110.0, 36.0)
 	button.add_theme_font_size_override("font_size", 13)
-	button.add_theme_color_override("font_color", Color(0.9, 0.92, 0.96))
+	ThemeColors.bind_override(button, &"font_color", &"text.primary")
 	_ws._project_menu = button
 	_ws.get_node("UI/TopBar").add_child(button)
 	_ws.get_node("UI/TopBar").move_child(button, 0)

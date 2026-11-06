@@ -10,8 +10,8 @@ signal image_chosen(source_path: String)
 signal eyedropper_requested(second: bool)
 signal cleared
 
-const CAPTION_COLOR: Color = Color(0.7, 0.72, 0.8)
-const HINT_COLOR: Color = Color(0.55, 0.58, 0.7)
+const CAPTION_COLOR: StringName = &"text.caption"
+const HINT_COLOR: StringName = &"text.dim"
 const BODY_PALETTE: Array[Color] = [
 	Color("1d2338"),
 	Color("2b2140"),
@@ -45,7 +45,7 @@ func _init(title_key: String = "background.title") -> void:
 	_header.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_header.focus_mode = Control.FOCUS_NONE
 	_header.add_theme_font_size_override("font_size", 12)
-	_header.add_theme_color_override("font_color", CAPTION_COLOR)
+	ThemeColors.bind_override(_header, &"font_color", CAPTION_COLOR)
 	_header.pressed.connect(_on_header_pressed)
 	add_child(_header)
 
@@ -67,7 +67,7 @@ func setup(swatch_shader: Shader, with_eyedropper: bool = false) -> void:
 	_gradient_toggle.text = "background.gradient"
 	_gradient_toggle.focus_mode = Control.FOCUS_NONE
 	_gradient_toggle.add_theme_font_size_override("font_size", 12)
-	_gradient_toggle.add_theme_color_override("font_color", CAPTION_COLOR)
+	ThemeColors.bind_override(_gradient_toggle, &"font_color", CAPTION_COLOR)
 	_gradient_toggle.toggled.connect(_on_gradient_toggled)
 	_body.add_child(_gradient_toggle)
 
@@ -100,7 +100,7 @@ func setup(swatch_shader: Shader, with_eyedropper: bool = false) -> void:
 
 	_hint = Label.new()
 	_hint.add_theme_font_size_override("font_size", 11)
-	_hint.add_theme_color_override("font_color", HINT_COLOR)
+	ThemeColors.bind_override(_hint, &"font_color", HINT_COLOR)
 	_hint.visible = false
 	_body.add_child(_hint)
 	_sync_fold()
@@ -115,11 +115,11 @@ func attach_border_control(control: Control, caption: String) -> void:
 	_body.add_child(body_caption)
 	_body.move_child(body_caption, 2)
 
-func _make_caption(text: String, font_size: int, color: Color) -> Label:
+func _make_caption(text: String, font_size: int, color: StringName) -> Label:
 	var label: Label = Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", color)
+	ThemeColors.bind_override(label, &"font_color", color)
 	return label
 
 func _make_button(text: String, on_pressed: Callable) -> Button:

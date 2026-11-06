@@ -25,11 +25,17 @@ const GRID_SPACING: float = 16.0
 const TOOLTIP_FONT_SIZE: int = 11
 const COLLAPSE_DURATION: float = 0.22
 
-const ACCENT_COLOR: Color = Color(0.41, 0.44, 0.98, 1.0)
-const FRAME_FILL_COLOR: Color = Color(0.9, 0.92, 1.0, 0.08)
-const FRAME_BORDER_COLOR: Color = Color(0.9, 0.92, 1.0, 0.7)
-const GRID_COLOR: Color = Color(0.5, 0.55, 0.7, 0.14)
-const TEXT_COLOR: Color = Color(0.75, 0.78, 0.88, 1.0)
+const ACCENT_COLOR: StringName = &"accent"
+const FRAME_FILL_COLOR: StringName = &"minimap.frame_fill"
+const FRAME_BORDER_COLOR: StringName = &"minimap.frame_border"
+const GRID_COLOR: StringName = &"minimap.grid"
+const TEXT_COLOR: StringName = &"text.caption"
+const BACKGROUND_COLOR: StringName = &"minimap.background"
+const BORDER_COLOR: StringName = &"border"
+const TOOLTIP_BACKGROUND_COLOR: StringName = &"minimap.tooltip_background"
+const TOOLTIP_TEXT_COLOR: StringName = &"text.strong"
+const DARK_DOT_LIMIT: float = 0.3
+const LIGHT_DOT_LIMIT: float = 0.75
 
 var _navigator: CanvasNavigator = null
 var _cards: Dictionary = {}
@@ -60,11 +66,12 @@ var _drag_press_pos: Vector2 = Vector2.ZERO
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = false
+	ThemeColors.watch(queue_redraw)
 
 func _ready() -> void:
 	_panel_style.set_corner_radius_all(8)
 	_panel_style.set_border_width_all(1)
-	_panel_style.border_color = Color(0.247, 0.267, 0.365, 1.0)
+	ThemeColors.bind(_panel_style, &"border_color", BORDER_COLOR)
 
 	_fit_button = _make_header_button(ICON_MAXIMIZE, "minimap.fit")
 	_fit_button.pressed.connect(func() -> void: fit_requested.emit())
@@ -304,11 +311,11 @@ func _update_layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	_panel_style.bg_color = Color(0.07, 0.075, 0.1, _bg_alpha)
+	_panel_style.bg_color = ThemeColors.faded(BACKGROUND_COLOR, _bg_alpha)
 	draw_style_box(_panel_style, Rect2(Vector2.ZERO, size))
 
 	var font: Font = get_theme_default_font()
-	draw_string(font, Vector2(10.0, 16.0), tr("minimap.title"), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 12, TEXT_COLOR)
+	draw_string(font, Vector2(10.0, 16.0), tr("minimap.title"), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 12, ThemeColors.color(TEXT_COLOR))
 
 	if _open_amount <= 0.0 or not _world_ready or not is_instance_valid(_navigator):
 		return
@@ -324,7 +331,7 @@ func _draw() -> void:
 			continue
 		draw_rect(dot_rect, _dot_color(card), true)
 		if _selection != null and _selection.has(card):
-			draw_rect(dot_rect.grow(2.0), Color(ACCENT_COLOR, pulse), false, 1.5)
+			draw_rect(dot_rect.grow(2.0), ThemeColors.faded(ACCENT_COLOR, pulse), false, 1.5)
 
 	for card: GraphCard in _outliers:
 		_draw_outlier_marker(card, map_rect, pulse)
@@ -332,16 +339,19 @@ func _draw() -> void:
 	var visible_rect: Rect2 = _navigator.get_visible_canvas_rect(get_viewport_rect().size)
 	var frame: Rect2 = _frame_map_rect(visible_rect).intersection(map_rect)
 	if frame.size.x > 0.0 and frame.size.y > 0.0:
-		draw_rect(frame, FRAME_FILL_COLOR, true)
-		draw_rect(frame, FRAME_BORDER_COLOR, false, 1.0)
+		draw_rect(frame, ThemeColors.color(FRAME_FILL_COLOR), true)
+		draw_rect(frame, ThemeColors.color(FRAME_BORDER_COLOR), false, 1.0)
 
 	if is_instance_valid(_hover_card):
 		_draw_tooltip(font, _hover_card.title_label.text)
 
 func _dot_color(card: GraphCard) -> Color:
 	var col: Color = card.display_color
-	if col.get_luminance() < 0.3:
+	var on_dark: bool = ThemeColors.color(BACKGROUND_COLOR).get_luminance() < 0.5
+	if on_dark and col.get_luminance() < DARK_DOT_LIMIT:
 		col = col.lightened(0.45)
+	elif not on_dark and col.get_luminance() > LIGHT_DOT_LIMIT:
+		col = col.darkened(0.3)
 	return col
 
 func _draw_empty_grid(map_rect: Rect2) -> void:
@@ -349,7 +359,7 @@ func _draw_empty_grid(map_rect: Rect2) -> void:
 	while x < map_rect.end.x:
 		var y: float = map_rect.position.y + GRID_SPACING / 2.0
 		while y < map_rect.end.y:
-			draw_circle(Vector2(x, y), 1.0, GRID_COLOR)
+			draw_circle(Vector2(x, y), 1.0, ThemeColors.color(GRID_COLOR))
 			y += GRID_SPACING
 		x += GRID_SPACING
 
@@ -364,7 +374,7 @@ func _draw_outlier_marker(card: GraphCard, map_rect: Rect2, pulse: float) -> voi
 	var base_b: Vector2 = pos - direction * OUTLIER_MARKER_SIZE * 0.5 - side * OUTLIER_MARKER_SIZE * 0.7
 	draw_colored_polygon(PackedVector2Array([tip, base_a, base_b]), _dot_color(card))
 	if _selection != null and _selection.has(card):
-		draw_circle(pos, OUTLIER_MARKER_SIZE + 2.0, Color(ACCENT_COLOR, pulse * 0.5))
+		draw_circle(pos, OUTLIER_MARKER_SIZE + 2.0, ThemeColors.faded(ACCENT_COLOR, pulse * 0.5))
 
 func _draw_tooltip(font: Font, text: String) -> void:
 	var max_width: float = MAP_SIZE.x - 16.0
@@ -378,6 +388,6 @@ func _draw_tooltip(font: Font, text: String) -> void:
 	var box_y: float = maxf(mouse.y - box_height - 8.0, HEADER_HEIGHT + 2.0)
 	var box: Rect2 = Rect2(Vector2(box_x, box_y), Vector2(box_width, box_height))
 
-	draw_rect(box, Color(0.05, 0.055, 0.08, 0.95), true)
-	draw_rect(box, Color(0.247, 0.267, 0.365, 1.0), false, 1.0)
-	draw_string(font, box.position + Vector2(6.0, box_height - 5.0), label, HORIZONTAL_ALIGNMENT_LEFT, max_width, TOOLTIP_FONT_SIZE, Color(0.95, 0.96, 1.0))
+	draw_rect(box, ThemeColors.color(TOOLTIP_BACKGROUND_COLOR), true)
+	draw_rect(box, ThemeColors.color(BORDER_COLOR), false, 1.0)
+	draw_string(font, box.position + Vector2(6.0, box_height - 5.0), label, HORIZONTAL_ALIGNMENT_LEFT, max_width, TOOLTIP_FONT_SIZE, ThemeColors.color(TOOLTIP_TEXT_COLOR))

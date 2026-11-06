@@ -1,18 +1,20 @@
 class_name UiStyle
 extends RefCounted
 
-const BG_NORMAL: Color = Color(0.141176, 0.152941, 0.211765, 1.0)
-const BG_HOVER: Color = Color(0.192157, 0.207843, 0.286275, 1.0)
-const BORDER: Color = Color(0.247059, 0.266667, 0.364706, 1.0)
-const ACCENT: Color = Color(0.407843, 0.439216, 0.980392, 1.0)
-const ACCENT_SOFT: Color = Color(0.407843, 0.439216, 0.980392, 0.55)
+const BG_NORMAL: StringName = &"control.normal"
+const BG_HOVER: StringName = &"control.hover"
+const BORDER: StringName = &"border"
+const ACCENT: StringName = &"accent"
+const ACCENT_SOFT: StringName = &"accent.soft"
+const ACCENT_TINT: StringName = &"accent.tint"
+const CLEAR: StringName = &""
 
 static var _empty: StyleBoxEmpty = null
 
-static func box(background: Color, border: Color, radius: int, margin_x: float = 6.0, margin_y: float = 4.0) -> StyleBoxFlat:
+static func box(background: StringName, border: StringName, radius: int, margin_x: float = 6.0, margin_y: float = 4.0) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = background
-	style.border_color = border
+	ThemeColors.bind(style, &"bg_color", background)
+	ThemeColors.bind(style, &"border_color", border)
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(radius)
 	style.content_margin_left = margin_x
@@ -31,21 +33,29 @@ static func apply_round(button: Button) -> void:
 
 static func apply_danger_text(button: Button) -> void:
 	button.add_theme_font_size_override("font_size", 13)
-	button.add_theme_color_override("font_color", Color(0.85, 0.35, 0.35, 0.85))
-	button.add_theme_color_override("font_pressed_color", Color(0.9, 0.25, 0.25, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(1.0, 0.45, 0.45, 1.0))
-	button.add_theme_stylebox_override("normal", _danger_box(Color(0.0, 0.0, 0.0, 0.0)))
-	button.add_theme_stylebox_override("pressed", _danger_box(Color(0.0, 0.0, 0.0, 0.0)))
-	button.add_theme_stylebox_override("hover", _danger_box(Color(0.141176, 0.152941, 0.211765, 0.6)))
+	ThemeColors.bind_override(button, &"font_color", &"danger.text")
+	ThemeColors.bind_override(button, &"font_pressed_color", &"danger.text_pressed")
+	ThemeColors.bind_override(button, &"font_hover_color", &"danger.text_hover")
+	button.add_theme_stylebox_override("normal", _danger_box(CLEAR))
+	button.add_theme_stylebox_override("pressed", _danger_box(CLEAR))
+	button.add_theme_stylebox_override("hover", _danger_box(BG_NORMAL, 0.6))
 	button.add_theme_stylebox_override("focus", _get_empty())
 
-static func _danger_box(background: Color) -> StyleBoxFlat:
+static func _danger_box(background: StringName, alpha: float = -1.0) -> StyleBoxFlat:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = background
+	ThemeColors.bind(style, &"bg_color", background, alpha)
 	style.set_corner_radius_all(6)
 	style.content_margin_top = 8.0
 	style.content_margin_bottom = 8.0
 	return style
+
+static func paint_row_text(row: Button, disabled: bool, active: bool, text_key: StringName = &"text.primary", hint_key: StringName = &"text.muted") -> void:
+	var box: HBoxContainer = row.get_child(0) as HBoxContainer
+	var main_color: StringName = &"text.disabled" if disabled else (&"text.on_accent" if active else text_key)
+	var side_color: StringName = &"text.disabled" if disabled else (&"text.on_accent" if active else hint_key)
+	ThemeColors.bind_override(box.get_child(0) as Label, &"font_color", main_color)
+	if box.get_child_count() > 1:
+		ThemeColors.bind_override(box.get_child(1) as Label, &"font_color", side_color)
 
 static func make_borderless(button: Button) -> void:
 	button.flat = true

@@ -16,10 +16,10 @@ const SAFE_LINK_PREFIXES: Array[String] = ["http://", "https://", "mailto:"]
 
 const CARD_HEADING_SIZES: Array[int] = [16, 14, 13]
 const PREVIEW_HEADING_SIZES: Array[int] = [28, 22, 18]
-const HEADING_COLOR: String = "#ebedf5"
-const WIKI_COLOR: String = "#8f96ff"
-const MISSING_IMAGE_COLOR: String = "#e0a060"
-const LINK_COLOR: String = "#7cc4ff"
+const HEADING_KEY: StringName = &"markdown.heading"
+const WIKI_KEY: StringName = &"markdown.wiki"
+const MISSING_IMAGE_KEY: StringName = &"markdown.missing_image"
+const LINK_KEY: StringName = &"markdown.link"
 const TAB_WIDTH: int = 4
 
 const WIKI_META_PREFIX: String = "wiki:"
@@ -34,7 +34,7 @@ static var _tag_re: RegEx = null
 static var _color_name_re: RegEx = null
 static var _inline_rules: Array[Dictionary] = []
 
-static func to_bbcode(text: String, profile: Profile = Profile.CARD, max_image_width: int = 0) -> String:
+static func to_bbcode(text: String, profile: Profile = Profile.CARD, max_image_width: int = 0, heading_color: String = "") -> String:
 	if text.is_empty():
 		return text
 	_ensure_regex()
@@ -54,10 +54,13 @@ static func to_bbcode(text: String, profile: Profile = Profile.CARD, max_image_w
 			_append_list_item(lines, list_indents, _indent_width(item.get_string(1)), _inline(item.get_string(2)))
 		else:
 			_close_lists(lines, list_indents)
-			lines.append(_format_block(raw_line, profile))
+			lines.append(_format_block(raw_line, profile, heading_color))
 	_close_lists(lines, list_indents)
 
 	return _restore("\n".join(PackedStringArray(lines)), tokens, profile, max_image_width).replace(BRACKET_MARK, "[lb]")
+
+static func _hex(key: StringName) -> String:
+	return "#" + ThemeColors.color(key).to_html(false)
 
 static func _ensure_regex() -> void:
 	if _protect_re != null:
@@ -137,21 +140,21 @@ static func _render_token(token: String, profile: Profile, max_image_width: int)
 		var inner: String = token.substr(2, token.length() - 4)
 		if not WikiLink.is_note_link(inner):
 			return "[lb][lb]%s[rb][rb]" % inner
-		var styled: String = "[color=%s][lb][lb]%s[rb][rb][/color]" % [WIKI_COLOR, WikiLink.display_text(inner)]
+		var styled: String = "[color=%s][lb][lb]%s[rb][rb][/color]" % [_hex(WIKI_KEY), WikiLink.display_text(inner)]
 		var title: String = WikiLink.split(inner)["title"]
 		return "[url=%s%s]%s[/url]" % [WIKI_META_PREFIX, title, styled] if interactive else styled
 
 	if token.begins_with("http"):
 		if not interactive:
 			return token
-		return "[url=%s][color=%s]%s[/color][/url]" % [token, LINK_COLOR, token]
+		return "[url=%s][color=%s]%s[/color][/url]" % [token, _hex(LINK_KEY), token]
 
 	var md_link: RegExMatch = _md_link_re.search(token)
 	if md_link != null:
 		var label: String = _inline(md_link.get_string(1))
 		if interactive:
-			return "[url=%s][color=%s]%s[/color][/url]" % [md_link.get_string(2), LINK_COLOR, label]
-		return "[color=%s][u]%s[/u][/color]" % [LINK_COLOR, label]
+			return "[url=%s][color=%s]%s[/color][/url]" % [md_link.get_string(2), _hex(LINK_KEY), label]
+		return "[color=%s][u]%s[/u][/color]" % [_hex(LINK_KEY), label]
 
 	return token if _is_safe_tag(token) else "[lb]" + token.substr(1)
 
@@ -184,7 +187,7 @@ static func _image_bbcode(picture: Dictionary, max_image_width: int) -> String:
 		InlineImages.report_missing(path)
 		var shown_name: String = path.get_file().replace("[", "(").replace("]", ")")
 		var message: String = str(TranslationServer.translate("image.missing")).replace("%s", shown_name)
-		return "[color=%s][i]%s[/i][/color]" % [MISSING_IMAGE_COLOR, message]
+		return "[color=%s][i]%s[/i][/color]" % [_hex(MISSING_IMAGE_KEY), message]
 
 	var width: int = int(picture["width"])
 	if width <= 0:
@@ -193,7 +196,7 @@ static func _image_bbcode(picture: Dictionary, max_image_width: int) -> String:
 		width = mini(width, max_image_width)
 	return "[img width=%d]%s[/img]" % [maxi(width, 1), path]
 
-static func _format_block(line: String, profile: Profile) -> String:
+static func _format_block(line: String, profile: Profile, heading_color: String) -> String:
 	var heading: RegExMatch = _heading_re.search(line)
 	if heading == null:
 		return _inline(line)
@@ -201,7 +204,7 @@ static func _format_block(line: String, profile: Profile) -> String:
 	var sizes: Array[int] = PREVIEW_HEADING_SIZES if profile == Profile.PREVIEW else CARD_HEADING_SIZES
 	var level: int = mini(heading.get_string(1).length(), sizes.size())
 	var font_px: int = sizes[level - 1]
-	return "[font_size=%d][b][color=%s]%s[/color][/b][/font_size]" % [font_px, HEADING_COLOR, _inline(heading.get_string(2))]
+	return "[font_size=%d][b][color=%s]%s[/color][/b][/font_size]" % [font_px, heading_color if heading_color != "" else _hex(HEADING_KEY), _inline(heading.get_string(2))]
 
 static func _inline(text: String) -> String:
 	var result: String = text

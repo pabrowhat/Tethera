@@ -28,7 +28,7 @@ func set_inner(color: Color, inset: float, right_half: bool = false) -> void:
 	_material.set_shader_parameter("inner_right_half", right_half)
 
 func clear_inner() -> void:
-	_material.set_shader_parameter("inner_color", Color(0.0, 0.0, 0.0, 0.0))
+	_material.set_shader_parameter("inner_color", Color.TRANSPARENT)
 
 func place_centered(center: Vector2, diameter: float) -> void:
 	size = Vector2(diameter, diameter)
@@ -52,7 +52,8 @@ static func attach_to_button(button: Button, states: Dictionary, border_width: f
 
 	var apply: Callable = func() -> void:
 		var pair: Array = states.get(button.get_draw_mode(), states[BaseButton.DRAW_NORMAL]) as Array
-		shape.set_style(pair[0] as Color, pair[1] as Color, border_width, radius)
+		shape.set_style(ThemeColors.resolve(pair[0] as StringName), ThemeColors.resolve(pair[1] as StringName), border_width, radius)
 	apply.call()
 	button.draw.connect(apply)
+	ThemeColors.watch(button.queue_redraw)
 	return shape

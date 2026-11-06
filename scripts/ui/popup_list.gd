@@ -11,10 +11,9 @@ const SCREEN_MARGIN: float = 8.0
 const ANCHOR_GAP: float = 4.0
 const MAX_HEIGHT: float = 360.0
 const ROW_HEIGHT: float = 30.0
-const TEXT_COLOR: Color = Color(0.88, 0.89, 0.94, 1.0)
-const HINT_COLOR: Color = Color(0.6, 0.63, 0.74, 1.0)
-const DISABLED_COLOR: Color = Color(0.45, 0.47, 0.58, 1.0)
-const PANEL_BG: Color = Color(0.0901961, 0.0980392, 0.137255, 1.0)
+const TEXT_COLOR: StringName = &"text.primary"
+const HINT_COLOR: StringName = &"text.muted"
+const PANEL_BG: StringName = &"surface.panel"
 const SUBMENU_MARK: String = ">"
 const SUBMENU_GAP: float = 2.0
 
@@ -51,12 +50,12 @@ func _init() -> void:
 	set_process_input(false)
 
 	var panel_style: StyleBoxFlat = UiStyle.box(PANEL_BG, UiStyle.BORDER, 8, 4.0, 4.0)
-	panel_style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	ThemeColors.bind(panel_style, &"shadow_color", &"shadow")
 	panel_style.shadow_size = 12
 	panel_style.shadow_offset = Vector2(0.0, 4.0)
 	add_theme_stylebox_override("panel", panel_style)
 
-	_row_style = UiStyle.box(Color(0.0, 0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0, 0.0), 5, 0.0, 0.0)
+	_row_style = UiStyle.box(UiStyle.CLEAR, UiStyle.CLEAR, 5, 0.0, 0.0)
 	_row_style.set_border_width_all(0)
 	_row_active_style = UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 5, 0.0, 0.0)
 	_row_active_style.set_border_width_all(0)
@@ -251,7 +250,7 @@ func _make_separator() -> Control:
 	holder.add_theme_constant_override("margin_bottom", 3)
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var line: ColorRect = ColorRect.new()
-	line.color = UiStyle.BORDER
+	ThemeColors.bind(line, &"color", UiStyle.BORDER)
 	line.custom_minimum_size = Vector2(0.0, 1.0)
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	holder.add_child(line)
@@ -279,7 +278,6 @@ func _make_row(item: Dictionary, index: int) -> Button:
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_font_size_override("font_size", 13)
-	label.add_theme_color_override("font_color", DISABLED_COLOR if disabled else TEXT_COLOR)
 	box.add_child(label)
 
 	if str(item["hint"]) != "":
@@ -287,9 +285,9 @@ func _make_row(item: Dictionary, index: int) -> Button:
 		hint.text = str(item["hint"])
 		hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		hint.add_theme_font_size_override("font_size", 12)
-		hint.add_theme_color_override("font_color", DISABLED_COLOR if disabled else HINT_COLOR)
 		box.add_child(hint)
 
+	UiStyle.paint_row_text(row, disabled, false, TEXT_COLOR, HINT_COLOR)
 	row.custom_minimum_size = Vector2(box.get_combined_minimum_size().x + 20.0, ROW_HEIGHT)
 	row.mouse_entered.connect(_on_row_hovered.bind(index))
 	row.pressed.connect(_choose.bind(index))
@@ -322,9 +320,11 @@ func _refresh_selection() -> void:
 		var row: Button = _rows[index]
 		if row == null:
 			continue
-		var style: StyleBoxFlat = _row_active_style if index == _selected_index else _row_style
+		var active: bool = index == _selected_index
+		var style: StyleBoxFlat = _row_active_style if active else _row_style
 		for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 			row.add_theme_stylebox_override(state, style)
+		UiStyle.paint_row_text(row, bool(_items[index]["disabled"]), active, TEXT_COLOR, HINT_COLOR)
 	if _selected_index >= 0 and _selected_index < _rows.size() and _rows[_selected_index] != null:
 		_scroll.ensure_control_visible(_rows[_selected_index])
 

@@ -30,20 +30,20 @@ func _init() -> void:
 	custom_minimum_size = Vector2(popup_width, 0.0)
 
 	_panel_style = StyleBoxFlat.new()
-	_panel_style.bg_color = Color("1e2030")
-	_panel_style.border_color = Color("6870fa")
+	ThemeColors.bind(_panel_style, &"bg_color", &"surface.raised")
+	ThemeColors.bind(_panel_style, &"border_color", &"accent")
 	_panel_style.set_border_width_all(1)
 	_panel_style.set_corner_radius_all(6)
 	_panel_style.set_content_margin_all(4.0)
 	add_theme_stylebox_override("panel", _panel_style)
 
 	_row_style = StyleBoxFlat.new()
-	_row_style.bg_color = Color(0, 0, 0, 0)
+	ThemeColors.bind(_row_style, &"bg_color", UiStyle.CLEAR)
 	_row_style.set_corner_radius_all(4)
 	_row_style.set_content_margin_all(6.0)
 
 	_row_selected_style = StyleBoxFlat.new()
-	_row_selected_style.bg_color = Color("6870fa")
+	ThemeColors.bind(_row_selected_style, &"bg_color", &"accent")
 	_row_selected_style.set_corner_radius_all(4)
 	_row_selected_style.set_content_margin_all(6.0)
 
@@ -168,6 +168,9 @@ func _refresh_selection_style() -> void:
 		var style: StyleBoxFlat = _row_selected_style if i == _selected_index else _row_style
 		_buttons[i].add_theme_stylebox_override("normal", style)
 		_buttons[i].add_theme_stylebox_override("hover", style)
+		var selected: bool = i == _selected_index
+		ThemeColors.bind_override(_buttons[i], &"font_color", &"text.on_accent" if selected else &"text.primary")
+		ThemeColors.bind_override(_buttons[i], &"font_hover_color", &"text.on_accent" if selected else &"text.strong")
 
 func _reposition() -> void:
 	_scroll.custom_minimum_size.y = minf(_list.get_combined_minimum_size().y, max_height)

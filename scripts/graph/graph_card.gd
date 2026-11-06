@@ -49,6 +49,8 @@ signal cover_clicked(card: GraphCard)
 @onready var content_label: RichTextLabel = $FaceHost/FaceRoot/ContentMargin/VBoxContainer/ContentLabel
 @onready var back_margin: MarginContainer = $FaceHost/FaceRoot/BackMargin
 @onready var back_flip_button: Button = $FaceHost/FaceRoot/BackMargin/BackBox/BackHeader/BackFlipButton
+@onready var back_title_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/BackHeader/BackTitle
+@onready var backlinks_title_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/BacklinksTitle
 @onready var dates_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/DatesLabel
 @onready var todo_chip: Button = $FaceHost/FaceRoot/BackMargin/BackBox/StatusChips/TodoChip
 @onready var progress_chip: Button = $FaceHost/FaceRoot/BackMargin/BackBox/StatusChips/ProgressChip
@@ -56,10 +58,10 @@ signal cover_clicked(card: GraphCard)
 @onready var backlinks_box: VBoxContainer = $FaceHost/FaceRoot/BackMargin/BackBox/BacklinksBox
 
 var card_id: String = ""
-var card_color: Color = Color("313549")
+var card_color: Color = Color(Preferences.DEFAULT_NOTE_COLOR_HEX)
 var content_text: String = ""
-var display_color: Color = DEFAULT_SLATE
-var display_line_color: Color = LINE_DEFAULT_COLOR
+var display_color: Color = ThemeColors.color(&"card.border")
+var display_line_color: Color = ThemeColors.color(&"card.line")
 var image_path: String = ""
 var status: String = STATUS_NONE
 var entity_type_id: String = ""
@@ -97,14 +99,16 @@ var _filter_alpha: float = 1.0
 var _glide_tween: Tween = null
 var _shader_material: ShaderMaterial = null
 var _status_shape: RoundedShape = null
-var _body_color: Color = FRONT_BG
-var _body_color2: Color = FRONT_BG
+var _body_color: Color = ThemeColors.color(FRONT_BG)
+var _body_color2: Color = ThemeColors.color(FRONT_BG)
+var _body_input_color: Variant = null
+var _body_input_color2: Variant = null
 var _body_has_gradient: bool = false
 var _body_texture: Texture2D = null
-var _pill_color: Color = FRONT_BG
+var _pill_color: Color = ThemeColors.color(FRONT_BG)
 
-var _border_rest_color: Color = DEFAULT_SLATE
-var _border_active_color: Color = SELECTED_ACCENT
+var _border_rest_color: Color = ThemeColors.color(&"card.border")
+var _border_active_color: Color = ThemeColors.color(&"accent")
 var _color_from: PackedColorArray = PackedColorArray()
 var _color_to: PackedColorArray = PackedColorArray()
 var _is_hovering_cover: bool = false
@@ -131,10 +135,9 @@ const STATUS_TODO: String = "todo"
 const STATUS_IN_PROGRESS: String = "in_progress"
 const STATUS_DONE: String = "done"
 
-const DEFAULT_SLATE: Color = Color("313549")
-const SELECTED_ACCENT: Color = Color("6870fa")
-const CARRIED_COLOR: Color = Color("e056fd")
-const LINE_DEFAULT_COLOR: Color = Color("5b5fc7")
+const CARRIED_COLOR: StringName = &"card.carried"
+const MUTED_INK_FACTOR: float = 0.7
+const FLIP_ICON_ITEMS: Array[String] = ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"]
 const BORDER_THICKNESS: float = 2.0
 const BORDER_THICKNESS_SELECTED: float = 3.0
 
@@ -144,15 +147,15 @@ const BASE_MIN_SIZE: Vector2 = Vector2(CARD_WIDTH, 100.0)
 const TEXT_WIDTH_FALLBACK: float = CARD_WIDTH - 24.0
 const MIN_TEXT_HEIGHT: float = 24.0
 const FADE_HEIGHT: float = 36.0
-const ELLIPSIS_COLOR: Color = Color(0.72, 0.75, 0.86, 1.0)
+const ELLIPSIS_COLOR: StringName = &"text.caption"
 const TITLE_FONT_SIZE: int = 14
 const FACE_MARGIN: Vector2 = Vector2(12.0, 10.0)
 const DOT_SIZE: float = 12.0
 const ROW_GAP: float = 6.0
 const BASE_CORNER_RADIUS: float = 8.0
-const FRONT_BG: Color = Color(0.0941176, 0.101961, 0.141176, 1.0)
+const FRONT_BG: StringName = &"card.body"
 const PICTURE_OVERLAY_ALPHA: float = 0.55
-const BACK_BG: Color = Color(0.13, 0.14, 0.2, 1.0)
+const BACK_BG: StringName = &"card.back"
 const FLIP_MIN_SCALE: float = 0.02
 const DOUBLE_CLICK_DRAG_SLOP: float = 4.0
 const MAX_BACKLINK_ROWS: int = 5
@@ -160,10 +163,10 @@ const MAX_BACKLINK_ROWS: int = 5
 const SEARCH_FADE_DURATION: float = 0.18
 const TEXT_CLIP_SHADER: Shader = preload("res://shaders/text_clip.gdshader")
 
-const CHIP_BG: Color = Color(0.145098, 0.156863, 0.219608, 1.0)
-const CHIP_BG_HOVER: Color = Color(0.192157, 0.207843, 0.286275, 1.0)
-const CHIP_BORDER: Color = Color(0.247059, 0.266667, 0.364706, 1.0)
-const CHIP_ACCENT: Color = Color(0.407843, 0.439216, 0.980392, 1.0)
+const CHIP_BG: StringName = &"control.normal"
+const CHIP_BG_HOVER: StringName = &"control.hover"
+const CHIP_BORDER: StringName = &"border"
+const CHIP_ACCENT: StringName = &"accent"
 const STATUS_RING_WIDTH: float = 1.7
 const STATUS_HALF_INSET: float = 2.6
 const CHIP_RADIUS: float = 10.0
@@ -171,10 +174,13 @@ const CHIP_MARGIN_X: float = 7.0
 const CHIP_MARGIN_Y: float = 2.0
 
 const STATUS_COLORS: Dictionary = {
-	STATUS_TODO: Color("9aa3c7"),
-	STATUS_IN_PROGRESS: Color("f5b942"),
-	STATUS_DONE: Color("4cd07d"),
+	STATUS_TODO: &"card.status.todo",
+	STATUS_IN_PROGRESS: &"card.status.in_progress",
+	STATUS_DONE: &"card.status.done",
 }
+
+static func is_default_color(color: Color) -> bool:
+	return color.is_equal_approx(Color(Preferences.DEFAULT_NOTE_COLOR_HEX))
 
 func _ready() -> void:
 	pivot_offset = size / 2.0
@@ -220,6 +226,37 @@ func _ready() -> void:
 	progress_chip.pressed.connect(_on_chip_pressed.bind(STATUS_IN_PROGRESS))
 	done_chip.pressed.connect(_on_chip_pressed.bind(STATUS_DONE))
 	_sync_status_chips()
+	_bind_scene_colors()
+	ThemeColors.watch(_on_theme_changed)
+
+func _bind_scene_colors() -> void:
+	ThemeColors.bind(title_edit.get_theme_stylebox(&"normal"), &"bg_color", UiStyle.BG_NORMAL)
+	ThemeColors.bind(title_edit.get_theme_stylebox(&"normal"), &"border_color", UiStyle.ACCENT)
+	ThemeColors.bind_override(title_edit, &"font_color", &"text.strong")
+	ThemeColors.bind_override(zoom_hint, &"font_color", &"ink.on_dark")
+	ThemeColors.bind_override(back_title_label, &"font_color", &"card.text")
+	ThemeColors.bind_override(dates_label, &"font_color", &"card.text_muted")
+	ThemeColors.bind_override(backlinks_title_label, &"font_color", &"card.text_muted")
+
+func _on_theme_changed() -> void:
+	set_category_color(card_color, false)
+	set_body_background(_body_input_color, _body_input_color2, _body_texture)
+	if _back_filled:
+		populate_back(_back_created, _back_modified, _back_links)
+	status_dot.queue_redraw()
+
+func _front_ink() -> Array[Color]:
+	if not _body_input_color is Color and _body_texture == null:
+		return [ThemeColors.color(&"card.text"), ThemeColors.color(&"card.text_muted")]
+	var ink: Color = ThemeColors.ink_for(_pill_color)
+	return [ink, Color(ink, ink.a * MUTED_INK_FACTOR)]
+
+func _apply_front_text_colors() -> void:
+	var ink: Array[Color] = _front_ink()
+	title_label.add_theme_color_override("font_color", ink[0])
+	content_label.add_theme_color_override("default_color", ink[1])
+	for item: String in FLIP_ICON_ITEMS:
+		flip_button.add_theme_color_override(item, ink[0])
 
 func setup(id: String, initial_title: String, initial_content: String = "", color_hex: String = "313549", img_path: String = "") -> void:
 	card_id = id
@@ -252,14 +289,17 @@ func set_content(text: String) -> void:
 func _render_content() -> void:
 	_image_render_width = int(content_label.size.x) if content_label.size.x >= 1.0 else int(TEXT_WIDTH_FALLBACK)
 	_has_inline_images = not NoteImages.find_inline(content_text).is_empty()
-	content_label.text = MarkdownBBCode.to_bbcode(content_text, MarkdownBBCode.Profile.CARD, _image_render_width)
+	var heading: String = ""
+	if _body_input_color is Color or _body_texture != null:
+		heading = "#" + _front_ink()[0].to_html(false)
+	content_label.text = MarkdownBBCode.to_bbcode(content_text, MarkdownBBCode.Profile.CARD, _image_render_width, heading)
 
 func _build_ellipsis_label() -> void:
 	_ellipsis_label = Label.new()
 	_ellipsis_label.text = "…"
 	_ellipsis_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_ellipsis_label.add_theme_font_size_override("font_size", 14)
-	_ellipsis_label.add_theme_color_override("font_color", ELLIPSIS_COLOR)
+	ThemeColors.bind_override(_ellipsis_label, &"font_color", ELLIPSIS_COLOR)
 	_ellipsis_label.visible = false
 	content_label.add_child(_ellipsis_label)
 	_ellipsis_label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -351,10 +391,10 @@ func set_category_color(new_color: Color, animate: bool = true) -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _color_targets(base: Color) -> PackedColorArray:
-	var is_default: bool = base.is_equal_approx(DEFAULT_SLATE)
-	var line: Color = LINE_DEFAULT_COLOR if is_default else base
-	var active: Color = SELECTED_ACCENT if is_default else base.lightened(0.4)
-	return PackedColorArray([base, line, base, active])
+	if is_default_color(base):
+		var slate: Color = ThemeColors.color(&"card.border")
+		return PackedColorArray([slate, ThemeColors.color(&"card.line"), slate, ThemeColors.color(&"accent")])
+	return PackedColorArray([base, base, base, base.lightened(0.4)])
 
 func _current_color_channels() -> PackedColorArray:
 	return PackedColorArray([display_color, display_line_color, _border_rest_color, _border_active_color])
@@ -421,14 +461,12 @@ func _make_hint_label(text: String) -> Label:
 	label.text = text
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_font_size_override("font_size", 11)
-	label.add_theme_color_override("font_color", Color(0.45, 0.48, 0.58))
+	ThemeColors.bind_override(label, &"font_color", &"text.disabled")
 	return label
 
 func _make_backlink_button(info: Dictionary) -> Button:
 	var target_id: String = str(info.get("id", ""))
-	var tint: Color = info.get("color", Color.WHITE) as Color
-	if tint.get_luminance() < 0.4:
-		tint = tint.lightened(0.55)
+	var tint: Color = _backlink_tint(info.get("color", Color.WHITE) as Color)
 
 	var button: Button = Button.new()
 	button.text = str(info.get("title", ""))
@@ -444,6 +482,14 @@ func _make_backlink_button(info: Dictionary) -> Button:
 	button.add_theme_color_override("font_hover_color", tint.lightened(0.3))
 	button.pressed.connect(func() -> void: backlink_pressed.emit(target_id))
 	return button
+
+func _backlink_tint(color: Color) -> Color:
+	var on_dark: bool = ThemeColors.color(BACK_BG).get_luminance() < 0.5
+	if on_dark and color.get_luminance() < 0.4:
+		return color.lightened(0.55)
+	if not on_dark and color.get_luminance() > 0.5:
+		return color.darkened(0.45)
+	return color
 
 func _sync_status_chips() -> void:
 	todo_chip.set_pressed_no_signal(status == STATUS_TODO)
@@ -461,9 +507,11 @@ func _on_status_dot_draw() -> void:
 		return
 
 	var center: Vector2 = dot_size / 2.0
-	var tint: Color = STATUS_COLORS.get(status, Color.TRANSPARENT) as Color
+	var tint: Color = Color.TRANSPARENT
+	if STATUS_COLORS.has(status):
+		tint = ThemeColors.color(STATUS_COLORS[status] as StringName)
 	if status == STATUS_NONE:
-		tint = display_color.lightened(0.35) if display_color.get_luminance() < 0.5 else display_color
+		tint = display_color.lightened(0.35) if display_color.get_luminance() < 0.5 and ThemeColors.color(FRONT_BG).get_luminance() < 0.5 else display_color
 
 	var clear: Color = Color(tint, 0.0)
 	_status_shape.clear_inner()
@@ -483,7 +531,7 @@ func _on_status_dot_draw() -> void:
 				center + Vector2(-0.1, 0.38) * radius,
 				center + Vector2(0.5, -0.36) * radius,
 			])
-			status_dot.draw_polyline(tick, FRONT_BG, maxf(1.4, radius * 0.22), true)
+			status_dot.draw_polyline(tick, _body_color, maxf(1.4, radius * 0.22), true)
 		_:
 			_status_shape.place_centered(center, radius * 0.8 * 2.0)
 			_status_shape.set_style(tint, tint, 0.0)
@@ -703,7 +751,7 @@ func _update_surface_colors() -> void:
 	if not _shader_material:
 		return
 	var on_front: bool = not (is_flipped and not is_compact)
-	var face_bg: Color = _body_color if on_front else BACK_BG
+	var face_bg: Color = _body_color if on_front else ThemeColors.color(BACK_BG)
 	_shader_material.set_shader_parameter("bg_color", face_bg.lerp(_pill_color, _compact_amount))
 	var face_bg2: Color = _body_color2 if (on_front and _body_has_gradient) else face_bg
 	_shader_material.set_shader_parameter("bg_color2", face_bg2.lerp(_pill_color, _compact_amount))
@@ -711,21 +759,26 @@ func _update_surface_colors() -> void:
 	_shader_material.set_shader_parameter("bg_image_amount", picture_amount)
 
 func set_body_background(color: Variant, color2: Variant, texture: Texture2D) -> void:
-	_body_color = color as Color if color is Color else FRONT_BG
+	_body_input_color = color
+	_body_input_color2 = color2
+	_body_color = color as Color if color is Color else ThemeColors.color(FRONT_BG)
 	_body_has_gradient = color2 is Color
 	_body_color2 = color2 as Color if color2 is Color else _body_color
 	_body_texture = texture
 	if color is Color:
 		_pill_color = color as Color
 	elif texture != null:
-		_pill_color = InlineImages.average_color_of(texture, FRONT_BG).lerp(Color.BLACK, PICTURE_OVERLAY_ALPHA)
+		_pill_color = InlineImages.average_color_of(texture, ThemeColors.color(FRONT_BG)).lerp(Color.BLACK, PICTURE_OVERLAY_ALPHA)
 	else:
-		_pill_color = FRONT_BG
+		_pill_color = ThemeColors.color(FRONT_BG)
 	if _shader_material:
 		_shader_material.set_shader_parameter("bg_texture", texture)
 		if texture != null:
 			_shader_material.set_shader_parameter("bg_texture_size", Vector2(texture.get_width(), texture.get_height()))
 	_update_surface_colors()
+	if is_node_ready():
+		_apply_front_text_colors()
+		_render_content()
 
 func _is_tween_running(tween: Tween) -> bool:
 	return tween != null and tween.is_valid() and tween.is_running()
@@ -896,7 +949,7 @@ func play_capture_punch() -> void:
 func _update_border_display() -> void:
 	var target_color: Color = _border_rest_color
 	if is_carried:
-		target_color = CARRIED_COLOR
+		target_color = ThemeColors.color(CARRIED_COLOR)
 	elif is_dragging or is_link_source or is_selected:
 		target_color = _border_active_color
 

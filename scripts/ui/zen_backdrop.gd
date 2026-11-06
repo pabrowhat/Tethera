@@ -23,6 +23,10 @@ func _ready() -> void:
 	_material.shader = BLUR_SHADER
 	material = _material
 	_set_amount(0.0)
+	ThemeColors.watch(_apply_theme_colors)
+
+func _apply_theme_colors() -> void:
+	_material.set_shader_parameter("shade_color", ThemeColors.color(&"zen.shade"))
 
 func fade_in() -> void:
 	_kill_tween()

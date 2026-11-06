@@ -16,15 +16,18 @@ const SWATCH_GAP: int = 8
 const SLIDER_STEP: float = 0.1
 const PROMPT_WIDTH: float = 380.0
 const LANGUAGE_BUTTON_WIDTH: float = 170.0
+const THEME_BUTTON_WIDTH: float = 170.0
 
 var _reduce_motion: bool = false
 var _show_grid: bool = true
 var _export_linked: bool = false
 var _note_color: Color = Color(Preferences.DEFAULT_NOTE_COLOR_HEX)
 var _language: String = Localization.AUTO
+var _theme: String = ThemeColors.DEFAULT_ID
 
 var _boxes: Dictionary = {}
 var _language_button: DropdownButton = null
+var _theme_button: DropdownButton = null
 var _line_slider: HSlider = null
 var _line_value: Label = null
 var _swatch_row: HFlowContainer = null
@@ -41,7 +44,7 @@ var _prompt_title: Label = null
 var _prompt_message: Label = null
 var _prompt_buttons: HBoxContainer = null
 
-var _row_style: StyleBoxFlat = UiStyle.box(Color(0.0, 0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0, 0.0), 5, 0.0, 0.0)
+var _row_style: StyleBoxFlat = UiStyle.box(UiStyle.CLEAR, UiStyle.CLEAR, 5, 0.0, 0.0)
 var _row_hover_style: StyleBoxFlat = UiStyle.box(UiStyle.BG_HOVER, UiStyle.BG_HOVER, 5, 0.0, 0.0)
 var _box_off_style: StyleBoxFlat = UiStyle.box(UiStyle.BG_NORMAL, UiStyle.BORDER, 4, 0.0, 0.0)
 var _box_on_style: StyleBoxFlat = UiStyle.box(UiStyle.ACCENT, UiStyle.ACCENT, 4, 0.0, 0.0)
@@ -63,6 +66,7 @@ func _build() -> void:
 	_build_line_width()
 	_build_note_color()
 	_build_language()
+	_build_theme()
 	_build_advanced()
 
 	var footer: HBoxContainer = HBoxContainer.new()
@@ -83,7 +87,7 @@ func _build() -> void:
 
 func _build_prompt() -> void:
 	_prompt = ColorRect.new()
-	_prompt.color = Color(0.03, 0.03, 0.05, 0.7)
+	ThemeColors.bind(_prompt, &"color", &"overlay.prompt")
 	_prompt.mouse_filter = Control.MOUSE_FILTER_STOP
 	_prompt.visible = false
 	_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -151,11 +155,26 @@ func _build_language() -> void:
 	row.add_child(_language_button)
 	_body.add_child(_make_label("settings.language.hint", HINT_SIZE, MUTED_COLOR, true))
 
+func _build_theme() -> void:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_body.add_child(row)
+	var caption: Label = _make_label("settings.theme", FONT_SIZE, TEXT_COLOR)
+	caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(caption)
+	_theme_button = DropdownButton.new()
+	_theme_button.custom_minimum_size = Vector2(THEME_BUTTON_WIDTH, 32.0)
+	_fill_theme_list()
+	_theme_button.item_selected.connect(_on_theme_selected)
+	row.add_child(_theme_button)
+	_body.add_child(_make_label("settings.theme.hint", HINT_SIZE, MUTED_COLOR, true))
+
 func _build_advanced() -> void:
 	var header: Button = _make_row_button()
 	header.pressed.connect(_toggle_advanced)
 	var content: HBoxContainer = _make_row_content(header)
 	_advanced_arrow = TextureRect.new()
+	ThemeColors.bind(_advanced_arrow, &"modulate", &"text.caption")
 	_advanced_arrow.texture = ICON_CHEVRON
 	_advanced_arrow.custom_minimum_size = Vector2(CHECK_SIZE, CHECK_SIZE)
 	_advanced_arrow.pivot_offset = Vector2(CHECK_SIZE, CHECK_SIZE) * 0.5
@@ -256,6 +275,8 @@ func _load_form(values: Dictionary) -> void:
 	_note_color = Color(str(values[Preferences.KEY_DEFAULT_NOTE_COLOR]))
 	_language = str(values[Preferences.KEY_LANGUAGE])
 	_language_button.select_id(Localization.CHOICES.find(_language))
+	_theme = str(values[Preferences.KEY_THEME])
+	_theme_button.select_id(ThemeColors.BUILT_IN.find(_theme))
 
 	_line_slider.set_value_no_signal(float(values[Preferences.KEY_LINE_WIDTH_SCALE]))
 	_update_line_value()
@@ -277,6 +298,7 @@ func _current_values() -> Dictionary:
 		Preferences.KEY_BACKUPS_KEPT: int(_backups_spin.value),
 		Preferences.KEY_EXPORT_INCLUDE_LINKED: _export_linked,
 		Preferences.KEY_LANGUAGE: _language,
+		Preferences.KEY_THEME: _theme,
 	}
 
 func has_unsaved_changes() -> bool:
@@ -394,7 +416,7 @@ func _make_checkbox() -> PanelContainer:
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var tick: TextureRect = TextureRect.new()
 	tick.texture = ICON_CHECK
-	tick.modulate = TITLE_COLOR
+	ThemeColors.bind(tick, &"modulate", &"text.on_accent")
 	tick.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tick.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	tick.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -456,12 +478,22 @@ func _on_export_linked_pressed() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and _language_button != null:
 		_fill_language_list()
+		_fill_theme_list()
 
 func _fill_language_list() -> void:
 	_language_button.clear()
 	for index: int in Localization.CHOICES.size():
 		_language_button.add_item(tr("settings.language." + Localization.CHOICES[index]), index)
 	_language_button.select_id(Localization.CHOICES.find(_language))
+
+func _fill_theme_list() -> void:
+	_theme_button.clear()
+	for index: int in ThemeColors.BUILT_IN.size():
+		_theme_button.add_item(tr("settings.theme." + ThemeColors.BUILT_IN[index]), index)
+	_theme_button.select_id(ThemeColors.BUILT_IN.find(_theme))
+
+func _on_theme_selected(id: int) -> void:
+	_theme = ThemeColors.BUILT_IN[id]
 
 func _on_language_selected(id: int) -> void:
 	_language = Localization.CHOICES[id]

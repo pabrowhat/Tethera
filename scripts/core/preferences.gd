@@ -10,6 +10,7 @@ const KEY_DEFAULT_NOTE_COLOR: String = "default_note_color"
 const KEY_BACKUPS_KEPT: String = "backups_kept"
 const KEY_EXPORT_INCLUDE_LINKED: String = "export_include_linked"
 const KEY_LANGUAGE: String = "language"
+const KEY_THEME: String = "theme"
 
 const LINE_WIDTH_MIN: float = 0.5
 const LINE_WIDTH_MAX: float = 2.0
@@ -26,6 +27,7 @@ static func defaults() -> Dictionary:
 		KEY_BACKUPS_KEPT: VaultStorage.MAX_BACKUPS,
 		KEY_EXPORT_INCLUDE_LINKED: false,
 		KEY_LANGUAGE: Localization.AUTO,
+		KEY_THEME: ThemeColors.DEFAULT_ID,
 	}
 
 static func get_pref(key: String) -> Variant:
@@ -54,6 +56,8 @@ static func sanitize(key: String, value: Variant) -> Variant:
 			return fallback
 		KEY_LANGUAGE:
 			return value if value is String and Localization.CHOICES.has(value) else fallback
+		KEY_THEME:
+			return value if value is String and ThemeColors.BUILT_IN.has(value) else fallback
 	return fallback
 
 static func save(values: Dictionary) -> void:
@@ -83,3 +87,6 @@ static func export_include_linked() -> bool:
 
 static func language() -> String:
 	return str(get_pref(KEY_LANGUAGE))
+
+static func theme() -> String:
+	return str(get_pref(KEY_THEME))

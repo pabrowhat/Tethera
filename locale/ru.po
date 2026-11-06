@@ -688,6 +688,18 @@ msgstr "Русский"
 msgid "settings.language.hint"
 msgstr "«Авто» берёт язык системы. Изменение применяется сразу."
 
+msgid "settings.theme"
+msgstr "Тема"
+
+msgid "settings.theme.dark"
+msgstr "Тёмная"
+
+msgid "settings.theme.light"
+msgstr "Светлая"
+
+msgid "settings.theme.hint"
+msgstr "Тема меняет цвета всего интерфейса и холста. Цвета, которые вы выбрали для заметок, остаются."
+
 msgid "confirm.delete"
 msgstr "Удалить"
 
@@ -1476,3 +1488,9 @@ msgstr "Заметки можно копировать, вырезать и вс
 
 msgid "whats_new.1_1_0.shortcut_list"
 msgstr "В палитре Ctrl+K есть команда «Сочетания клавиш» со списком всех сочетаний."
+
+msgid "whats_new.1_2_0.light_theme"
+msgstr "Новая светлая тема: панели, меню, диалоги, холст с точечной сеткой, стартовый экран и экспорт в PNG следуют ей."
+
+msgid "whats_new.1_2_0.theme_setting"
+msgstr "Тема выбирается в настройках и применяется по кнопке «Сохранить», без перезапуска. Цвета, выбранные для заметок, не меняются."

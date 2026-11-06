@@ -105,8 +105,8 @@ var _pending_confirm: Callable = Callable()
 var _project_path: String = ""
 var _project_created: int = 0
 var _canvas_background: CanvasBackground = CanvasBackground.new()
-var _grid_dot_color: Color = Color.WHITE
 
+const SEARCH_ICON: Texture2D = preload("res://assets/icons/search.svg")
 const MARQUEE_DRAG_THRESHOLD: float = 4.0
 const LINE_PICK_RADIUS: float = 8.0
 const LINK_MENU_WIDTH: float = 140.0
@@ -125,6 +125,7 @@ const BACKLINK_FOCUS_ZOOM_MIN: float = 0.7
 
 func _init() -> void:
 	Localization.apply_saved()
+	ThemeColors.apply_saved()
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -244,11 +245,8 @@ func _ready() -> void:
 	$UI.add_child(_eyedropper)
 
 	background.visibility_layer = GRID_VISIBILITY_LAYER
-	if background.material is ShaderMaterial:
-		var grid_value: Variant = (background.material as ShaderMaterial).get_shader_parameter("dot_color")
-		if grid_value is Color:
-			_grid_dot_color = grid_value as Color
-	_apply_preferences()
+	_bind_scene_colors()
+	ThemeColors.watch(_apply_preferences)
 	_snapshot_exporter = SnapshotExporter.new()
 	add_child(_snapshot_exporter)
 
@@ -302,12 +300,33 @@ func _ready() -> void:
 	_world_flow.start()
 	navigator.update_shader()
 
+func _bind_scene_colors() -> void:
+	ThemeColors.bind(background, &"color", &"canvas.background")
+	ThemeColors.bind_override(add_button, &"font_color", &"text.primary")
+	ThemeColors.bind_override(search_input, &"font_color", &"text.strong")
+	var search_style: StyleBoxFlat = search_input.get_theme_stylebox(&"normal") as StyleBoxFlat
+	ThemeColors.bind(search_style, &"bg_color", &"surface.raised")
+	ThemeColors.bind(search_style, &"border_color", UiStyle.BORDER)
+	ThemeColors.watch(_tint_search_icon)
+
+func _tint_search_icon() -> void:
+	var image: Image = SEARCH_ICON.get_image()
+	if image.is_compressed():
+		image.decompress()
+	var tint: Color = ThemeColors.color(&"text.muted")
+	for y: int in image.get_height():
+		for x: int in image.get_width():
+			image.set_pixel(x, y, Color(tint, tint.a * image.get_pixel(x, y).a))
+	search_input.right_icon = ImageTexture.create_from_image(image)
+
 func _apply_preferences() -> void:
 	if background.material is ShaderMaterial:
-		var grid_color: Color = _grid_dot_color
+		var grid_color: Color = ThemeColors.color(&"canvas.dot")
 		if not Preferences.show_grid():
 			grid_color.a = 0.0
-		(background.material as ShaderMaterial).set_shader_parameter("dot_color", grid_color)
+		var grid_material: ShaderMaterial = background.material as ShaderMaterial
+		grid_material.set_shader_parameter("dot_color", grid_color)
+		grid_material.set_shader_parameter("bg_color", ThemeColors.color(&"canvas.background"))
 	connection_renderer.width_scale = Preferences.line_width_scale()
 	connection_renderer.queue_redraw()
 
@@ -332,8 +351,9 @@ func open_about() -> void:
 	_about_dialog.open_tab(AboutDialog.Tab.ABOUT)
 
 func _on_settings_saved() -> void:
-	_apply_preferences()
 	Localization.apply_saved()
+	ThemeColors.apply_saved()
+	_apply_preferences()
 	_toast.show_message(tr("settings.saved"))
 
 func _refresh_search_hint() -> void:
