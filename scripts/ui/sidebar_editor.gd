@@ -461,7 +461,7 @@ func _on_color_button_pressed(color: Color) -> void:
 func _on_image_button_pressed() -> void:
 	if not is_instance_valid(current_card):
 		return
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("sidebar.cover.dialog"),
 		"",
 		"",
@@ -929,7 +929,7 @@ func _on_format_image_requested() -> void:
 		return
 	var card_id: String = current_card.card_id
 	_image_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("image.insert.dialog"),
 		"",
 		"",

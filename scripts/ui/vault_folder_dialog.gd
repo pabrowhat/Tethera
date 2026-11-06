@@ -67,7 +67,7 @@ func _open_system_dialog() -> void:
 	if _system_dialog_open:
 		return
 	_system_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("vault.pick.dialog_title"),
 		OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS),
 		"",

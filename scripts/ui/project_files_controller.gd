@@ -330,7 +330,7 @@ func export_snapshot() -> void:
 		default_dir = OS.get_system_dir(OS.SYSTEM_DIR_PICTURES)
 
 	_ws._file_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("snapshot.dialog.title"),
 		default_dir,
 		"Tethera_Snapshot_%s.png" % stamp,
@@ -435,7 +435,7 @@ func open_project_dialog(from_start: bool = false) -> void:
 	if _ws._snapshot_busy or _ws._file_dialog_open or (_ws._is_modal_open() and not (from_start and not _ws._is_modal_over_start())):
 		return
 	_ws._file_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("open.dialog.title"),
 		_project_dialog_dir(),
 		"",
@@ -494,7 +494,7 @@ func _on_export_choice(_action_id: int, ids: Array[String], include_linked: bool
 	var directory: String = _ws._project_path.get_base_dir() if _ws._project_path != "" else _project_dialog_dir()
 
 	_ws._file_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("save.dialog.title"),
 		directory,
 		name_hint,

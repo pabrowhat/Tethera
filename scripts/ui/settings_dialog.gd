@@ -234,7 +234,7 @@ func _open_vault_picker() -> void:
 	if _folder_dialog_open:
 		return
 	_folder_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("settings.vault_dir.dialog_title"),
 		_vault_dir,
 		"",

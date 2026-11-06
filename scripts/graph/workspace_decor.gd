@@ -289,7 +289,7 @@ func request_add() -> void:
 		_ws._toast.show_message(tr("decor.limit") % DecorItem.MAX_PER_CANVAS, true)
 		return
 	_ws._file_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("decor.dialog"),
 		"",
 		"",

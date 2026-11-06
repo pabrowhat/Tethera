@@ -32,7 +32,7 @@ func request_pick() -> void:
 	if _ws._file_dialog_open:
 		return
 	_ws._file_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("canvas_bg.dialog"),
 		"",
 		"",

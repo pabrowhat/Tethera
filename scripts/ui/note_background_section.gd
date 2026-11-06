@@ -170,7 +170,7 @@ func _on_pick_pressed() -> void:
 	if _image_dialog_open:
 		return
 	_image_dialog_open = true
-	DisplayServer.file_dialog_show(
+	SystemFileDialog.open(
 		tr("background.dialog"),
 		"",
 		"",
