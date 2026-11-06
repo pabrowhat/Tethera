@@ -1285,6 +1285,12 @@ msgstr "Вкладка «Что нового» хранит заметки пр�
 msgid "whats_new.1_0_1.sliders"
 msgstr "Ползунки (толщина линии, прозрачность фона холста) теперь в стиле остального интерфейса."
 
+msgid "whats_new.1_0_2.github"
+msgstr "В окне «О программе» есть ссылка на проект на GitHub."
+
+msgid "whats_new.1_0_2.spacing"
+msgstr "В окне «О программе» улучшены отступы."
+
 msgid "menu.main_menu"
 msgstr "Главное меню"
 
@@ -1314,6 +1320,9 @@ msgstr "Автор: %s"
 
 msgid "about.guide"
 msgstr "Гайд"
+
+msgid "about.github"
+msgstr "GitHub"
 
 msgid "guide.title"
 msgstr "Гайд"

@@ -7,6 +7,8 @@ const DIALOG_WIDTH: float = 580.0
 const LICENSE_HEIGHT: float = 200.0
 const CONTENT_HEIGHT: float = 340.0
 const AUTHOR: String = "pabrowhat"
+const GITHUB_URL: String = "https://github.com/pabrowhat/tethera"
+const SECTION_GAP: float = 8.0
 const LUCIDE_LICENSE_PATH: String = "res://assets/icons/LICENSE-lucide.txt"
 
 var _tab_buttons: Array[Button] = []
@@ -98,8 +100,19 @@ func _build_about_page() -> void:
 	var guide_button: Button = _make_button("about.guide", false)
 	guide_button.pressed.connect(_guide_dialog.open_guide)
 	version_row.add_child(guide_button)
-	box.add_child(_make_label(tr("about.author") % AUTHOR, 13, TEXT_COLOR))
-	box.add_child(_make_label("about.licenses", 13, TITLE_COLOR))
+	var author_row: HBoxContainer = HBoxContainer.new()
+	author_row.add_theme_constant_override("separation", 8)
+	box.add_child(author_row)
+	var author_label: Label = _make_label(tr("about.author") % AUTHOR, 13, TEXT_COLOR)
+	author_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	author_row.add_child(author_label)
+	var github_button: Button = _make_button("about.github", false)
+	github_button.pressed.connect(func() -> void: OS.shell_open(GITHUB_URL))
+	author_row.add_child(github_button)
+	var section_gap: Control = Control.new()
+	section_gap.custom_minimum_size = Vector2(0.0, SECTION_GAP)
+	box.add_child(section_gap)
+	box.add_child(_make_label("about.licenses", 15, TITLE_COLOR))
 	_add_license(box, "about.license.godot", _godot_notice)
 	_add_license(box, "about.license.lucide", _lucide_notice)
 

@@ -1285,6 +1285,12 @@ msgstr "The What's new tab keeps the notes of earlier versions: open any version
 msgid "whats_new.1_0_1.sliders"
 msgstr "Sliders (line width, canvas background opacity) now match the rest of the interface."
 
+msgid "whats_new.1_0_2.github"
+msgstr "The About window has a link to the project on GitHub."
+
+msgid "whats_new.1_0_2.spacing"
+msgstr "Spacing in the About window is improved."
+
 msgid "menu.main_menu"
 msgstr "Main menu"
 
@@ -1314,6 +1320,9 @@ msgstr "Author: %s"
 
 msgid "about.guide"
 msgstr "Guide"
+
+msgid "about.github"
+msgstr "GitHub"
 
 msgid "guide.title"
 msgstr "Guide"
