@@ -80,7 +80,8 @@ func clear() -> void:
 	selection_changed.emit()
 
 func clear_cards() -> void:
-	var kept: Array = get_decor()
+	var kept: Array = []
+	kept.append_array(get_decor())
 	if kept.size() == item_count():
 		return
 	set_items(kept)

@@ -934,14 +934,14 @@ func _handle_global_shortcut(key: InputEventKey, is_typing: bool) -> bool:
 	if (key.keycode == KEY_M or key.physical_keycode == KEY_M) and not key.shift_pressed:
 		_world_flow.go_to_main_menu()
 		return true
+	if _key_is(key, KEY_E) and not key.shift_pressed and not PopupList.is_any_open():
+		if not sidebar_editor.can_toggle_mode():
+			return false
+		sidebar_editor.toggle_mode()
+		return true
 	if not is_typing and not key.shift_pressed and not PopupList.is_any_open():
 		if _key_is(key, KEY_N):
 			_spawn_card_at_viewport_center()
-			return true
-		if _key_is(key, KEY_E):
-			if not sidebar_editor.can_toggle_mode():
-				return false
-			sidebar_editor.toggle_mode()
 			return true
 		if _key_is(key, KEY_C):
 			return _clipboard_ops.copy()
