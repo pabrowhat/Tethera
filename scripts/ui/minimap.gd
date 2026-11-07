@@ -34,12 +34,17 @@ const BACKGROUND_COLOR: StringName = &"minimap.background"
 const BORDER_COLOR: StringName = &"border"
 const TOOLTIP_BACKGROUND_COLOR: StringName = &"minimap.tooltip_background"
 const TOOLTIP_TEXT_COLOR: StringName = &"text.strong"
+const DECOR_TEXT_COLOR: StringName = &"minimap.decor_text"
+const DECOR_MISSING_COLOR: StringName = &"minimap.decor_missing"
 const DARK_DOT_LIMIT: float = 0.3
 const LIGHT_DOT_LIMIT: float = 0.75
 
 var _navigator: CanvasNavigator = null
 var _cards: Dictionary = {}
 var _selection: SelectionController = null
+var _decor_below: Node2D = null
+var _decor_above: Node2D = null
+var _decor_cache: Array[Dictionary] = []
 
 var _panel_style: StyleBoxFlat = StyleBoxFlat.new()
 var _fit_button: Button = null
@@ -81,10 +86,36 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_update_layout)
 	_update_layout()
 
-func setup(navigator: CanvasNavigator, cards_by_id: Dictionary, selection: SelectionController) -> void:
+func setup(navigator: CanvasNavigator, cards_by_id: Dictionary, selection: SelectionController, decor_below: Node2D = null, decor_above: Node2D = null) -> void:
 	_navigator = navigator
 	_cards = cards_by_id
 	_selection = selection
+	_decor_below = decor_below
+	_decor_above = decor_above
+
+func decor_boxes() -> Array[Dictionary]:
+	var boxes: Array[Dictionary] = []
+	if not Preferences.minimap_decor():
+		return boxes
+	_collect_decor(_decor_below, DecorItem.LAYER_BELOW, boxes)
+	_collect_decor(_decor_above, DecorItem.LAYER_ABOVE, boxes)
+	return boxes
+
+func _collect_decor(layer_node: Node2D, layer: String, boxes: Array[Dictionary]) -> void:
+	if layer_node == null:
+		return
+	for child: Node in layer_node.get_children():
+		var node: DecorNode = child as DecorNode
+		if node == null or not is_instance_valid(node) or node.is_queued_for_deletion():
+			continue
+		var half: Vector2 = node.box_size / 2.0
+		var polygon: PackedVector2Array = PackedVector2Array()
+		for corner: Vector2 in [Vector2(-half.x, -half.y), Vector2(half.x, -half.y), Vector2(half.x, half.y), Vector2(-half.x, half.y)]:
+			polygon.append(node.position + corner.rotated(node.rotation))
+		var color: Color = ThemeColors.color(DECOR_TEXT_COLOR)
+		if not node.is_text():
+			color = node.average_color(ThemeColors.color(DECOR_MISSING_COLOR))
+		boxes.append({"id": node.decor_id, "kind": node.kind, "layer": layer, "color": color, "polygon": polygon, "center": node.position})
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
@@ -152,7 +183,8 @@ func _begin_drag(pos: Vector2) -> void:
 	else:
 		_drag_follow = false
 		_drag_offset = Vector2.ZERO
-		_navigator.glide_center_to(canvas_pos, viewport_size)
+		var decor_center: Variant = _decor_target_at(pos)
+		_navigator.glide_center_to(decor_center as Vector2 if decor_center is Vector2 else canvas_pos, viewport_size)
 
 func _update_drag(pos: Vector2) -> void:
 	if not _drag_follow:
@@ -249,6 +281,12 @@ func _compute_target_world(visible_rect: Rect2) -> Rect2:
 		core = card_rect if not has_core else core.merge(card_rect)
 		has_core = true
 
+	_decor_cache = decor_boxes()
+	for box: Dictionary in _decor_cache:
+		var box_rect: Rect2 = _polygon_bounds(box["polygon"] as PackedVector2Array)
+		core = box_rect if not has_core else core.merge(box_rect)
+		has_core = true
+
 	var world: Rect2 = core.merge(visible_rect) if has_core else visible_rect
 	var pad: Vector2 = Vector2(
 		maxf(world.size.x * WORLD_PADDING_RATIO, MIN_WORLD_PADDING),
@@ -264,6 +302,28 @@ func _compute_target_world(visible_rect: Rect2) -> Rect2:
 	else:
 		fitted.y = fitted.x / aspect
 	return Rect2(center_point - fitted / 2.0, fitted)
+
+func _polygon_bounds(polygon: PackedVector2Array) -> Rect2:
+	var bounds: Rect2 = Rect2(polygon[0], Vector2.ZERO)
+	for point: Vector2 in polygon:
+		bounds = bounds.expand(point)
+	return bounds
+
+func _decor_target_at(map_pos: Vector2) -> Variant:
+	var canvas_pos: Vector2 = _to_canvas(map_pos)
+	for i: int in range(_decor_cache.size() - 1, -1, -1):
+		var box: Dictionary = _decor_cache[i]
+		if str(box["layer"]) == DecorItem.LAYER_BELOW and _card_at(map_pos):
+			continue
+		if Geometry2D.is_point_in_polygon(canvas_pos, box["polygon"] as PackedVector2Array):
+			return box["center"]
+	return null
+
+func _card_at(map_pos: Vector2) -> bool:
+	for card: GraphCard in _dots:
+		if _card_map_rect(card).grow(2.0).has_point(map_pos):
+			return true
+	return false
 
 func _update_hover() -> void:
 	_hover_card = null
@@ -325,6 +385,7 @@ func _draw() -> void:
 		_draw_empty_grid(map_rect)
 
 	var pulse: float = 0.55 + 0.45 * sin(Time.get_ticks_msec() / 1000.0 * 5.0)
+	_draw_decor_layer(DecorItem.LAYER_BELOW, map_rect)
 	for card: GraphCard in _dots:
 		var dot_rect: Rect2 = _card_map_rect(card).intersection(map_rect)
 		if dot_rect.size.x <= 0.0 or dot_rect.size.y <= 0.0:
@@ -333,6 +394,7 @@ func _draw() -> void:
 		if _selection != null and _selection.has(card):
 			draw_rect(dot_rect.grow(2.0), ThemeColors.faded(ACCENT_COLOR, pulse), false, 1.5)
 
+	_draw_decor_layer(DecorItem.LAYER_ABOVE, map_rect)
 	for card: GraphCard in _outliers:
 		_draw_outlier_marker(card, map_rect, pulse)
 
@@ -344,6 +406,25 @@ func _draw() -> void:
 
 	if is_instance_valid(_hover_card):
 		_draw_tooltip(font, _hover_card.title_label.text)
+
+func _draw_decor_layer(layer: String, map_rect: Rect2) -> void:
+	var clip: PackedVector2Array = PackedVector2Array([map_rect.position, Vector2(map_rect.end.x, map_rect.position.y), map_rect.end, Vector2(map_rect.position.x, map_rect.end.y)])
+	for box: Dictionary in _decor_cache:
+		if str(box["layer"]) != layer:
+			continue
+		var polygon: PackedVector2Array = PackedVector2Array()
+		for point: Vector2 in (box["polygon"] as PackedVector2Array):
+			polygon.append(_to_map(point))
+		var bounds: Rect2 = _polygon_bounds(polygon)
+		var color: Color = box["color"]
+		if bounds.size.x < MIN_DOT_SIZE.x or bounds.size.y < MIN_DOT_SIZE.y:
+			var small: Rect2 = Rect2(bounds.get_center() - MIN_DOT_SIZE / 2.0, MIN_DOT_SIZE).intersection(map_rect)
+			if small.size.x > 0.0 and small.size.y > 0.0:
+				draw_rect(small, color, true)
+			continue
+		for piece: PackedVector2Array in Geometry2D.intersect_polygons(polygon, clip):
+			if piece.size() >= 3:
+				draw_colored_polygon(piece, color)
 
 func _dot_color(card: GraphCard) -> Color:
 	var col: Color = card.display_color

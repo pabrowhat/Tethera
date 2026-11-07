@@ -23,6 +23,8 @@ const SCROLL_MIN_HEIGHT: float = 120.0
 var _reduce_motion: bool = false
 var _show_grid: bool = true
 var _export_linked: bool = false
+var _minimap_decor: bool = true
+var _collapse_distant: bool = true
 var _note_color: Color = Color(Preferences.DEFAULT_NOTE_COLOR_HEX)
 var _language: String = Localization.AUTO
 var _theme: String = ThemeColors.AUTO
@@ -39,6 +41,7 @@ var _swatches: Array[ColorRect] = []
 var _advanced_body: VBoxContainer = null
 var _advanced_arrow: TextureRect = null
 var _backups_spin: SpinBox = null
+var _layout_spins: Dictionary = {}
 var _vault_dir: String = ""
 var _vault_label: Label = null
 var _folder_dialog_open: bool = false
@@ -220,7 +223,33 @@ func _build_advanced() -> void:
 	_advanced_body.add_child(_make_label("settings.backups.hint", HINT_SIZE, MUTED_COLOR, true))
 
 	_add_toggle(&"export_linked", "settings.export_include_linked", "", _on_export_linked_pressed, _advanced_body)
+	_add_toggle(&"minimap_decor", "settings.minimap_decor", "", _on_minimap_decor_pressed, _advanced_body)
+	_add_toggle(&"collapse_distant_notes", "settings.collapse_distant_notes", "", _on_collapse_distant_pressed, _advanced_body, "settings.collapse_distant_notes.tip")
+	_build_layout_rows()
 	_build_vault_row()
+
+func _build_layout_rows() -> void:
+	_advanced_body.add_child(_make_label("settings.layout", FONT_SIZE, UiStyle.ACCENT))
+	_add_layout_spin(Preferences.KEY_LAYOUT_LEVEL_GAP, "settings.layout.level_gap", Preferences.LAYOUT_GAP_MIN, Preferences.LAYOUT_GAP_MAX)
+	_add_layout_spin(Preferences.KEY_LAYOUT_SIBLING_GAP, "settings.layout.sibling_gap", Preferences.LAYOUT_GAP_MIN, Preferences.LAYOUT_GAP_MAX)
+	_add_layout_spin(Preferences.KEY_LAYOUT_BLOCK_GAP, "settings.layout.block_gap", Preferences.LAYOUT_GAP_MIN, Preferences.LAYOUT_GAP_MAX)
+	_add_layout_spin(Preferences.KEY_LAYOUT_RING_STEP, "settings.layout.ring_step", Preferences.LAYOUT_RING_STEP_MIN, Preferences.LAYOUT_RING_STEP_MAX)
+	_advanced_body.add_child(_make_label("settings.layout.hint", HINT_SIZE, MUTED_COLOR, true))
+
+func _add_layout_spin(key: String, caption: String, low: int, high: int) -> void:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_advanced_body.add_child(row)
+	var label: Label = _make_label(caption, FONT_SIZE, TEXT_COLOR)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label)
+	var spin: SpinBox = SpinBox.new()
+	spin.min_value = low
+	spin.max_value = high
+	spin.step = 1.0
+	spin.rounded = true
+	row.add_child(spin)
+	_layout_spins[key] = spin
 
 func _build_vault_row() -> void:
 	var row: HBoxContainer = HBoxContainer.new()
@@ -286,6 +315,8 @@ func _load_form(values: Dictionary) -> void:
 	_reduce_motion = bool(values[Preferences.KEY_REDUCE_MOTION])
 	_show_grid = bool(values[Preferences.KEY_SHOW_GRID])
 	_export_linked = bool(values[Preferences.KEY_EXPORT_INCLUDE_LINKED])
+	_minimap_decor = bool(values[Preferences.KEY_MINIMAP_DECOR])
+	_collapse_distant = bool(values[Preferences.KEY_COLLAPSE_DISTANT_NOTES])
 	_note_color = Color(str(values[Preferences.KEY_DEFAULT_NOTE_COLOR]))
 	_language = str(values[Preferences.KEY_LANGUAGE])
 	_language_button.select_id(Localization.CHOICES.find(_language))
@@ -297,6 +328,11 @@ func _load_form(values: Dictionary) -> void:
 	var backups: int = int(values[Preferences.KEY_BACKUPS_KEPT])
 	_backups_spin.set_value_no_signal(float(backups))
 	_backups_spin.get_line_edit().text = str(backups)
+	for key: String in _layout_spins:
+		var spin: SpinBox = _layout_spins[key]
+		var gap: int = int(values[key])
+		spin.set_value_no_signal(float(gap))
+		spin.get_line_edit().text = str(gap)
 	_refresh_toggles()
 	_rebuild_swatches()
 
@@ -304,7 +340,11 @@ func _load_form(values: Dictionary) -> void:
 func _current_values() -> Dictionary:
 	if _backups_spin.get_line_edit().has_focus():
 		_backups_spin.apply()
-	return {
+	for key: String in _layout_spins:
+		var spin: SpinBox = _layout_spins[key]
+		if spin.get_line_edit().has_focus():
+			spin.apply()
+	var values: Dictionary = {
 		Preferences.KEY_REDUCE_MOTION: _reduce_motion,
 		Preferences.KEY_SHOW_GRID: _show_grid,
 		Preferences.KEY_LINE_WIDTH_SCALE: snappedf(_line_slider.value, SLIDER_STEP),
@@ -313,7 +353,12 @@ func _current_values() -> Dictionary:
 		Preferences.KEY_EXPORT_INCLUDE_LINKED: _export_linked,
 		Preferences.KEY_LANGUAGE: _language,
 		Preferences.KEY_THEME: _theme,
+		Preferences.KEY_MINIMAP_DECOR: _minimap_decor,
+		Preferences.KEY_COLLAPSE_DISTANT_NOTES: _collapse_distant,
 	}
+	for key: String in _layout_spins:
+		values[key] = int((_layout_spins[key] as SpinBox).value)
+	return values
 
 func has_unsaved_changes() -> bool:
 	if not is_open():
@@ -388,9 +433,10 @@ func _hide_prompt() -> void:
 	_prompt.visible = false
 
 
-func _add_toggle(key: StringName, text: String, hint: String, on_press: Callable, parent: Control = null) -> void:
+func _add_toggle(key: StringName, text: String, hint: String, on_press: Callable, parent: Control = null, tip: String = "") -> void:
 	var target: Control = parent if parent != null else _content
 	var row: Button = _make_row_button()
+	row.tooltip_text = tip
 	row.pressed.connect(on_press)
 	var content: HBoxContainer = _make_row_content(row)
 	var box: PanelContainer = _make_checkbox()
@@ -446,6 +492,8 @@ func _refresh_toggles() -> void:
 	_set_checked(&"reduce_motion", _reduce_motion)
 	_set_checked(&"show_grid", _show_grid)
 	_set_checked(&"export_linked", _export_linked)
+	_set_checked(&"minimap_decor", _minimap_decor)
+	_set_checked(&"collapse_distant_notes", _collapse_distant)
 
 
 func _color_choices() -> Array[Color]:
@@ -487,6 +535,14 @@ func _on_show_grid_pressed() -> void:
 
 func _on_export_linked_pressed() -> void:
 	_export_linked = not _export_linked
+	_refresh_toggles()
+
+func _on_collapse_distant_pressed() -> void:
+	_collapse_distant = not _collapse_distant
+	_refresh_toggles()
+
+func _on_minimap_decor_pressed() -> void:
+	_minimap_decor = not _minimap_decor
 	_refresh_toggles()
 
 func _notification(what: int) -> void:

@@ -4,6 +4,7 @@ extends ModalDialog
 const DIALOG_WIDTH: float = 460.0
 
 var _callback: Callable = Callable()
+var _is_taken: Callable = Callable()
 var _title_label: Label = null
 var _name_page: VBoxContainer = null
 var _name_edit: LineEdit = null
@@ -58,8 +59,9 @@ func _make_footer(page: VBoxContainer) -> HBoxContainer:
 	footer.add_child(cancel_button)
 	return footer
 
-func prompt_name(title: String, default_name: String, callback: Callable) -> void:
+func prompt_name(title: String, default_name: String, callback: Callable, is_taken: Callable = Callable()) -> void:
 	_callback = callback
+	_is_taken = is_taken
 	_title_label.text = title
 	_name_page.visible = true
 	_confirm_page.visible = false
@@ -95,15 +97,22 @@ func show_error(text: String) -> void:
 
 func close() -> void:
 	_callback = Callable()
+	_is_taken = Callable()
 	super()
 
-func _on_name_changed(text: String) -> void:
+func _name_problem(text: String) -> String:
 	var problem: String = WorldRegistry.check_name(text)
+	if problem == "" and _is_taken.is_valid() and bool(_is_taken.call(text)):
+		return WorldRegistry.REASON_NAME_TAKEN
+	return problem
+
+func _on_name_changed(text: String) -> void:
+	var problem: String = _name_problem(text)
 	_name_ok.disabled = problem != ""
 	show_error(tr(problem) if problem != "" and text != "" else "")
 
 func _confirm_name() -> void:
-	var problem: String = WorldRegistry.check_name(_name_edit.text)
+	var problem: String = _name_problem(_name_edit.text)
 	if problem != "":
 		show_error(tr(problem))
 		return

@@ -90,6 +90,9 @@ var _project_menu: Button = null
 var _project_popup: PopupList = null
 var _project_files: ProjectFilesController = null
 var _import: WorkspaceImport = null
+var _links: WorkspaceLinks = null
+var _link_dialog: LinkMismatchDialog = null
+var _link_mismatch_pending: Dictionary = {}
 var _clipboard_ops: WorkspaceClipboard = null
 var _shortcuts_dialog: ShortcutsDialog = null
 var _search_popup: LinkAutocompletePopup = null
@@ -140,6 +143,7 @@ func _ready() -> void:
 	_layout = WorkspaceLayout.new(self)
 	_project_files = ProjectFilesController.new(self)
 	_import = WorkspaceImport.new(self)
+	_links = WorkspaceLinks.new(self)
 	_clipboard_ops = WorkspaceClipboard.new(self)
 	_search =CanvasSearch.new(self)
 	_sampler = CanvasColorSampler.new(self)
@@ -218,7 +222,7 @@ func _ready() -> void:
 	_minimap = Minimap.new()
 	$UI.add_child(_minimap)
 	$UI.move_child(_minimap, 1)
-	_minimap.setup(navigator, _cards_by_id, _selection)
+	_minimap.setup(navigator, _cards_by_id, _selection, _decor_below, _decor_above)
 	_minimap.fit_requested.connect(_focus_camera_to_selection_or_bounds)
 
 	_recent_panel = RecentPanel.new()
@@ -279,6 +283,10 @@ func _ready() -> void:
 	$UI.add_child(_vault_dialog)
 	_world_prompt = WorldPromptDialog.new()
 	$UI.add_child(_world_prompt)
+	_link_dialog = LinkMismatchDialog.new()
+	$UI.add_child(_link_dialog)
+	_link_dialog.applied.connect(_links.apply_choices)
+	_link_dialog.canceled.connect(_links.on_dialog_closed)
 	_shortcuts_dialog = ShortcutsDialog.new()
 	$UI.add_child(_shortcuts_dialog)
 	_palette = CommandPalette.new()
@@ -366,6 +374,7 @@ func _on_settings_saved() -> void:
 	Localization.apply_saved()
 	ThemeColors.apply_saved()
 	_apply_preferences()
+	_update_lod(navigator.get_zoom())
 	_toast.show_message(tr("settings.saved"))
 
 func _refresh_search_hint() -> void:
@@ -403,6 +412,7 @@ func _load_vault_data(skipped_worlds: int = 0) -> void:
 		_note_counter += 1
 
 	_graph.load_from_data(_storage.load_connections())
+	_links.scan_world()
 	_decor.load_all()
 	_canvas_bg.load_saved()
 	_pin_positions(loaded_notes)
@@ -547,6 +557,7 @@ func _save_all_vault_data() -> bool:
 		var card: GraphCard = _cards_by_id[id]
 		if is_instance_valid(card):
 			saved = _save_card(card) and saved
+	_links.reconcile()
 	saved = _storage.save_connections(_graph.get_all_connections()) and saved
 	saved = _storage.save_types(_types.to_array()) and saved
 	saved = _decor.save() and saved
@@ -593,6 +604,7 @@ func _clear_canvas() -> void:
 		decor_node.queue_free()
 	_decor_by_id.clear()
 	_extras_kept.clear()
+	_links.reset()
 	_last_titles.clear()
 	_last_contents.clear()
 	_saved_colors.clear()
@@ -654,7 +666,7 @@ func _compact_font_for_zoom(zoom: float) -> int:
 	return clampi(steps * COMPACT_FONT_STEP, COMPACT_FONT_MIN, COMPACT_FONT_MAX)
 
 func _update_lod(zoom: float, animate: bool = true) -> void:
-	var want_compact: bool = zoom < (LOD_EXIT_ZOOM if _lod_compact else LOD_ENTER_ZOOM)
+	var want_compact: bool = Preferences.collapse_distant_notes() and zoom < (LOD_EXIT_ZOOM if _lod_compact else LOD_ENTER_ZOOM)
 	var font_px: int = _compact_font_for_zoom(zoom)
 	var mode_changed: bool = want_compact != _lod_compact
 	var font_changed: bool = font_px != _lod_font
@@ -1432,6 +1444,8 @@ func _on_sidebar_article_updated(card_id: String, new_title: String, new_content
 		card.refresh_compact_layout()
 	_save_card(card, new_title, new_content)
 	_apply_title_change(card_id, new_title)
+	if changed:
+		_links.reconcile()
 
 func _apply_title_change(card_id: String, new_title: String) -> void:
 	var old_title: String = _last_titles.get(card_id, "")
@@ -1441,19 +1455,7 @@ func _apply_title_change(card_id: String, new_title: String) -> void:
 	if old_title == "" or old_title == new_title:
 		return
 
-	for neighbor_id: String in _graph.get_neighbors(card_id):
-		var neighbor: GraphCard = _cards_by_id.get(neighbor_id, null)
-		if not is_instance_valid(neighbor):
-			continue
-		var text: String = neighbor.content_text
-		var updated: String = WikiLink.replace_title(text, old_title, new_title)
-		if updated == text:
-			continue
-
-		neighbor.set_content(updated)
-		_last_contents[neighbor.card_id] = neighbor.content_text
-		_touch_card(neighbor)
-		sidebar_editor.refresh_content(neighbor)
+	_links.rewrite_after_rename(card_id, old_title, new_title)
 
 func _on_sidebar_card_color_changed(card_id: String, _new_color: Color) -> void:
 	var card: GraphCard = _cards_by_id.get(card_id, null)
@@ -1598,17 +1600,7 @@ func _cancel_link_source() -> void:
 	connection_renderer.clear_preview_line()
 
 func _toggle_connection(id_a: String, id_b: String) -> void:
-	var existing: Dictionary = _graph.get_link(id_a, id_b)
-	if existing.is_empty():
-		if not _graph.toggle_connection(id_a, id_b):
-			return
-		var created: Array[Dictionary] = [_graph.get_link(id_a, id_b)]
-		_history.record(tr("history.link.create"), _graph.remove_link.bind(id_a, id_b), _graph.restore_links.bind(created))
-	else:
-		_graph.remove_link(id_a, id_b)
-		var removed: Array[Dictionary] = [existing]
-		_history.record(tr("history.link.delete"), _graph.restore_links.bind(removed), _graph.remove_link.bind(id_a, id_b))
-
+	_links.toggle_drawn(id_a, id_b)
 
 const LINK_MENU_STYLES: Array[String] = ["solid", "dashed", "dotted"]
 
@@ -1730,6 +1722,7 @@ func _is_dialog_over_start() -> bool:
 		or (is_instance_valid(_canvas_bg_dialog) and _canvas_bg_dialog.is_open()) 		or (is_instance_valid(_decor_text_dialog) and _decor_text_dialog.is_open()) \
 		or (is_instance_valid(_vault_dialog) and _vault_dialog.is_open()) \
 		or (is_instance_valid(_world_prompt) and _world_prompt.is_open()) \
+		or (is_instance_valid(_link_dialog) and _link_dialog.is_open()) \
 		or (is_instance_valid(_shortcuts_dialog) and _shortcuts_dialog.is_open()) \
 		or (is_instance_valid(_palette) and _palette.is_open())
 

@@ -11,12 +11,22 @@ const KEY_BACKUPS_KEPT: String = "backups_kept"
 const KEY_EXPORT_INCLUDE_LINKED: String = "export_include_linked"
 const KEY_LANGUAGE: String = "language"
 const KEY_THEME: String = "theme"
+const KEY_MINIMAP_DECOR: String = "minimap_decor"
+const KEY_COLLAPSE_DISTANT_NOTES: String = "collapse_distant_notes"
+const KEY_LAYOUT_LEVEL_GAP: String = "layout_level_gap"
+const KEY_LAYOUT_SIBLING_GAP: String = "layout_sibling_gap"
+const KEY_LAYOUT_BLOCK_GAP: String = "layout_block_gap"
+const KEY_LAYOUT_RING_STEP: String = "layout_ring_step"
 
 const LINE_WIDTH_MIN: float = 0.5
 const LINE_WIDTH_MAX: float = 2.0
 const BACKUPS_MIN: int = 0
 const BACKUPS_MAX: int = 50
 const DEFAULT_NOTE_COLOR_HEX: String = "313549"
+const LAYOUT_GAP_MIN: int = 0
+const LAYOUT_GAP_MAX: int = 1000
+const LAYOUT_RING_STEP_MIN: int = 40
+const LAYOUT_RING_STEP_MAX: int = 2000
 
 static func defaults() -> Dictionary:
 	return {
@@ -28,6 +38,12 @@ static func defaults() -> Dictionary:
 		KEY_EXPORT_INCLUDE_LINKED: false,
 		KEY_LANGUAGE: Localization.AUTO,
 		KEY_THEME: ThemeColors.AUTO,
+		KEY_MINIMAP_DECOR: true,
+		KEY_COLLAPSE_DISTANT_NOTES: true,
+		KEY_LAYOUT_LEVEL_GAP: int(LayoutTemplates.LEVEL_GAP),
+		KEY_LAYOUT_SIBLING_GAP: int(LayoutTemplates.SIBLING_GAP),
+		KEY_LAYOUT_BLOCK_GAP: int(LayoutTemplates.BLOCK_GAP),
+		KEY_LAYOUT_RING_STEP: int(LayoutTemplates.RING_STEP),
 	}
 
 static func get_pref(key: String) -> Variant:
@@ -38,7 +54,7 @@ static func get_pref(key: String) -> Variant:
 static func sanitize(key: String, value: Variant) -> Variant:
 	var fallback: Variant = defaults().get(key, null)
 	match key:
-		KEY_REDUCE_MOTION, KEY_SHOW_GRID, KEY_EXPORT_INCLUDE_LINKED:
+		KEY_REDUCE_MOTION, KEY_SHOW_GRID, KEY_EXPORT_INCLUDE_LINKED, KEY_MINIMAP_DECOR, KEY_COLLAPSE_DISTANT_NOTES:
 			return value if value is bool else fallback
 		KEY_LINE_WIDTH_SCALE:
 			if value is float or value is int:
@@ -47,6 +63,14 @@ static func sanitize(key: String, value: Variant) -> Variant:
 		KEY_BACKUPS_KEPT:
 			if value is int or value is float:
 				return clampi(int(value), BACKUPS_MIN, BACKUPS_MAX)
+			return fallback
+		KEY_LAYOUT_LEVEL_GAP, KEY_LAYOUT_SIBLING_GAP, KEY_LAYOUT_BLOCK_GAP:
+			if value is int or value is float:
+				return clampi(int(value), LAYOUT_GAP_MIN, LAYOUT_GAP_MAX)
+			return fallback
+		KEY_LAYOUT_RING_STEP:
+			if value is int or value is float:
+				return clampi(int(value), LAYOUT_RING_STEP_MIN, LAYOUT_RING_STEP_MAX)
 			return fallback
 		KEY_DEFAULT_NOTE_COLOR:
 			if value is String:
@@ -90,3 +114,17 @@ static func language() -> String:
 
 static func theme() -> String:
 	return str(get_pref(KEY_THEME))
+
+static func minimap_decor() -> bool:
+	return bool(get_pref(KEY_MINIMAP_DECOR))
+
+static func collapse_distant_notes() -> bool:
+	return bool(get_pref(KEY_COLLAPSE_DISTANT_NOTES))
+
+static func layout_spacing() -> Dictionary:
+	return {
+		"level_gap": float(int(get_pref(KEY_LAYOUT_LEVEL_GAP))),
+		"sibling_gap": float(int(get_pref(KEY_LAYOUT_SIBLING_GAP))),
+		"block_gap": float(int(get_pref(KEY_LAYOUT_BLOCK_GAP))),
+		"ring_step": float(int(get_pref(KEY_LAYOUT_RING_STEP))),
+	}

@@ -22,7 +22,9 @@ Tethera is a canvas for notes and lore: notes and worlds are laid out as cards, 
 - Note text is Markdown with BBCode tags (`[b]`, `[i]`, `[color=...]` and others).
 - A link is made by writing `[[Title]]` in the text. The link appears as soon as a note with that title exists.
 - `[[Title|Label]]` shows the label instead of the title.
-- A manual link (Ctrl+click between cards) does not depend on the text.
+- A link made from `[[Title]]` is marked "from text": it is checked when you save, and it goes away when you remove the `[[Title]]`.
+- A manual link (Ctrl+click between cards) is marked "drawn by hand" and does not depend on the text. A link can have both marks; removing `[[Title]]` clears only the first one.
+- Renaming a note rewrites `[[old title]]` in every note that links to it; one Ctrl+Z undoes all of it.
 - Space + click pins a card to the screen: it moves with the canvas until you unpin it with the same Space + click. A plain click on an empty part of the canvas releases all pinned cards.
 
 ## Keyboard shortcuts

@@ -174,6 +174,21 @@ func remove_nodes(node_ids: Array[String]) -> void:
 	if changed:
 		network_changed.emit()
 
+static func is_drawn(link: Dictionary) -> bool:
+	return LinkReconciler.is_drawn(link)
+
+func set_drawn(id_a: String, id_b: String, drawn: bool) -> bool:
+	for conn: Dictionary in _connections:
+		var from_id: String = conn.get("from", "")
+		var to_id: String = conn.get("to", "")
+		if (from_id == id_a and to_id == id_b) or (from_id == id_b and to_id == id_a):
+			if is_drawn(conn) == drawn:
+				return false
+			conn["kind"] = KIND_MANUAL if drawn else KIND_WIKI
+			network_changed.emit()
+			return true
+	return false
+
 func get_link_style(id_a: String, id_b: String) -> String:
 	var link: Dictionary = get_link(id_a, id_b)
 	if link.is_empty():

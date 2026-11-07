@@ -122,7 +122,7 @@ func _on_start_open(world_id: String) -> void:
 	_finish_start_screen(true)
 
 func _on_start_create() -> void:
-	_ws._world_prompt.prompt_name(tr("worlds.name.title_create"), "", _on_start_create_named)
+	_ws._world_prompt.prompt_name(tr("worlds.name.title_create"), "", _on_start_create_named, _ws._worlds.is_name_taken)
 
 func _on_start_create_named(world_name: String) -> void:
 	var made: Dictionary = _ws._worlds.create_world(world_name)
@@ -142,9 +142,10 @@ func _finish_start_screen(with_toast: bool) -> void:
 	_ws._start_screen.close()
 	if with_toast:
 		_ws._toast.show_message(tr("worlds.switch.done") % current_name())
-	_show_whats_new_if_due.call_deferred()
+	_ws._links.show_dialog_if_ready.call_deferred()
+	show_whats_new_if_due.call_deferred()
 
-func _show_whats_new_if_due() -> void:
+func show_whats_new_if_due() -> void:
 	if not _ws._whats_new_pending or _ws._is_modal_open():
 		return
 	_ws._whats_new_pending = false
@@ -192,6 +193,7 @@ func change_vault(path: String) -> void:
 			_open_world(last_id, 0)
 			_ws._focus_camera_to_selection_or_bounds()
 			_ws._toast.show_message(tr("vault.change.done") % current_name())
+			_ws._links.show_dialog_if_ready.call_deferred()
 			return
 	var problem: String = _prepare_vault()
 	if problem != "":
@@ -207,7 +209,7 @@ func import_into_new_world(bundle: Dictionary, ids: Array[String], include_linke
 		default_name = default_name.left(WorldRegistry.MAX_NEW_NAME_LENGTH).strip_edges()
 	if default_name == "":
 		default_name = tr("worlds.default_name")
-	_ws._world_prompt.prompt_name(tr("import.new_world.title"), default_name, _on_import_world_named.bind(bundle, ids, include_linked, path))
+	_ws._world_prompt.prompt_name(tr("import.new_world.title"), default_name, _on_import_world_named.bind(bundle, ids, include_linked, path), _ws._worlds.is_name_taken)
 
 func _on_import_world_named(world_name: String, bundle: Dictionary, ids: Array[String], include_linked: bool, path: String) -> void:
 	var selection: Dictionary = ProjectSelection.select(bundle["notes"] as Array[Dictionary], bundle["connections"] as Array[Dictionary], \
@@ -285,7 +287,7 @@ func _on_start_rename(world_id: String) -> void:
 		show_start_screen()
 		_ws._start_screen.show_error(tr(WorldRegistry.REASON_RENAME_FAILED))
 		return
-	_ws._world_prompt.prompt_name(tr("worlds.name.title_rename"), str(row["name"]), _on_start_rename_named.bind(world_id))
+	_ws._world_prompt.prompt_name(tr("worlds.name.title_rename"), str(row["name"]), _on_start_rename_named.bind(world_id), _ws._worlds.is_name_taken.bind(world_id))
 
 func _on_start_rename_named(world_name: String, world_id: String) -> void:
 	var problem: String = _ws._worlds.rename_world(world_id, world_name)

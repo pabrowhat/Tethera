@@ -75,6 +75,8 @@
 		"minimap.frame_border": "#e6ebffb3",
 		"minimap.grid": "#808cb324",
 		"minimap.tooltip_background": "#0d0e14f2",
+		"minimap.decor_text": "#8d96bd",
+		"minimap.decor_missing": "#454a63",
 		"start.background": "#12131a",
 		"start.base": "#0b0d16",
 		"start.glow_a": "#6870fa",

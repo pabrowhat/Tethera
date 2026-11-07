@@ -151,6 +151,9 @@ func set_image(path: String) -> void:
 		InlineImages.report_missing(path)
 	queue_redraw()
 
+func average_color(fallback: Color) -> Color:
+	return InlineImages.average_color_of(_texture, fallback)
+
 func get_state() -> Dictionary:
 	return {"pos": position, "size": box_size, "rot": DecorItem.normalize_angle(rad_to_deg(rotation)), "text_width": text_width, "flip_h": flip_h, "flip_v": flip_v}
 

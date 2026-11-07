@@ -656,6 +656,7 @@ func fill_new_world(bundle: Dictionary, path: String, remember_file: bool = true
 	_ws._graph.load_from_data(links)
 	write_failed = not _ws._storage.save_connections(_ws._graph.get_all_connections()) or write_failed
 	_ws._pin_positions(imported)
+	_ws._links.scan_world()
 
 	var lost_decor: int = int(bundle["skipped_decor"])
 	var lost_background: bool = bool(bundle["lost_canvas_background"])

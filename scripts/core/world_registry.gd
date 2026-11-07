@@ -19,6 +19,7 @@ const REASON_NAME_EMPTY: String = "worlds.name.empty"
 const REASON_NAME_TOO_LONG: String = "worlds.name.too_long"
 const REASON_NAME_LINE_BREAK: String = "worlds.name.line_break"
 const REASON_RENAME_FAILED: String = "worlds.rename.failed"
+const REASON_NAME_TAKEN: String = "worlds.error.name_taken"
 const REASON_DELETE_LAST: String = "worlds.delete.last"
 const REASON_DELETE_DAMAGED: String = "worlds.delete.damaged"
 const REASON_DELETE_FAILED: String = "worlds.delete.failed"
@@ -214,8 +215,24 @@ static func check_name(world_name: String) -> String:
 		return REASON_NAME_TOO_LONG
 	return ""
 
+static func name_key(world_name: String) -> String:
+	return world_name.strip_edges().to_lower()
+
+func is_name_taken(world_name: String, except_id: String = "") -> bool:
+	var wanted: String = name_key(world_name)
+	if wanted == "":
+		return false
+	for world: Dictionary in list_worlds():
+		if not bool(world["ok"]) or str(world["id"]) == except_id:
+			continue
+		if name_key(str(world["name"])) == wanted:
+			return true
+	return false
+
 func create_world(world_name: String, with_files: bool = true) -> Dictionary:
 	var name_problem: String = check_name(world_name)
+	if name_problem == "" and is_name_taken(world_name):
+		name_problem = REASON_NAME_TAKEN
 	if name_problem != "":
 		return {"ok": false, "id": "", "root": "", "reason": name_problem}
 	if vault_dir == "":
@@ -246,6 +263,8 @@ func create_world(world_name: String, with_files: bool = true) -> Dictionary:
 
 func rename_world(id: String, world_name: String) -> String:
 	var name_problem: String = check_name(world_name)
+	if name_problem == "" and is_name_taken(world_name, id):
+		name_problem = REASON_NAME_TAKEN
 	if name_problem != "":
 		return name_problem
 	var root: String = world_root(id)

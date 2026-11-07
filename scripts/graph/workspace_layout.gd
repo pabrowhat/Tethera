@@ -90,16 +90,16 @@ func apply(template: int) -> int:
 func _compute(template: int, ids: Array[String], sizes: Dictionary, types: Dictionary, anchor: Vector2) -> Dictionary:
 	match template:
 		Template.TREE_DOWN:
-			return LayoutTemplates.tree(ids, _ws._graph.get_all_connections(), sizes, anchor, false)
+			return LayoutTemplates.tree(ids, _ws._graph.get_all_connections(), sizes, anchor, false, Preferences.layout_spacing())
 		Template.TREE_RIGHT:
-			return LayoutTemplates.tree(ids, _ws._graph.get_all_connections(), sizes, anchor, true)
+			return LayoutTemplates.tree(ids, _ws._graph.get_all_connections(), sizes, anchor, true, Preferences.layout_spacing())
 		Template.ORBIT_BY_TYPE:
 			var order: Array[String] = []
 			for entity_type: EntityType in _ws._types.get_all():
 				order.append(entity_type.id)
-			return LayoutTemplates.orbit_by_type(ids, sizes, types, order, anchor)
+			return LayoutTemplates.orbit_by_type(ids, sizes, types, order, anchor, Preferences.layout_spacing())
 		_:
-			return LayoutTemplates.orbit(ids, sizes, anchor)
+			return LayoutTemplates.orbit(ids, sizes, anchor, Preferences.layout_spacing())
 
 func _move(positions: Dictionary) -> void:
 	var jump: bool = Preferences.reduce_motion()

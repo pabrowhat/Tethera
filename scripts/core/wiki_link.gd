@@ -49,8 +49,7 @@ static func escape(text: String) -> String:
 	return text.replace(ESCAPE, ESCAPE + ESCAPE).replace(SEPARATOR, ESCAPE + SEPARATOR)
 
 static func replace_title(text: String, old_title: String, new_title: String) -> String:
-	if _link_re == null:
-		_link_re = RegEx.create_from_string("\\[\\[([^\\[\\]\\n]+)\\]\\]")
+	_ensure_regex()
 	var wanted: String = old_title.strip_edges().to_lower()
 	var result: String = ""
 	var cursor: int = 0
@@ -65,6 +64,36 @@ static func replace_title(text: String, old_title: String, new_title: String) ->
 		result += "]]"
 		cursor = found.get_end()
 	return result + text.substr(cursor)
+
+static func titles_in(text: String) -> Array[String]:
+	_ensure_regex()
+	var titles: Array[String] = []
+	for found: RegExMatch in _link_re.search_all(text):
+		var inner: String = found.get_string(1)
+		if not is_note_link(inner):
+			continue
+		titles.append(str(split(inner)["title"]))
+	return titles
+
+static func unlink_title(text: String, title: String) -> String:
+	_ensure_regex()
+	var wanted: String = title.strip_edges().to_lower()
+	var result: String = ""
+	var cursor: int = 0
+	for found: RegExMatch in _link_re.search_all(text):
+		var inner: String = found.get_string(1)
+		if not is_note_link(inner):
+			continue
+		if str(split(inner)["title"]).strip_edges().to_lower() != wanted:
+			continue
+		result += text.substr(cursor, found.get_start() - cursor)
+		result += display_text(inner)
+		cursor = found.get_end()
+	return result + text.substr(cursor)
+
+static func _ensure_regex() -> void:
+	if _link_re == null:
+		_link_re = RegEx.create_from_string("\\[\\[([^\\[\\]\\n]+)\\]\\]")
 
 static func _is_escapable(c: String) -> bool:
 	return c == SEPARATOR or c == ESCAPE

@@ -1588,3 +1588,117 @@ msgstr "Flip picture"
 
 msgid "whats_new.1_3_0.flip"
 msgstr "Pictures can be flipped: right-click a picture and choose \"Flip horizontally\" or \"Flip vertically\". You can also drag a side handle or a corner (with Ctrl or Cmd) past the opposite edge: the picture keeps growing, now mirrored."
+
+msgid "history.rename_links"
+msgstr "Rename and update links (%d)"
+
+msgid "history.link_mismatch"
+msgstr "Fix link mismatches (%d)"
+
+msgid "links.history.draw"
+msgstr "Mark link as drawn by hand"
+
+msgid "links.history.undraw"
+msgstr "Clear the drawn-by-hand mark"
+
+msgid "links.rename.failed"
+msgstr "Links not updated in notes: %d"
+
+msgid "links.mismatch.title"
+msgstr "Links and text do not match"
+
+msgid "links.mismatch.hint"
+msgstr "Some links disagree with the [[...]] text of the notes. Choose what to do with each one. Rows without a choice stay as they are."
+
+msgid "links.mismatch.apply_all"
+msgstr "Apply to all:"
+
+msgid "links.mismatch.keep_all"
+msgstr "Keep all"
+
+msgid "links.mismatch.remove_all"
+msgstr "Remove all"
+
+msgid "links.mismatch.keep"
+msgstr "Keep"
+
+msgid "links.mismatch.remove"
+msgstr "Remove"
+
+msgid "links.mismatch.apply"
+msgstr "Apply"
+
+msgid "links.mismatch.close"
+msgstr "Close"
+
+msgid "links.mismatch.stale"
+msgstr "The link between “%s” and “%s” has no [[...]] in the text."
+
+msgid "links.mismatch.stale.hint"
+msgstr "Keep: the link stays, marked as drawn by hand. Remove: the link is deleted."
+
+msgid "links.mismatch.unlinked"
+msgstr "“%s” mentions [[%s]], but there is no link."
+
+msgid "links.mismatch.unlinked.hint"
+msgstr "Keep: the link is created. Remove: the brackets are taken off in the text."
+
+msgid "links.mismatch.done"
+msgstr "Mismatches fixed: %d"
+
+msgid "links.mismatch.failed"
+msgstr "Notes that could not be written: %d"
+
+msgid "settings.minimap_decor"
+msgstr "Show pictures and text in the minimap"
+
+msgid "settings.layout"
+msgstr "Layout spacing"
+
+msgid "settings.layout.level_gap"
+msgstr "Between levels"
+
+msgid "settings.layout.sibling_gap"
+msgstr "Between cards in a row"
+
+msgid "settings.layout.block_gap"
+msgstr "Between separate groups"
+
+msgid "settings.layout.ring_step"
+msgstr "Smallest step between rings"
+
+msgid "settings.layout.hint"
+msgstr "Used by the “Arrange” menu, in canvas pixels."
+
+msgid "whats_new.1_4_0.rename"
+msgstr "Renaming a note now rewrites [[old name]] in every note that links to it, in one undo step. If some note cannot be written, the app says how many were not updated."
+
+msgid "whats_new.1_4_0.reconcile"
+msgstr "The [[...]] text of the notes is the source of truth for links. When you save, the saved links are checked against the text: a link made from [[...]] disappears when you remove the [[...]], and a new [[...]] to an existing note makes a link."
+
+msgid "whats_new.1_4_0.marks"
+msgstr "Every link is “from text”, “drawn by hand” (Ctrl+click) or both. Removing [[...]] clears only the “from text” mark, so a hand-drawn link stays."
+
+msgid "whats_new.1_4_0.mismatch"
+msgstr "When you open an older world or import a .tether file and the saved links disagree with the text, one window lists them. Choose Keep or Remove for each row, or apply one choice to all. Closing the window changes nothing."
+
+msgid "whats_new.1_4_0.minimap_decor"
+msgstr "The minimap shows pictures and text labels as plain boxes, in the same order as on the canvas, and a click on a box moves the canvas to it. It can be turned off in Settings > Advanced."
+
+msgid "whats_new.1_4_0.layout_spacing"
+msgstr "Settings > Advanced has the spacing used by “Arrange”: between levels, between cards, between groups and between rings."
+
+msgid "worlds.error.name_taken"
+msgstr "A world with this name already exists. Letter case is ignored."
+
+msgid "settings.collapse_distant_notes"
+msgstr "Collapse notes into pills when zoomed out"
+
+msgid "settings.collapse_distant_notes.tip"
+msgstr "When off, notes keep their full size at any zoom. A very distant view of many notes may be slower."
+
+msgid "whats_new.1_4_0.world_names_unique"
+msgstr "World names are now unique: a new or renamed world cannot take a name that another world already has, whatever the letter case. Existing worlds with the same name are left as they are."
+
+msgid "whats_new.1_4_0.collapse_setting"
+msgstr "Settings > Advanced can turn off the collapse of notes into pills when you zoom out. Notes then keep their full size at any zoom."

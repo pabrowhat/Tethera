@@ -91,6 +91,7 @@ func import_selection(bundle: Dictionary, ids: Array[String], include_linked: bo
 	write_failed = not _ws._storage.save_connections(_ws._graph.get_all_connections()) or write_failed
 	write_failed = not _ws._storage.save_types(_ws._types.to_array()) or write_failed
 	_ws._pin_positions(placed_notes)
+	_ws._links.scan_world(created_ids)
 	if _ws._active_search_query != "":
 		_ws._search.on_search_text_changed(_ws._active_search_query)
 
