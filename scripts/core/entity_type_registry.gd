@@ -32,7 +32,7 @@ func find_by_name(type_name: String) -> EntityType:
 	if wanted == "":
 		return null
 	for entity_type: EntityType in _types:
-		if entity_type.name.to_lower() == wanted:
+		if entity_type.display_name().to_lower() == wanted:
 			return entity_type
 	return null
 
@@ -46,7 +46,7 @@ func add_type(entity_type: EntityType) -> bool:
 func has_name(type_name: String, except_id: String = "") -> bool:
 	var wanted: String = type_name.strip_edges().to_lower()
 	for entity_type: EntityType in _types:
-		if entity_type.id != except_id and entity_type.name.to_lower() == wanted:
+		if entity_type.id != except_id and entity_type.display_name().to_lower() == wanted:
 			return true
 	return false
 
@@ -64,9 +64,10 @@ func create(type_name: String, type_color: Color) -> EntityType:
 func rename(type_id: String, type_name: String) -> bool:
 	var entity_type: EntityType = find(type_id)
 	var clean: String = type_name.strip_edges()
-	if entity_type == null or clean == "" or entity_type.name == clean:
+	if entity_type == null or clean == "" or entity_type.display_name() == clean:
 		return false
 	entity_type.name = clean
+	entity_type.name_key = ""
 	changed.emit()
 	return true
 
@@ -155,6 +156,21 @@ func load_array(value: Variant) -> void:
 			seen_ids[entity_type.id] = true
 			_types.append(entity_type)
 	changed.emit()
+
+func migrate_default_names() -> bool:
+	var key_of_name: Dictionary = {}
+	var resource: Resource = load(DEFAULT_TYPES_PATH)
+	if resource is JSON and (resource as JSON).data is Array:
+		for entry: Variant in ((resource as JSON).data as Array):
+			if entry is Dictionary:
+				key_of_name[str((entry as Dictionary).get("name", ""))] = str((entry as Dictionary).get("name_key", ""))
+	var migrated: bool = false
+	for entity_type: EntityType in _types:
+		var wanted_key: String = str(key_of_name.get(entity_type.name, ""))
+		if entity_type.name_key == "" and wanted_key != "":
+			entity_type.name_key = wanted_key
+			migrated = true
+	return migrated
 
 func seed_defaults() -> void:
 	_types.clear()

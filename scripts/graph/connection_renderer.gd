@@ -68,6 +68,11 @@ func clear_preview_line() -> void:
 func animate_link(from_id: String, to_id: String) -> void:
 	var key: String = _pair_key(from_id, to_id)
 	_clear_dying(key)
+	if Preferences.reduce_motion():
+		_drop_anim(key)
+		link_anchored.emit(to_id)
+		queue_redraw()
+		return
 	var state: Dictionary = _get_anim_state(key)
 	_kill_anim_tween(state, "grow_tween")
 	state["progress"] = 0.0
@@ -84,6 +89,8 @@ func animate_link(from_id: String, to_id: String) -> void:
 
 func pulse_link(from_id: String, to_id: String) -> void:
 	var key: String = _pair_key(from_id, to_id)
+	if Preferences.reduce_motion():
+		return
 	var state: Dictionary = _get_anim_state(key)
 	_kill_anim_tween(state, "pulse_tween")
 	state["pulse"] = 1.0
@@ -100,6 +107,10 @@ func pulse_link(from_id: String, to_id: String) -> void:
 func dissolve_link(from_id: String, to_id: String) -> void:
 	var key: String = _pair_key(from_id, to_id)
 	_clear_dying(key)
+	if Preferences.reduce_motion():
+		_drop_anim(key)
+		queue_redraw()
+		return
 
 	var progress: float = 1.0
 	if _anims.has(key):
@@ -153,6 +164,14 @@ func _clear_dying(key: String) -> void:
 		return
 	_kill_anim_tween(_dying[key] as Dictionary, "tween")
 	_dying.erase(key)
+
+func _drop_anim(key: String) -> void:
+	if not _anims.has(key):
+		return
+	var state: Dictionary = _anims[key] as Dictionary
+	_kill_anim_tween(state, "grow_tween")
+	_kill_anim_tween(state, "pulse_tween")
+	_anims.erase(key)
 
 func _cleanup_anim(key: String) -> void:
 	if not _anims.has(key):

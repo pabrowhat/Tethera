@@ -139,6 +139,8 @@ const CARRIED_COLOR: StringName = &"card.carried"
 const MUTED_INK_FACTOR: float = 0.7
 const FLIP_ICON_ITEMS: Array[String] = ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"]
 const BORDER_THICKNESS: float = 2.0
+const REMOVE_DURATION: float = 0.15
+const REMOVE_SCALE: float = 0.85
 const BORDER_THICKNESS_SELECTED: float = 3.0
 
 const CARD_WIDTH: float = 240.0
@@ -515,6 +517,7 @@ func _on_status_dot_draw() -> void:
 
 	var clear: Color = Color(tint, 0.0)
 	_status_shape.clear_inner()
+	_status_shape.clear_tick()
 	match status:
 		STATUS_TODO:
 			_status_shape.place_centered(center, (radius + 0.05) * 2.0)
@@ -527,11 +530,11 @@ func _on_status_dot_draw() -> void:
 			_status_shape.place_centered(center, radius * 2.0)
 			_status_shape.set_style(tint, tint, 0.0)
 			var tick: PackedVector2Array = PackedVector2Array([
-				center + Vector2(-0.45, 0.0) * radius,
-				center + Vector2(-0.1, 0.38) * radius,
-				center + Vector2(0.5, -0.36) * radius,
+				Vector2(-0.45, 0.0) * radius,
+				Vector2(-0.1, 0.38) * radius,
+				Vector2(0.5, -0.36) * radius,
 			])
-			status_dot.draw_polyline(tick, _body_color, maxf(1.4, radius * 0.22), true)
+			_status_shape.set_tick(tick, _body_color, maxf(1.4, radius * 0.22))
 		_:
 			_status_shape.place_centered(center, radius * 0.8 * 2.0)
 			_status_shape.set_style(tint, tint, 0.0)
@@ -793,6 +796,13 @@ func _process(delta: float) -> void:
 
 	var target_tilt: float = 0.0
 
+	if (is_dragging or is_carried or is_group_following) and Preferences.reduce_motion():
+		_current_angle = 0.0
+		_angular_velocity = 0.0
+		_external_velocity_x = 0.0
+		rotation = 0.0
+		return
+
 	if is_dragging:
 		var current_mouse_pos: Vector2 = get_global_mouse_position()
 		var mouse_delta_x: float = (current_mouse_pos.x - _prev_mouse_pos.x) / delta
@@ -935,7 +945,7 @@ func set_selected(active: bool, punch: bool = false) -> void:
 		play_capture_punch()
 
 func play_capture_punch() -> void:
-	if is_dragging or is_carried or is_group_following:
+	if Preferences.reduce_motion() or is_dragging or is_carried or is_group_following:
 		return
 	if _lift_tween and _lift_tween.is_valid():
 		_lift_tween.kill()
@@ -987,8 +997,11 @@ func _animate_lift(lifting: bool) -> void:
 	if _lift_tween and _lift_tween.is_valid():
 		_lift_tween.kill()
 
-	_lift_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	var target_scale: Vector2 = lift_scale if lifting else Vector2.ONE
+	if Preferences.reduce_motion():
+		scale = target_scale
+		return
+	_lift_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_lift_tween.tween_property(self, "scale", target_scale, lift_duration)
 
 func start_rename() -> void:
@@ -1050,11 +1063,30 @@ func _fade_to_dim_alpha(immediate: bool) -> void:
 	_search_tween.tween_property(self, "modulate:a", _dim_alpha(), SEARCH_FADE_DURATION)
 
 func play_spawn_animation() -> void:
+	if Preferences.reduce_motion():
+		scale = Vector2.ONE
+		modulate.a = _dim_alpha()
+		return
 	scale = Vector2(0.3, 0.3)
 	modulate.a = 0.0
 	var tween: Tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "scale", Vector2.ONE, 0.3)
 	tween.tween_property(self, "modulate:a", _dim_alpha(), 0.2)
+
+func play_remove_animation() -> void:
+	if not is_inside_tree() or Preferences.reduce_motion():
+		queue_free()
+		return
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_process(false)
+	pivot_offset = size / 2.0
+	_kill_tween(_search_tween)
+	_kill_tween(_lift_tween)
+	_kill_tween(_punch_tween)
+	var tween: Tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "scale", Vector2(REMOVE_SCALE, REMOVE_SCALE), REMOVE_DURATION)
+	tween.tween_property(self, "modulate:a", 0.0, REMOVE_DURATION)
+	tween.chain().tween_callback(queue_free)
 
 func _on_resized() -> void:
 	pivot_offset = size / 2.0

@@ -1,7 +1,7 @@
 [
-	{"name": "Персонаж", "color": "3498db", "fields": []},
-	{"name": "Событие", "color": "f1c40f", "fields": []},
-	{"name": "Место", "color": "2ecc71", "fields": []},
-	{"name": "Фракция", "color": "e74c3c", "fields": []},
-	{"name": "Предмет", "color": "9b59b6", "fields": []}
+	{"name": "Персонаж", "name_key": "type.character", "color": "3498db", "fields": []},
+	{"name": "Событие", "name_key": "type.event", "color": "f1c40f", "fields": []},
+	{"name": "Место", "name_key": "type.place", "color": "2ecc71", "fields": []},
+	{"name": "Фракция", "name_key": "type.faction", "color": "e74c3c", "fields": []},
+	{"name": "Предмет", "name_key": "type.item", "color": "9b59b6", "fields": []}
 ]

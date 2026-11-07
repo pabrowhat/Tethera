@@ -9,10 +9,22 @@ uniform float corner_radius = -1.0;
 uniform vec4 inner_color : source_color = vec4(0.0);
 uniform float inner_inset = 0.0;
 uniform bool inner_right_half = false;
+uniform vec4 tick_color : source_color = vec4(0.0);
+uniform vec2 tick_a = vec2(0.0);
+uniform vec2 tick_b = vec2(0.0);
+uniform vec2 tick_c = vec2(0.0);
+uniform float tick_width = 1.4;
 
 float sd_rounded_box(vec2 p, vec2 half_size, float r) {
 	vec2 q = abs(p) - half_size + vec2(r);
 	return min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
+}
+
+float sd_segment(vec2 p, vec2 a, vec2 b) {
+	vec2 pa = p - a;
+	vec2 ba = b - a;
+	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+	return length(pa - ba * h);
 }
 
 vec4 premultiply(vec4 c) {
@@ -45,6 +57,12 @@ void fragment() {
 		}
 		float inner_alpha = 1.0 - smoothstep(-px, 0.0, inner_dist);
 		result = premultiply(inner_color) * inner_alpha + result * (1.0 - inner_color.a * inner_alpha);
+	}
+
+	if (tick_color.a > 0.0) {
+		float tick_dist = min(sd_segment(p, tick_a, tick_b), sd_segment(p, tick_b, tick_c)) - tick_width * 0.5;
+		float tick_alpha = 1.0 - smoothstep(-px * 0.5, px * 0.5, tick_dist);
+		result = premultiply(tick_color) * tick_alpha + result * (1.0 - tick_color.a * tick_alpha);
 	}
 
 	result.rgb *= COLOR.rgb;

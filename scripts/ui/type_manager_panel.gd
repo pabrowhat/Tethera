@@ -139,7 +139,7 @@ func _make_type_header(entity_type: EntityType) -> Button:
 	var count: int = int(_count_of.call(type_id)) if _count_of.is_valid() else 0
 
 	var button: Button = Button.new()
-	button.text = entity_type.name if entity_type.name != "" else "—"
+	button.text = entity_type.display_name() if entity_type.display_name() != "" else "—"
 	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.clip_text = true
 	button.focus_mode = Control.FOCUS_NONE
@@ -173,7 +173,7 @@ func _make_type_body(entity_type: EntityType) -> PanelContainer:
 	body.add_child(box)
 
 	var name_input: LineEdit = LineEdit.new()
-	name_input.text = entity_type.name
+	name_input.text = entity_type.display_name()
 	name_input.text_submitted.connect(_on_name_committed.bind(type_id, name_input))
 	name_input.focus_exited.connect(_on_name_focus_lost.bind(type_id, name_input))
 	box.add_child(name_input)
@@ -311,8 +311,8 @@ func _commit_name(text: String, type_id: String, edit: LineEdit) -> void:
 		return
 	var clean: String = text.strip_edges()
 	if clean == "":
-		edit.text = entity_type.name
-	elif clean != entity_type.name:
+		edit.text = entity_type.display_name()
+	elif clean != entity_type.display_name():
 		rename_requested.emit(type_id, clean)
 
 func _on_color_chosen(color: Color, type_id: String) -> void:

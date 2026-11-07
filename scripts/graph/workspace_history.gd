@@ -59,7 +59,7 @@ func record_move(before: Dictionary, label: String = "", decor_before: Dictionar
 func _decor_state_differs(a: Dictionary, b: Dictionary) -> bool:
 	return (a["pos"] as Vector2).distance_to(b["pos"] as Vector2) > MOVE_EPSILON \
 		or (a["size"] as Vector2).distance_to(b["size"] as Vector2) > MOVE_EPSILON \
-		or absf(angle_difference(deg_to_rad(float(a["rot"])), deg_to_rad(float(b["rot"])))) > deg_to_rad(0.1)
+		or absf(angle_difference(deg_to_rad(float(a["rot"])), deg_to_rad(float(b["rot"])))) > deg_to_rad(0.1) 		or bool(a.get("flip_h", false)) != bool(b.get("flip_h", false)) 		or bool(a.get("flip_v", false)) != bool(b.get("flip_v", false))
 
 func apply_move(positions: Dictionary, decor_states: Dictionary) -> void:
 	apply_positions(positions)
@@ -149,7 +149,7 @@ func remove_cards(ids: Array[String]) -> void:
 		_ws._last_titles.erase(doomed_ids[i])
 		_ws._last_contents.erase(doomed_ids[i])
 		_ws._saved_colors.erase(doomed_ids[i])
-		doomed[i].queue_free()
+		doomed[i].play_remove_animation()
 
 func capture(ids: Array[String]) -> Dictionary:
 	var notes: Array[Dictionary] = []
@@ -219,7 +219,7 @@ func remove_decor(ids: Array[String]) -> void:
 	for node: DecorNode in doomed:
 		_ws._storage.trash_decor(node.to_item().to_dict())
 		_ws._decor_by_id.erase(node.decor_id)
-		node.queue_free()
+		node.play_remove_animation()
 	_ws._decor.save()
 
 func restore_decor(states: Array[Dictionary]) -> void:

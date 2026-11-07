@@ -6,7 +6,9 @@ class Notifier:
 	signal changed
 
 const DEFAULT_ID: String = "dark"
+const AUTO: String = "auto"
 const BUILT_IN: Array[String] = ["dark", "light"]
+const CHOICES: Array[String] = ["auto", "dark", "light"]
 const PATH: String = "res://themes/%s.json"
 const FORMAT: int = 1
 const MISSING_COLOR: Color = Color.MAGENTA
@@ -142,7 +144,15 @@ static func load_file(theme_id: String) -> Dictionary:
 static func apply_saved() -> void:
 	apply_theme(Preferences.theme())
 
-static func apply_theme(theme_id: String) -> void:
+static func resolve_choice(choice: String) -> String:
+	if choice != AUTO:
+		return choice if BUILT_IN.has(choice) else DEFAULT_ID
+	if not DisplayServer.is_dark_mode_supported():
+		return DEFAULT_ID
+	return "dark" if DisplayServer.is_dark_mode() else "light"
+
+static func apply_theme(choice: String) -> void:
+	var theme_id: String = resolve_choice(choice)
 	_ensure_base()
 	if theme_id == _active_id and not _colors.is_empty():
 		return

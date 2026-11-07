@@ -1497,3 +1497,94 @@ msgstr "Choose the theme in Settings. It applies on Save, with no restart. The c
 
 msgid "whats_new.1_2_0.macos_vault_dialog"
 msgstr "Fixed: on macOS, the Vault folder dialog could get stuck after choosing a folder."
+
+msgid "settings.theme.auto"
+msgstr "Auto"
+
+msgid "type.character"
+msgstr "Character"
+
+msgid "type.event"
+msgstr "Event"
+
+msgid "type.place"
+msgstr "Place"
+
+msgid "type.faction"
+msgstr "Faction"
+
+msgid "type.item"
+msgstr "Item"
+
+msgid "whats_new.1_3_0.type_names"
+msgstr "The standard types (Character, Event, Place, Faction, Item) now follow the interface language. A type you rename keeps your name."
+
+msgid "whats_new.1_3_0.theme_auto"
+msgstr "New theme choice \"Auto\": the theme matches the system at launch and on Save. It is the default for new installs."
+
+msgid "whats_new.1_3_0.settings_scroll"
+msgstr "Fixed: in Settings, the Advanced section no longer pushes controls out of view. The content scrolls, Save and Cancel stay at the bottom."
+
+
+msgid "whats_new.1_3_0.light_aurora"
+msgstr "The aurora on the start screen is easier to see in the light theme."
+
+msgid "whats_new.1_3_0.license_window"
+msgstr "Licences open in a window of their own that is larger and easier to read."
+
+msgid "whats_new.1_3_0.start_focus"
+msgstr "Fixed: on the start screen, no world shows a focus frame at launch, and the frame follows the keyboard (Up, Down, Tab) without leaving copies behind."
+
+msgid "whats_new.1_3_0.reduce_motion"
+msgstr "\"Reduce motion\" now also turns off the appear animation of notes and pictures, the springy lag of a dragged card and the animation of links appearing and disappearing."
+
+msgid "whats_new.1_3_0.delete_animation"
+msgstr "Notes and pictures now fade out and shrink when deleted (instant with \"Reduce motion\")."
+
+msgid "menu.add_text"
+msgstr "Add text to the table"
+
+msgid "decor.history.text"
+msgstr "Edit text"
+
+msgid "decor.text.title"
+msgstr "Text on the table"
+
+msgid "decor.text.placeholder"
+msgstr "Type the text…"
+
+msgid "decor.text.size"
+msgstr "Font size"
+
+msgid "decor.text.color"
+msgstr "Text colour"
+
+msgid "decor.text.theme_color"
+msgstr "Use theme colour"
+
+msgid "decor.text.count"
+msgstr "Characters: %d / %d"
+
+msgid "whats_new.1_3_0.text_element"
+msgstr "New: text labels on the canvas. \"Add text to the table\" is in the project menu and the Ctrl+K palette. Double-click a label to edit the text, its size and colour. Labels move, resize, rotate, change layer, undo and export like pictures."
+
+msgid "whats_new.1_3_0.text_old_versions"
+msgstr "Older versions of the app do not show text labels. They stay in the world folder (canvas_extras.json) and come back when you open the world in 1.3.0 or later."
+
+msgid "whats_new.1_3_0.start_backdrop"
+msgstr "The start screen background now keeps moving even when \"Reduce motion\" is on."
+
+msgid "whats_new.1_3_0.side_handles"
+msgstr "Pictures and text labels have handles in the middle of each side: they change only the width or the height. For a text label, the side handles change the width of the lines, so the text reflows and the letters keep their size. Holding Ctrl (Cmd on macOS) while dragging a corner resizes freely, without keeping the proportions."
+
+msgid "decor.flip_h"
+msgstr "Flip horizontally"
+
+msgid "decor.flip_v"
+msgstr "Flip vertically"
+
+msgid "decor.history.flip"
+msgstr "Flip picture"
+
+msgid "whats_new.1_3_0.flip"
+msgstr "Pictures can be flipped: right-click a picture and choose \"Flip horizontally\" or \"Flip vertically\". You can also drag a side handle or a corner (with Ctrl or Cmd) past the opposite edge: the picture keeps growing, now mirrored."

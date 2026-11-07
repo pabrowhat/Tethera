@@ -1,7 +1,7 @@
 class_name ProjectFilesController
 extends RefCounted
 
-enum MenuItem { OPEN, SAVE, EXPORT, EXPORT_PNG, UNDO, REDO, TYPES, CLEAN_IMAGES, TRASH_RESTORE, TRASH_EMPTY, TRASH_MENU, SETTINGS, ADD_DECOR, OPEN_FOLDER, RECENT, NEW_NOTE, SEARCH, TYPE_FILTER, CANVAS_BACKGROUND, ABOUT, MAIN_MENU, QUIT, EXPORT_MENU, IMAGES_MENU, EXPORT_ALL, INSERT_IMAGE, COPY, PASTE, CUT, DUPLICATE, SELECT_ALL, TOGGLE_MODE, OPEN_PROJECT_MENU, SHORTCUTS }
+enum MenuItem { OPEN, SAVE, EXPORT, EXPORT_PNG, UNDO, REDO, TYPES, CLEAN_IMAGES, TRASH_RESTORE, TRASH_EMPTY, TRASH_MENU, SETTINGS, ADD_DECOR, OPEN_FOLDER, RECENT, NEW_NOTE, SEARCH, TYPE_FILTER, CANVAS_BACKGROUND, ABOUT, MAIN_MENU, QUIT, EXPORT_MENU, IMAGES_MENU, EXPORT_ALL, INSERT_IMAGE, COPY, PASTE, CUT, DUPLICATE, SELECT_ALL, TOGGLE_MODE, OPEN_PROJECT_MENU, SHORTCUTS, ADD_TEXT }
 
 const GROUP_MENU: String = "menu"
 const GROUP_EXPORT: String = "export"
@@ -96,6 +96,7 @@ func commands() -> Array[Dictionary]:
 		_separator(GROUP_MENU),
 		_command(MenuItem.EXPORT_PNG, tr("menu.export_png"), "Ctrl+Shift+S"),
 		_command(MenuItem.ADD_DECOR, tr("menu.add_decor")),
+		_command(MenuItem.ADD_TEXT, tr("menu.add_text")),
 		_command(MenuItem.CANVAS_BACKGROUND, tr("menu.canvas_background")),
 		_separator(GROUP_MENU),
 		_command(MenuItem.TYPES, tr("menu.types")),
@@ -164,6 +165,8 @@ func run_command(id: int) -> void:
 			export_snapshot()
 		MenuItem.ADD_DECOR:
 			_ws._decor.request_add()
+		MenuItem.ADD_TEXT:
+			_ws._decor.request_add_text()
 		MenuItem.CANVAS_BACKGROUND:
 			_ws._canvas_bg.open_dialog()
 		MenuItem.OPEN_FOLDER:
@@ -557,7 +560,7 @@ func write_project(path: String) -> void:
 			notes.append(_ws._snapshot_card(card))
 
 	var created: int = _ws._project_created if _ws._project_created > 0 else _ws._now()
-	var result: Dictionary = ProjectBundle.write(path, notes, _ws._graph.get_all_connections(), _ws._types.to_array(), created, _ws._decor.snapshot_all(), _ws._canvas_bg.snapshot(), _ws._world_flow.current_name())
+	var result: Dictionary = ProjectBundle.write(path, notes, _ws._graph.get_all_connections(), _ws._types.to_array(), created, _ws._decor.snapshot_all(), _ws._canvas_bg.snapshot(), _ws._world_flow.current_name(), _ws._decor.snapshot_extras())
 	if not bool(result["ok"]):
 		_ws._toast.show_message(str(result["message"]), true)
 		return
@@ -665,6 +668,15 @@ func fill_new_world(bundle: Dictionary, path: String, remember_file: bool = true
 			decor_item.image = NoteImages.localize_asset(decor_item.image, assets, _ws._storage, vault_images)
 			if decor_item.image == "" or _ws._decor.create_node(decor_item) == null:
 				lost_decor += 1
+		for extra: Dictionary in (bundle["extras"] as Array[Dictionary]):
+			if _ws._decor.is_full():
+				lost_decor += 1
+			elif str(extra.get("kind", "")) == DecorItem.KIND_TEXT:
+				var text_item: DecorItem = DecorItem.from_dict(extra)
+				if text_item == null or _ws._decor.create_node(text_item) == null:
+					lost_decor += 1
+			else:
+				_ws._extras_kept.append(extra)
 		write_failed = not _ws._decor.save()
 
 		var project_background: CanvasBackground = CanvasBackground.from_dict(bundle["canvas_background"])

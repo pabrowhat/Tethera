@@ -130,15 +130,15 @@ func _plan_types(file_types: Array[Dictionary]) -> Dictionary:
 
 	var conflicts_total: int = 0
 	for file_type: EntityType in parsed:
-		if _ws._types.find_by_name(file_type.name) != null:
+		if _ws._types.find_by_name(file_type.display_name()) != null:
 			conflicts_total += 1
 
 	var plans: Dictionary = {}
 	var claimed: Dictionary = {}
 	var asked: int = 0
 	for file_type: EntityType in parsed:
-		var existing: EntityType = _ws._types.find_by_name(file_type.name)
-		var wanted: String = file_type.name.strip_edges().to_lower()
+		var existing: EntityType = _ws._types.find_by_name(file_type.display_name())
+		var wanted: String = file_type.display_name().strip_edges().to_lower()
 		if existing == null and not claimed.has(wanted):
 			plans[file_type.id] = _new_plan(file_type)
 			claimed[wanted] = true
@@ -147,7 +147,7 @@ func _plan_types(file_types: Array[Dictionary]) -> Dictionary:
 		asked += 1
 		var is_taken: Callable = func(candidate: String) -> bool:
 			return _ws._types.find_by_name(candidate) != null or claimed.has(candidate.strip_edges().to_lower())
-		_ws._type_conflict.ask(file_type.name, asked, maxi(conflicts_total, asked), _free_name(file_type.name, is_taken), is_taken, existing != null)
+		_ws._type_conflict.ask(file_type.display_name(), asked, maxi(conflicts_total, asked), _free_name(file_type.display_name(), is_taken), is_taken, existing != null)
 		var decision: Dictionary = await _ws._type_conflict.resolved
 
 		match int(decision["choice"]):
@@ -158,6 +158,7 @@ func _plan_types(file_types: Array[Dictionary]) -> Dictionary:
 			TypeConflictDialog.Choice.RENAME:
 				var renamed: EntityType = EntityType.from_dict(file_type.to_dict())
 				renamed.name = str(decision["name"])
+				renamed.name_key = ""
 				plans[file_type.id] = _new_plan(renamed)
 				claimed[renamed.name.to_lower()] = true
 			TypeConflictDialog.Choice.MERGE:

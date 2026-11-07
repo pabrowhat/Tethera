@@ -69,6 +69,9 @@ var _decor: WorkspaceDecor = null
 var _canvas_bg: WorkspaceCanvasBackground = null
 var _layout: WorkspaceLayout = null
 var _canvas_bg_dialog: CanvasBackgroundDialog = null
+var _decor_text_dialog: DecorTextDialog = null
+var _decor_text_target_id: String = ""
+var _extras_kept: Array[Dictionary] = []
 var _decor_gesture: Dictionary = {}
 var _decor_menu: PopupList = null
 var _decor_menu_target: DecorNode = null
@@ -107,6 +110,7 @@ var _project_created: int = 0
 var _canvas_background: CanvasBackground = CanvasBackground.new()
 
 const SEARCH_ICON: Texture2D = preload("res://assets/icons/search.svg")
+const SEARCH_ICON_SIZE: float = 24.0
 const MARQUEE_DRAG_THRESHOLD: float = 4.0
 const LINE_PICK_RADIUS: float = 8.0
 const LINK_MENU_WIDTH: float = 140.0
@@ -268,6 +272,9 @@ func _ready() -> void:
 	_canvas_bg_dialog.pick_requested.connect(_canvas_bg.request_pick)
 	_canvas_bg_dialog.clear_requested.connect(_canvas_bg.remove)
 	_canvas_bg_dialog.opacity_changed.connect(_canvas_bg.set_opacity)
+	_decor_text_dialog = DecorTextDialog.new()
+	$UI.add_child(_decor_text_dialog)
+	_decor_text_dialog.applied.connect(_decor.on_text_applied)
 	_vault_dialog = VaultFolderDialog.new()
 	$UI.add_child(_vault_dialog)
 	_world_prompt = WorldPromptDialog.new()
@@ -307,17 +314,22 @@ func _bind_scene_colors() -> void:
 	var search_style: StyleBoxFlat = search_input.get_theme_stylebox(&"normal") as StyleBoxFlat
 	ThemeColors.bind(search_style, &"bg_color", &"surface.raised")
 	ThemeColors.bind(search_style, &"border_color", UiStyle.BORDER)
-	ThemeColors.watch(_tint_search_icon)
+	_add_search_icon(search_style)
 
-func _tint_search_icon() -> void:
-	var image: Image = SEARCH_ICON.get_image()
-	if image.is_compressed():
-		image.decompress()
-	var tint: Color = ThemeColors.color(&"text.muted")
-	for y: int in image.get_height():
-		for x: int in image.get_width():
-			image.set_pixel(x, y, Color(tint, tint.a * image.get_pixel(x, y).a))
-	search_input.right_icon = ImageTexture.create_from_image(image)
+func _add_search_icon(search_style: StyleBoxFlat) -> void:
+	var icon: TextureRect = TextureRect.new()
+	icon.texture = SEARCH_ICON
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	icon.offset_left = -(search_style.content_margin_right + SEARCH_ICON_SIZE)
+	icon.offset_right = -search_style.content_margin_right
+	icon.offset_top = -SEARCH_ICON_SIZE * 0.5
+	icon.offset_bottom = SEARCH_ICON_SIZE * 0.5
+	ThemeColors.bind(icon, &"modulate", &"text.muted")
+	search_input.add_child(icon)
+	search_style.content_margin_right += SEARCH_ICON_SIZE
 
 func _apply_preferences() -> void:
 	if background.material is ShaderMaterial:
@@ -420,6 +432,8 @@ func _load_types() -> void:
 	var stored: Dictionary = _storage.load_types()
 	if bool(stored["exists"]):
 		_types.load_array(stored["types"])
+		if _types.migrate_default_names():
+			_storage.save_types(_types.to_array())
 	else:
 		_types.seed_defaults()
 		_storage.save_types(_types.to_array())
@@ -578,6 +592,7 @@ func _clear_canvas() -> void:
 	for decor_node: DecorNode in _decor.all_nodes():
 		decor_node.queue_free()
 	_decor_by_id.clear()
+	_extras_kept.clear()
 	_last_titles.clear()
 	_last_contents.clear()
 	_saved_colors.clear()
@@ -1712,7 +1727,7 @@ func _is_dialog_over_start() -> bool:
 		or (is_instance_valid(_about_dialog) and _about_dialog.is_open()) \
 		or (is_instance_valid(_type_conflict) and _type_conflict.is_open()) \
 		or (is_instance_valid(_settings_dialog) and _settings_dialog.is_open()) \
-		or (is_instance_valid(_canvas_bg_dialog) and _canvas_bg_dialog.is_open()) \
+		or (is_instance_valid(_canvas_bg_dialog) and _canvas_bg_dialog.is_open()) 		or (is_instance_valid(_decor_text_dialog) and _decor_text_dialog.is_open()) \
 		or (is_instance_valid(_vault_dialog) and _vault_dialog.is_open()) \
 		or (is_instance_valid(_world_prompt) and _world_prompt.is_open()) \
 		or (is_instance_valid(_shortcuts_dialog) and _shortcuts_dialog.is_open()) \

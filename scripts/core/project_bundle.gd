@@ -16,7 +16,7 @@ const DEFAULT_COLOR: String = "313549"
 const MAX_ID_LENGTH: int = 80
 const MAX_COORDINATE: float = 10000000.0
 
-static func write(path: String, notes: Array[Dictionary], connections: Array[Dictionary], types: Array[Dictionary], created: int, decor: Array[Dictionary] = [], canvas_background: CanvasBackground = null, project_name: String = "") -> Dictionary:
+static func write(path: String, notes: Array[Dictionary], connections: Array[Dictionary], types: Array[Dictionary], created: int, decor: Array[Dictionary] = [], canvas_background: CanvasBackground = null, project_name: String = "", extras: Array[Dictionary] = []) -> Dictionary:
 	var asset_by_source: Dictionary = {}
 	var asset_bytes: Dictionary = {}
 	var used_names: Dictionary = {}
@@ -83,12 +83,20 @@ static func write(path: String, notes: Array[Dictionary], connections: Array[Dic
 		var decor_item: DecorItem = DecorItem.from_dict(decor_data)
 		if decor_item == null:
 			continue
+		if decor_item.is_text():
+			continue
 		var decor_ref: String = _register_asset(decor_item.image, false, asset_by_source, asset_bytes, used_names)
 		if decor_ref == "":
 			missing_images += 1
 			continue
 		decor_item.image = decor_ref
 		decor_entries.append(decor_item.to_dict())
+
+	var extra_entries: Array[Dictionary] = []
+	for extra_data: Dictionary in extras:
+		var normalized: Dictionary = _normalize_extra(extra_data)
+		if not normalized.is_empty() and decor_entries.size() + extra_entries.size() < DecorItem.MAX_PER_CANVAS:
+			extra_entries.append(normalized)
 
 	var background_entry: Dictionary = {}
 	if canvas_background != null and canvas_background.is_set():
@@ -120,6 +128,7 @@ static func write(path: String, notes: Array[Dictionary], connections: Array[Dic
 		"connections": link_entries.size(),
 		"types": types.size(),
 		"decor": decor_entries.size(),
+		"extras": extra_entries.size(),
 		"assets": asset_bytes.size(),
 	}
 	if sanitize_name(project_name) != "":
@@ -131,6 +140,8 @@ static func write(path: String, notes: Array[Dictionary], connections: Array[Dic
 		"adjacency": adjacency,
 		"decor": decor_entries,
 	}
+	if not extra_entries.is_empty():
+		graph["extras"] = extra_entries
 	if not background_entry.is_empty():
 		graph["canvas_background"] = background_entry
 
@@ -310,6 +321,9 @@ static func _read_opened(reader: ZIPReader, declared: Dictionary) -> Dictionary:
 				continue
 			while decor_ids.has(decor_item.id):
 				decor_item.id = UuidUtil.generate_v4()
+			if decor_item.is_text():
+				skipped_decor += 1
+				continue
 			var decor_asset: String = _load_asset(reader, files, decor_item.image, assets, declared, refused_assets)
 			if decor_asset != "" and not bool(ImageGuard.inspect(assets[decor_asset] as PackedByteArray, decor_asset.get_extension(), DecorItem.MAX_SIDE, DecorItem.MAX_FILE_BYTES)["ok"]):
 				decor_asset = ""
@@ -319,6 +333,21 @@ static func _read_opened(reader: ZIPReader, declared: Dictionary) -> Dictionary:
 			decor_ids[decor_item.id] = true
 			decor_item.image = decor_asset
 			decor.append(decor_item.to_dict())
+
+	var extras: Array[Dictionary] = []
+	var raw_extras: Variant = graph.get("extras", [])
+	if raw_extras is Array:
+		var extra_ids: Dictionary = {}
+		for extra_value: Variant in (raw_extras as Array):
+			var normalized: Dictionary = _normalize_extra(extra_value)
+			if normalized.is_empty() or decor.size() + extras.size() >= DecorItem.MAX_PER_CANVAS:
+				skipped_decor += 1
+				continue
+			if str(normalized.get("kind", "")) == DecorItem.KIND_TEXT:
+				while extra_ids.has(str(normalized["id"])):
+					normalized["id"] = UuidUtil.generate_v4()
+				extra_ids[str(normalized["id"])] = true
+			extras.append(normalized)
 
 	var canvas_background: Dictionary = {}
 	var lost_canvas_background: bool = false
@@ -367,6 +396,7 @@ static func _read_opened(reader: ZIPReader, declared: Dictionary) -> Dictionary:
 		"dropped_images": dropped_images,
 		"refused_assets": refused_assets,
 		"decor": decor,
+		"extras": extras,
 		"skipped_decor": skipped_decor,
 		"canvas_background": canvas_background,
 		"lost_canvas_background": lost_canvas_background,
@@ -508,3 +538,15 @@ static func _adjacency_add(adjacency: Dictionary, from_id: String, to_id: String
 
 static func _failure(message: String) -> Dictionary:
 	return {"ok": false, "message": message}
+
+static func _normalize_extra(value: Variant) -> Dictionary:
+	if not (value is Dictionary):
+		return {}
+	var data: Dictionary = value as Dictionary
+	var kind: Variant = data.get("kind", null)
+	if not (kind is String) or (kind as String) == "":
+		return {}
+	if kind == DecorItem.KIND_TEXT:
+		var item: DecorItem = DecorItem.from_dict(data)
+		return item.to_dict() if item != null else {}
+	return data.duplicate(true)

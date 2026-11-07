@@ -30,6 +30,16 @@ func set_inner(color: Color, inset: float, right_half: bool = false) -> void:
 func clear_inner() -> void:
 	_material.set_shader_parameter("inner_color", Color.TRANSPARENT)
 
+func set_tick(points: PackedVector2Array, color: Color, width: float) -> void:
+	_material.set_shader_parameter("tick_a", points[0])
+	_material.set_shader_parameter("tick_b", points[1])
+	_material.set_shader_parameter("tick_c", points[2])
+	_material.set_shader_parameter("tick_color", color)
+	_material.set_shader_parameter("tick_width", width)
+
+func clear_tick() -> void:
+	_material.set_shader_parameter("tick_color", Color.TRANSPARENT)
+
 func place_centered(center: Vector2, diameter: float) -> void:
 	size = Vector2(diameter, diameter)
 	position = center - size * 0.5

@@ -107,7 +107,7 @@ func _rebuild() -> void:
 	var selected: int = 0
 	for entity_type: EntityType in _registry.get_all():
 		var index: int = _picker.get_item_count()
-		_picker.add_item(entity_type.name if entity_type.name != "" else "—", index, entity_type.id)
+		_picker.add_item(entity_type.display_name() if entity_type.display_name() != "" else "—", index, entity_type.id)
 		if entity_type.id == _card.entity_type_id:
 			selected = index
 	_picker.select_id(selected)

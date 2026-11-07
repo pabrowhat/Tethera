@@ -27,7 +27,7 @@ static func defaults() -> Dictionary:
 		KEY_BACKUPS_KEPT: VaultStorage.MAX_BACKUPS,
 		KEY_EXPORT_INCLUDE_LINKED: false,
 		KEY_LANGUAGE: Localization.AUTO,
-		KEY_THEME: ThemeColors.DEFAULT_ID,
+		KEY_THEME: ThemeColors.AUTO,
 	}
 
 static func get_pref(key: String) -> Variant:
@@ -57,7 +57,7 @@ static func sanitize(key: String, value: Variant) -> Variant:
 		KEY_LANGUAGE:
 			return value if value is String and Localization.CHOICES.has(value) else fallback
 		KEY_THEME:
-			return value if value is String and ThemeColors.BUILT_IN.has(value) else fallback
+			return value if value is String and ThemeColors.CHOICES.has(value) else fallback
 	return fallback
 
 static func save(values: Dictionary) -> void:

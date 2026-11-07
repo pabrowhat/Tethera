@@ -17,14 +17,18 @@ const SLIDER_STEP: float = 0.1
 const PROMPT_WIDTH: float = 380.0
 const LANGUAGE_BUTTON_WIDTH: float = 170.0
 const THEME_BUTTON_WIDTH: float = 170.0
+const SCROLL_RESERVE: float = 190.0
+const SCROLL_MIN_HEIGHT: float = 120.0
 
 var _reduce_motion: bool = false
 var _show_grid: bool = true
 var _export_linked: bool = false
 var _note_color: Color = Color(Preferences.DEFAULT_NOTE_COLOR_HEX)
 var _language: String = Localization.AUTO
-var _theme: String = ThemeColors.DEFAULT_ID
+var _theme: String = ThemeColors.AUTO
 
+var _scroll: ScrollContainer = null
+var _content: VBoxContainer = null
 var _boxes: Dictionary = {}
 var _language_button: DropdownButton = null
 var _theme_button: DropdownButton = null
@@ -57,9 +61,18 @@ func _init() -> void:
 	_set_card_width(DIALOG_WIDTH)
 	_build()
 	_build_prompt()
+	resized.connect(_fit_scroll)
 
 func _build() -> void:
 	_body.add_child(_make_label("settings.title", 15, TITLE_COLOR))
+
+	_scroll = ScrollContainer.new()
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_body.add_child(_scroll)
+	_content = VBoxContainer.new()
+	_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_content.add_theme_constant_override("separation", 10)
+	_scroll.add_child(_content)
 
 	_add_toggle(&"reduce_motion", "settings.reduce_motion", "settings.reduce_motion.hint", _on_reduce_motion_pressed)
 	_add_toggle(&"show_grid", "settings.show_grid", "", _on_show_grid_pressed)
@@ -117,7 +130,7 @@ func _build_prompt() -> void:
 
 func _build_line_width() -> void:
 	var head: HBoxContainer = HBoxContainer.new()
-	_body.add_child(head)
+	_content.add_child(head)
 	var caption: Label = _make_label("settings.line_width", FONT_SIZE, TEXT_COLOR)
 	caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(caption)
@@ -131,20 +144,20 @@ func _build_line_width() -> void:
 	_line_slider.focus_mode = Control.FOCUS_NONE
 	_line_slider.custom_minimum_size = Vector2(0.0, 22.0)
 	_line_slider.value_changed.connect(_on_line_width_changed)
-	_body.add_child(_line_slider)
+	_content.add_child(_line_slider)
 
 func _build_note_color() -> void:
-	_body.add_child(_make_label("settings.default_color", FONT_SIZE, TEXT_COLOR))
-	_body.add_child(_make_label("settings.default_color.hint", HINT_SIZE, MUTED_COLOR, true))
+	_content.add_child(_make_label("settings.default_color", FONT_SIZE, TEXT_COLOR))
+	_content.add_child(_make_label("settings.default_color.hint", HINT_SIZE, MUTED_COLOR, true))
 	_swatch_row = HFlowContainer.new()
 	_swatch_row.add_theme_constant_override("h_separation", SWATCH_GAP)
 	_swatch_row.add_theme_constant_override("v_separation", SWATCH_GAP)
-	_body.add_child(_swatch_row)
+	_content.add_child(_swatch_row)
 
 func _build_language() -> void:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
-	_body.add_child(row)
+	_content.add_child(row)
 	var caption: Label = _make_label("settings.language", FONT_SIZE, TEXT_COLOR)
 	caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(caption)
@@ -153,12 +166,12 @@ func _build_language() -> void:
 	_fill_language_list()
 	_language_button.item_selected.connect(_on_language_selected)
 	row.add_child(_language_button)
-	_body.add_child(_make_label("settings.language.hint", HINT_SIZE, MUTED_COLOR, true))
+	_content.add_child(_make_label("settings.language.hint", HINT_SIZE, MUTED_COLOR, true))
 
 func _build_theme() -> void:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
-	_body.add_child(row)
+	_content.add_child(row)
 	var caption: Label = _make_label("settings.theme", FONT_SIZE, TEXT_COLOR)
 	caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(caption)
@@ -167,7 +180,7 @@ func _build_theme() -> void:
 	_fill_theme_list()
 	_theme_button.item_selected.connect(_on_theme_selected)
 	row.add_child(_theme_button)
-	_body.add_child(_make_label("settings.theme.hint", HINT_SIZE, MUTED_COLOR, true))
+	_content.add_child(_make_label("settings.theme.hint", HINT_SIZE, MUTED_COLOR, true))
 
 func _build_advanced() -> void:
 	var header: Button = _make_row_button()
@@ -186,11 +199,11 @@ func _build_advanced() -> void:
 	var title: Label = _make_label("settings.advanced", FONT_SIZE, UiStyle.ACCENT)
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(title)
-	_body.add_child(header)
+	_content.add_child(header)
 
 	_advanced_body = VBoxContainer.new()
 	_advanced_body.add_theme_constant_override("separation", 10)
-	_body.add_child(_advanced_body)
+	_content.add_child(_advanced_body)
 
 	var backups_row: HBoxContainer = HBoxContainer.new()
 	backups_row.add_theme_constant_override("separation", 10)
@@ -267,6 +280,7 @@ func open_with_current() -> void:
 	_show_vault_dir()
 	_set_advanced_open(false)
 	open()
+	_fit_scroll.call_deferred()
 
 func _load_form(values: Dictionary) -> void:
 	_reduce_motion = bool(values[Preferences.KEY_REDUCE_MOTION])
@@ -276,7 +290,7 @@ func _load_form(values: Dictionary) -> void:
 	_language = str(values[Preferences.KEY_LANGUAGE])
 	_language_button.select_id(Localization.CHOICES.find(_language))
 	_theme = str(values[Preferences.KEY_THEME])
-	_theme_button.select_id(ThemeColors.BUILT_IN.find(_theme))
+	_theme_button.select_id(ThemeColors.CHOICES.find(_theme))
 
 	_line_slider.set_value_no_signal(float(values[Preferences.KEY_LINE_WIDTH_SCALE]))
 	_update_line_value()
@@ -375,7 +389,7 @@ func _hide_prompt() -> void:
 
 
 func _add_toggle(key: StringName, text: String, hint: String, on_press: Callable, parent: Control = null) -> void:
-	var target: Control = parent if parent != null else _body
+	var target: Control = parent if parent != null else _content
 	var row: Button = _make_row_button()
 	row.pressed.connect(on_press)
 	var content: HBoxContainer = _make_row_content(row)
@@ -488,12 +502,12 @@ func _fill_language_list() -> void:
 
 func _fill_theme_list() -> void:
 	_theme_button.clear()
-	for index: int in ThemeColors.BUILT_IN.size():
-		_theme_button.add_item(tr("settings.theme." + ThemeColors.BUILT_IN[index]), index)
-	_theme_button.select_id(ThemeColors.BUILT_IN.find(_theme))
+	for index: int in ThemeColors.CHOICES.size():
+		_theme_button.add_item(tr("settings.theme." + ThemeColors.CHOICES[index]), index)
+	_theme_button.select_id(ThemeColors.CHOICES.find(_theme))
 
 func _on_theme_selected(id: int) -> void:
-	_theme = ThemeColors.BUILT_IN[id]
+	_theme = ThemeColors.CHOICES[id]
 
 func _on_language_selected(id: int) -> void:
 	_language = Localization.CHOICES[id]
@@ -510,6 +524,13 @@ func _toggle_advanced() -> void:
 func _set_advanced_open(open_section: bool) -> void:
 	_advanced_body.visible = open_section
 	_advanced_arrow.rotation = 0.0 if open_section else -PI / 2.0
+	_fit_scroll.call_deferred()
+
+func _fit_scroll() -> void:
+	if _scroll == null or not is_inside_tree():
+		return
+	var limit: float = maxf(get_viewport_rect().size.y - SCROLL_RESERVE, SCROLL_MIN_HEIGHT)
+	_scroll.custom_minimum_size = Vector2(0.0, minf(_content.get_combined_minimum_size().y, limit))
 
 func _on_save_pressed(after: Callable = Callable()) -> void:
 	if not _vault_changed():

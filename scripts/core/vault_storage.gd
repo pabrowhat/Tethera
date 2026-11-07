@@ -9,6 +9,7 @@ const BACKUPS_FOLDER: String = "backups/"
 const CONNECTIONS_FILE: String = "connections.json"
 const TYPES_FILE: String = "types.json"
 const DECOR_FILE: String = "decor.json"
+const EXTRAS_FILE: String = "canvas_extras.json"
 const CANVAS_FILE: String = "canvas.json"
 const BACKUP_PREFIX: String = "vault_"
 const MAX_BACKUPS: int = 10
@@ -32,6 +33,7 @@ var images_dir: String = ""
 var connections_path: String = ""
 var types_path: String = ""
 var decor_path: String = ""
+var extras_path: String = ""
 var canvas_path: String = ""
 var backups_dir: String = ""
 var trash_dir: String = ""
@@ -49,6 +51,7 @@ func _init(world_root: String) -> void:
 	connections_path = root + CONNECTIONS_FILE
 	types_path = root + TYPES_FILE
 	decor_path = root + DECOR_FILE
+	extras_path = root + EXTRAS_FILE
 	canvas_path = root + CANVAS_FILE
 	backups_dir = root + BACKUPS_FOLDER
 	trash_dir = root + TRASH_FOLDER
@@ -468,6 +471,8 @@ func _backup_into(backup_dir: String) -> bool:
 		copied = DirAccess.copy_absolute(types_path, backup_dir + "types.json") == OK and copied
 	if FileAccess.file_exists(decor_path):
 		copied = DirAccess.copy_absolute(decor_path, backup_dir + "decor.json") == OK and copied
+	if FileAccess.file_exists(extras_path):
+		copied = DirAccess.copy_absolute(extras_path, backup_dir + EXTRAS_FILE) == OK and copied
 	if FileAccess.file_exists(canvas_path):
 		copied = DirAccess.copy_absolute(canvas_path, backup_dir + "canvas.json") == OK and copied
 	return copied
@@ -478,6 +483,7 @@ func clear_vault() -> void:
 	_move_to_trash(types_path, trash_files_dir)
 	_move_to_trash(connections_path, trash_files_dir)
 	_move_to_trash(decor_path, trash_files_dir)
+	_move_to_trash(extras_path, trash_files_dir)
 	_move_to_trash(canvas_path, trash_files_dir)
 	var no_links: Array[Dictionary] = []
 	save_connections(no_links)
@@ -541,6 +547,25 @@ func load_decor() -> Array[Dictionary]:
 		for item: Variant in (parsed as Array):
 			if item is Dictionary:
 				result.append(item as Dictionary)
+	return result
+
+func save_extras(items: Array[Dictionary]) -> bool:
+	if items.is_empty() and not FileAccess.file_exists(extras_path):
+		return true
+	ensure_directories()
+	return _write_text_atomic(extras_path, JSON.stringify(items, "	"))
+
+func load_extras() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if not FileAccess.file_exists(extras_path):
+		return result
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(extras_path))
+	if not (parsed is Array):
+		DirAccess.rename_absolute(extras_path, extras_path + CORRUPT_SUFFIX)
+		return result
+	for item: Variant in (parsed as Array):
+		if item is Dictionary:
+			result.append(item as Dictionary)
 	return result
 
 func save_canvas_background(background: CanvasBackground) -> bool:

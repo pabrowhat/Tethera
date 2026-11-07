@@ -33,6 +33,7 @@ var _row_by_id: Dictionary = {}
 var _backdrop: ColorRect = null
 var _backdrop_material: ShaderMaterial = null
 var _usable_count: int = 0
+var _frame_shown: bool = false
 
 func _init() -> void:
 	ThemeColors.bind(self, &"color", BACKGROUND)
@@ -128,6 +129,7 @@ func show_worlds(worlds: Array[Dictionary], last_id: String) -> void:
 	_worlds = worlds
 	_last_id = last_id
 	_selected_id = ""
+	_frame_shown = false
 	if _is_usable(last_id):
 		_selected_id = last_id
 	else:
@@ -137,15 +139,16 @@ func show_worlds(worlds: Array[Dictionary], last_id: String) -> void:
 				break
 	_rebuild_rows()
 	show_error("")
-	(_backdrop.material as ShaderMaterial).set_shader_parameter("speed", 0.0 if Preferences.reduce_motion() else 1.0)
 	_is_open = true
 	visible = true
 	set_process_input(true)
 
 func refresh(worlds: Array[Dictionary], last_id: String) -> void:
 	var keep: String = _selected_id
+	var keep_frame: bool = _frame_shown
 	show_worlds(worlds, last_id)
 	if keep != "" and _is_usable(keep):
+		_frame_shown = keep_frame
 		_select(keep)
 
 func close() -> void:
@@ -227,8 +230,8 @@ func _make_row(world: Dictionary, now: int) -> HBoxContainer:
 	entry.add_theme_constant_override("separation", 6)
 	entry.add_child(row)
 	if usable:
-		row.button_pressed = world_id == _selected_id
-		row.pressed.connect(_select.bind(world_id))
+		row.set_pressed_no_signal(_frame_shown and world_id == _selected_id)
+		row.pressed.connect(_pick_with_mouse.bind(world_id))
 		row.gui_input.connect(_on_row_input.bind(world_id))
 		_row_by_id[world_id] = row
 		var rename_button: Button = _make_button("worlds.rename", false)
@@ -249,12 +252,17 @@ func _make_row(world: Dictionary, now: int) -> HBoxContainer:
 		entry.add_child(damaged_delete)
 	return entry
 
+func _pick_with_mouse(world_id: String) -> void:
+	_frame_shown = true
+	_select(world_id)
+
 func _select(world_id: String) -> void:
 	_selected_id = world_id
 	show_error("")
+	for other_id: String in _row_by_id:
+		(_row_by_id[other_id] as Button).set_pressed_no_signal(_frame_shown and other_id == world_id)
 	var row: Button = _row_by_id.get(world_id) as Button
 	if row != null:
-		row.set_pressed_no_signal(true)
 		_scroll.ensure_control_visible(row)
 	_update_buttons()
 
@@ -280,6 +288,7 @@ func _move_selection(step: int) -> void:
 	if usable_ids.is_empty():
 		return
 	var index: int = usable_ids.find(_selected_id)
+	_frame_shown = true
 	index = clampi(index + step if index >= 0 else 0, 0, usable_ids.size() - 1)
 	_select(usable_ids[index])
 
@@ -296,6 +305,8 @@ func _input(event: InputEvent) -> void:
 			_move_selection(1)
 		KEY_UP:
 			_move_selection(-1)
+		KEY_TAB:
+			_move_selection(-1 if key.shift_pressed else 1)
 		KEY_ENTER, KEY_KP_ENTER:
 			if not key.is_echo():
 				_request_open()

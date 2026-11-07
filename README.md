@@ -21,8 +21,9 @@ Spatial canvas for notes and lore: cards, links and pictures on an infinite boar
 ## Features
 
 - Markdown notes on a canvas, linked with `[[...]]`
-- Entity types with custom fields for characters, planets and events
+- Entity types with custom fields for characters, places and events
 - Pictures, decor and a canvas background
+- Text labels on the canvas
 - Export and import of whole worlds as `.tether` files
 - Interface in English and Russian
 

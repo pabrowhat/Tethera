@@ -4,7 +4,6 @@ extends ModalDialog
 enum Tab { ABOUT, WHATS_NEW }
 
 const DIALOG_WIDTH: float = 580.0
-const LICENSE_HEIGHT: float = 200.0
 const CONTENT_HEIGHT: float = 340.0
 const AUTHOR: String = "pabrowhat"
 const AVATAR_PATH: String = "res://assets/icon-pabrowhat.png"
@@ -19,6 +18,7 @@ var _about_page: ScrollContainer = null
 var _whats_new_page: ScrollContainer = null
 var _whats_new_box: VBoxContainer = null
 var _guide_dialog: GuideDialog = null
+var _license_dialog: LicenseDialog = null
 var _expanded_versions: Dictionary = {}
 
 func _init() -> void:
@@ -26,6 +26,8 @@ func _init() -> void:
 	_set_card_width(DIALOG_WIDTH)
 	_guide_dialog = GuideDialog.new()
 	add_child(_guide_dialog)
+	_license_dialog = LicenseDialog.new()
+	add_child(_license_dialog)
 	_body.add_child(_make_label("about.title", 15, TITLE_COLOR))
 
 	var tabs: HBoxContainer = HBoxContainer.new()
@@ -136,17 +138,7 @@ func _add_license(box: VBoxContainer, title: String, reader: Callable) -> void:
 	header.add_child(name_label)
 	var toggle: Button = _make_button("about.license.show", false)
 	header.add_child(toggle)
-	var text_view: TextEdit = TextEdit.new()
-	text_view.editable = false
-	text_view.custom_minimum_size = Vector2(0.0, LICENSE_HEIGHT)
-	text_view.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
-	text_view.visible = false
-	box.add_child(text_view)
-	toggle.pressed.connect(func() -> void:
-		if not text_view.visible and text_view.text == "":
-			text_view.text = str(reader.call())
-		text_view.visible = not text_view.visible
-		toggle.text = "about.license.hide" if text_view.visible else "about.license.show")
+	toggle.pressed.connect(_license_dialog.open_license.bind(title, reader))
 
 func _godot_notice() -> String:
 	var parts: PackedStringArray = PackedStringArray([Engine.get_license_text()])

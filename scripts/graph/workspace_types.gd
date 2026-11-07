@@ -145,7 +145,7 @@ func request_delete_type(type_id: String) -> void:
 	_ws._pending_confirm = delete_type.bind(type_id)
 	_ws.confirm_modal.prompt(
 		tr("type.delete.title"),
-		tr("type.delete.confirm") % [entity_type.name, count_notes_of_type(type_id)],
+		tr("type.delete.confirm") % [entity_type.display_name(), count_notes_of_type(type_id)],
 		tr("type.delete.button")
 	)
 

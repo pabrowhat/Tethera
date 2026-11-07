@@ -125,7 +125,7 @@ func rebuild(types: Array[EntityType], filter: TypeFilter) -> void:
 	_labels.clear()
 
 	for entity_type: EntityType in types:
-		_add_row(entity_type.id, entity_type.name, entity_type.color)
+		_add_row(entity_type.id, entity_type.display_name(), entity_type.color)
 	_add_row("", tr("filter.no_type"), ThemeColors.color(NO_TYPE_COLOR))
 	_apply_search()
 	refresh_states(filter)

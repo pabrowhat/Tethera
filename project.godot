@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Tethera"
-config/version="1.2.0"
+config/version="1.3.0"
 run/main_scene="uid://bvyg7kq0v37pm"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Tethera"
@@ -47,5 +47,6 @@ locale/translations=PackedStringArray("res://locale/en.po", "res://locale/ru.po"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=4
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_2d=2

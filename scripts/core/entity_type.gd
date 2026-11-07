@@ -2,9 +2,11 @@ class_name EntityType
 extends RefCounted
 
 const DEFAULT_COLOR: Color = Color("3498db")
+const NAME_KEYS: Array[String] = ["type.character", "type.event", "type.place", "type.faction", "type.item"]
 
 var id: String = ""
 var name: String = ""
+var name_key: String = ""
 var color: Color = DEFAULT_COLOR
 var fields: Array[FieldDef] = []
 var bg_color: String = ""
@@ -18,11 +20,16 @@ static func create(type_name: String, type_color: Color) -> EntityType:
 	entity_type.color = type_color
 	return entity_type
 
+func display_name() -> String:
+	if name_key != "":
+		return TranslationServer.translate(name_key)
+	return name
+
 func to_dict() -> Dictionary:
 	var field_entries: Array[Dictionary] = []
 	for field: FieldDef in fields:
 		field_entries.append(field.to_dict())
-	return {
+	var result: Dictionary = {
 		"id": id,
 		"name": name,
 		"color": color.to_html(false),
@@ -31,6 +38,9 @@ func to_dict() -> Dictionary:
 		"bg_color2": bg_color2,
 		"bg_image": bg_image,
 	}
+	if name_key != "":
+		result["name_key"] = name_key
+	return result
 
 static func from_dict(value: Variant) -> EntityType:
 	if not (value is Dictionary):
@@ -43,6 +53,9 @@ static func from_dict(value: Variant) -> EntityType:
 	var entity_type: EntityType = EntityType.new()
 	entity_type.id = type_id
 	entity_type.name = str(data.get("name", "")).strip_edges()
+	var raw_key: String = str(data.get("name_key", "")).strip_edges()
+	if NAME_KEYS.has(raw_key):
+		entity_type.name_key = raw_key
 
 	var color_hex: String = str(data.get("color", "")).strip_edges().trim_prefix("#")
 	entity_type.color = Color(color_hex) if Color.html_is_valid(color_hex) else DEFAULT_COLOR

@@ -117,7 +117,7 @@ func _paste_from(source: NoteClipboard, offset: Vector2, history_label: String, 
 
 	var decor_ids: Array[String] = []
 	for entry: Dictionary in new_decor:
-		if _ws._decor_by_id.size() >= DecorItem.MAX_PER_CANVAS:
+		if _ws._decor.is_full():
 			break
 		var item: DecorItem = DecorItem.from_dict(entry)
 		var node: DecorNode = _ws._decor.create_node(item) if item != null else null
