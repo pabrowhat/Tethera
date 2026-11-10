@@ -5,6 +5,7 @@ signal drag_started(card: GraphCard)
 signal drag_moved(card: GraphCard, delta: Vector2, velocity_x: float)
 signal drag_ended(card: GraphCard)
 signal card_clicked(card: GraphCard, is_ctrl: bool)
+signal card_clean_clicked(card: GraphCard)
 signal carried_toggled(card: GraphCard)
 signal title_changed(card: GraphCard, new_title: String)
 signal flip_started(card: GraphCard, to_back: bool)
@@ -51,11 +52,16 @@ signal cover_clicked(card: GraphCard)
 @onready var back_flip_button: Button = $FaceHost/FaceRoot/BackMargin/BackBox/BackHeader/BackFlipButton
 @onready var back_title_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/BackHeader/BackTitle
 @onready var backlinks_title_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/BacklinksTitle
-@onready var dates_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/DatesLabel
+@onready var dates_label: RichTextLabel = $FaceHost/FaceRoot/BackMargin/BackBox/DatesLabel
 @onready var todo_chip: Button = $FaceHost/FaceRoot/BackMargin/BackBox/StatusChips/TodoChip
 @onready var progress_chip: Button = $FaceHost/FaceRoot/BackMargin/BackBox/StatusChips/ProgressChip
 @onready var done_chip: Button = $FaceHost/FaceRoot/BackMargin/BackBox/StatusChips/DoneChip
 @onready var backlinks_box: VBoxContainer = $FaceHost/FaceRoot/BackMargin/BackBox/BacklinksBox
+@onready var type_box: VBoxContainer = $FaceHost/FaceRoot/BackMargin/BackBox/TypeBox
+@onready var manual_title_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/ManualTitle
+@onready var manual_box: VBoxContainer = $FaceHost/FaceRoot/BackMargin/BackBox/ManualBox
+@onready var outgoing_title_label: Label = $FaceHost/FaceRoot/BackMargin/BackBox/OutgoingTitle
+@onready var outgoing_box: VBoxContainer = $FaceHost/FaceRoot/BackMargin/BackBox/OutgoingBox
 
 var card_id: String = ""
 var card_color: Color = Color(Preferences.DEFAULT_NOTE_COLOR_HEX)
@@ -157,10 +163,10 @@ const ROW_GAP: float = 6.0
 const BASE_CORNER_RADIUS: float = 8.0
 const FRONT_BG: StringName = &"card.body"
 const PICTURE_OVERLAY_ALPHA: float = 0.55
-const BACK_BG: StringName = &"card.back"
 const FLIP_MIN_SCALE: float = 0.02
 const DOUBLE_CLICK_DRAG_SLOP: float = 4.0
 const MAX_BACKLINK_ROWS: int = 5
+const HINT_ALPHA: float = 0.6
 
 const SEARCH_FADE_DURATION: float = 0.18
 const TEXT_CLIP_SHADER: Shader = preload("res://shaders/text_clip.gdshader")
@@ -236,15 +242,13 @@ func _bind_scene_colors() -> void:
 	ThemeColors.bind(title_edit.get_theme_stylebox(&"normal"), &"border_color", UiStyle.ACCENT)
 	ThemeColors.bind_override(title_edit, &"font_color", &"text.strong")
 	ThemeColors.bind_override(zoom_hint, &"font_color", &"ink.on_dark")
-	ThemeColors.bind_override(back_title_label, &"font_color", &"card.text")
-	ThemeColors.bind_override(dates_label, &"font_color", &"card.text_muted")
-	ThemeColors.bind_override(backlinks_title_label, &"font_color", &"card.text_muted")
+	_apply_back_text_colors()
 
 func _on_theme_changed() -> void:
 	set_category_color(card_color, false)
 	set_body_background(_body_input_color, _body_input_color2, _body_texture)
 	if _back_filled:
-		populate_back(_back_created, _back_modified, _back_links)
+		_repopulate_back()
 	status_dot.queue_redraw()
 
 func _front_ink() -> Array[Color]:
@@ -259,6 +263,16 @@ func _apply_front_text_colors() -> void:
 	content_label.add_theme_color_override("default_color", ink[1])
 	for item: String in FLIP_ICON_ITEMS:
 		flip_button.add_theme_color_override(item, ink[0])
+		back_flip_button.add_theme_color_override(item, ink[0])
+	_apply_back_text_colors()
+
+func _apply_back_text_colors() -> void:
+	var ink: Array[Color] = _front_ink()
+	back_title_label.add_theme_color_override("font_color", ink[0])
+	dates_label.add_theme_color_override("default_color", ink[1])
+	for label: Label in [backlinks_title_label, outgoing_title_label, manual_title_label]:
+		label.add_theme_color_override("font_color", ink[0])
+		label.add_theme_font_override("font", AppFonts.note_bold())
 
 func setup(id: String, initial_title: String, initial_content: String = "", color_hex: String = "313549", img_path: String = "") -> void:
 	card_id = id
@@ -433,37 +447,98 @@ func contains_global_point(point: Vector2) -> bool:
 var _back_created: String = ""
 var _back_modified: String = ""
 var _back_links: Array[Dictionary] = []
+var _back_outgoing: Array[Dictionary] = []
+var _back_manual: Array[Dictionary] = []
+var _back_type: Dictionary = {}
+var _back_words: int = -1
 var _back_filled: bool = false
 
-func populate_back(created_text: String, modified_text: String, backlinks: Array[Dictionary]) -> void:
+func populate_back(created_text: String, modified_text: String, backlinks: Array[Dictionary], outgoing: Array[Dictionary] = [], type_info: Dictionary = {}, word_count: int = -1, manual: Array[Dictionary] = []) -> void:
 	_back_created = created_text
 	_back_modified = modified_text
 	_back_links = backlinks
+	_back_outgoing = outgoing
+	_back_manual = manual
+	_back_type = type_info
+	_back_words = word_count
 	_back_filled = true
-	dates_label.text = tr("card.dates") % [created_text, modified_text]
+	_repopulate_back()
 
-	for child: Node in backlinks_box.get_children():
-		backlinks_box.remove_child(child)
-		child.queue_free()
-
-	if backlinks.is_empty():
-		backlinks_box.add_child(_make_hint_label("card.backlinks.none"))
-	else:
-		var shown: int = mini(backlinks.size(), MAX_BACKLINK_ROWS)
-		for i: int in shown:
-			backlinks_box.add_child(_make_backlink_button(backlinks[i]))
-		if backlinks.size() > shown:
-			backlinks_box.add_child(_make_hint_label(tr("card.backlinks.more") % (backlinks.size() - shown)))
+func _repopulate_back() -> void:
+	if not _back_filled:
+		return
+	var dates: String = tr("card.dates") % [_back_created, _back_modified]
+	if _back_words >= 0:
+		dates += "\n" + tr("card.words") % _back_words
+	dates_label.text = _emphasise_heads(dates, _front_ink()[0])
+	_fill_type_box()
+	_fill_link_box(backlinks_box, _back_links, "card.backlinks.none")
+	_fill_link_box(outgoing_box, _back_outgoing, "card.outgoing.none")
+	manual_title_label.visible = not _back_manual.is_empty()
+	manual_box.visible = not _back_manual.is_empty()
+	if not _back_manual.is_empty():
+		_fill_link_box(manual_box, _back_manual, "")
 
 	if is_flipped and not is_compact and not _is_flipping:
 		_refit_size(true)
+
+func _emphasise_heads(text: String, head_color: Color) -> String:
+	var rows: PackedStringArray = PackedStringArray()
+	for row: String in text.split("
+"):
+		var cut: int = row.find(": ")
+		rows.append(row.replace("[", "[lb]") if cut < 0 else "[color=#%s]%s[/color]%s" % [head_color.to_html(false), row.substr(0, cut + 1).replace("[", "[lb]"), row.substr(cut + 1).replace("[", "[lb]")])
+	return "
+".join(rows)
+
+func _clear_box(box: Container) -> void:
+	for child: Node in box.get_children():
+		box.remove_child(child)
+		child.queue_free()
+
+func _fill_link_box(box: VBoxContainer, rows: Array[Dictionary], none_key: String) -> void:
+	_clear_box(box)
+	if rows.is_empty():
+		box.add_child(_make_hint_label(none_key))
+		return
+	var shown: int = mini(rows.size(), MAX_BACKLINK_ROWS)
+	for i: int in shown:
+		box.add_child(_make_backlink_button(rows[i]))
+	if rows.size() > shown:
+		box.add_child(_make_hint_label(tr("card.backlinks.more") % (rows.size() - shown)))
+
+func _fill_type_box() -> void:
+	_clear_box(type_box)
+	type_box.visible = not _back_type.is_empty()
+	if _back_type.is_empty():
+		return
+	var name_label: Label = _make_value_label(str(_back_type["name"]))
+	name_label.add_theme_font_size_override("font_size", 12)
+	name_label.add_theme_font_override("font", AppFonts.note_bold())
+	name_label.add_theme_color_override("font_color", _backlink_tint(_back_type["color"] as Color))
+	type_box.add_child(name_label)
+	for row: Dictionary in _back_type["fields"]:
+		var line: Label = _make_value_label(tr("card.type.field") % [str(row["label"]), str(row["value"])])
+		line.clip_text = true
+		line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		type_box.add_child(line)
+	if int(_back_type.get("more", 0)) > 0:
+		type_box.add_child(_make_hint_label(tr("card.backlinks.more") % int(_back_type["more"])))
 
 func _make_hint_label(text: String) -> Label:
 	var label: Label = Label.new()
 	label.text = text
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_font_size_override("font_size", 11)
-	ThemeColors.bind_override(label, &"font_color", &"text.disabled")
+	label.add_theme_color_override("font_color", Color(_front_ink()[1], HINT_ALPHA))
+	return label
+
+func _make_value_label(text: String) -> Label:
+	var label: Label = Label.new()
+	label.text = text
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", 11)
+	label.add_theme_color_override("font_color", _front_ink()[0])
 	return label
 
 func _make_backlink_button(info: Dictionary) -> Button:
@@ -486,7 +561,7 @@ func _make_backlink_button(info: Dictionary) -> Button:
 	return button
 
 func _backlink_tint(color: Color) -> Color:
-	var on_dark: bool = ThemeColors.color(BACK_BG).get_luminance() < 0.5
+	var on_dark: bool = _front_ink()[0].get_luminance() > 0.5
 	if on_dark and color.get_luminance() < 0.4:
 		return color.lightened(0.55)
 	if not on_dark and color.get_luminance() > 0.5:
@@ -753,12 +828,10 @@ func _set_corner_radius(radius: float) -> void:
 func _update_surface_colors() -> void:
 	if not _shader_material:
 		return
-	var on_front: bool = not (is_flipped and not is_compact)
-	var face_bg: Color = _body_color if on_front else ThemeColors.color(BACK_BG)
-	_shader_material.set_shader_parameter("bg_color", face_bg.lerp(_pill_color, _compact_amount))
-	var face_bg2: Color = _body_color2 if (on_front and _body_has_gradient) else face_bg
+	_shader_material.set_shader_parameter("bg_color", _body_color.lerp(_pill_color, _compact_amount))
+	var face_bg2: Color = _body_color2 if _body_has_gradient else _body_color
 	_shader_material.set_shader_parameter("bg_color2", face_bg2.lerp(_pill_color, _compact_amount))
-	var picture_amount: float = (1.0 - _compact_amount) if (on_front and _body_texture != null) else 0.0
+	var picture_amount: float = (1.0 - _compact_amount) if _body_texture != null else 0.0
 	_shader_material.set_shader_parameter("bg_image_amount", picture_amount)
 
 func set_body_background(color: Variant, color2: Variant, texture: Texture2D) -> void:
@@ -782,6 +855,7 @@ func set_body_background(color: Variant, color2: Variant, texture: Texture2D) ->
 	if is_node_ready():
 		_apply_front_text_colors()
 		_render_content()
+		_repopulate_back()
 
 func _is_tween_running(tween: Tween) -> bool:
 	return tween != null and tween.is_valid() and tween.is_running()
@@ -863,6 +937,8 @@ func _gui_input(event: InputEvent) -> void:
 					_stop_drag()
 					if _press_on_hint and not _last_press_moved:
 						cover_clicked.emit(self)
+					elif not _press_on_hint and not _last_press_moved:
+						card_clean_clicked.emit(self)
 					_press_on_hint = false
 					accept_event()
 
@@ -887,7 +963,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_MOUSE_EXIT:
 		_set_cover_hover(false)
 	elif what == NOTIFICATION_TRANSLATION_CHANGED and _back_filled and dates_label != null:
-		populate_back(_back_created, _back_modified, _back_links)
+		_repopulate_back()
 
 func _is_over_cover(local_pos: Vector2) -> bool:
 	if not _has_cover or is_compact or is_flipped or _is_flipping or is_renaming:

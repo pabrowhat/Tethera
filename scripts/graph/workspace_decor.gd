@@ -470,25 +470,25 @@ func open_text_editor(node: DecorNode) -> void:
 	if not is_instance_valid(node) or not node.is_text():
 		return
 	_ws._decor_text_target_id = node.decor_id
-	_ws._decor_text_dialog.open_for(node.text, node.text_color, node.font_size)
+	_ws._decor_text_dialog.open_for(node.text, node.text_color, node.font_size, node.align)
 
 func text_state(node: DecorNode) -> Dictionary:
-	return {"text": node.text, "color": node.text_color, "font_size": node.font_size, "size": node.box_size}
+	return {"text": node.text, "color": node.text_color, "font_size": node.font_size, "align": node.align, "size": node.box_size}
 
 func apply_text_state(decor_id: String, state: Dictionary) -> void:
 	var node: DecorNode = _ws._decor_by_id.get(decor_id, null)
 	if not is_instance_valid(node):
 		return
-	node.set_text_content(str(state["text"]), str(state["color"]), int(state["font_size"]))
+	node.set_text_content(str(state["text"]), str(state["color"]), int(state["font_size"]), str(state["align"]))
 	node.box_size = state["size"] as Vector2
 	save()
 
-func on_text_applied(content: String, color_hex: String, font_size: int) -> void:
+func on_text_applied(content: String, color_hex: String, font_size: int, align: String) -> void:
 	var node: DecorNode = _ws._decor_by_id.get(_ws._decor_text_target_id, null)
 	if not is_instance_valid(node):
 		return
 	var before: Dictionary = text_state(node)
-	node.set_text_content(DecorItem.clip_text(content), NoteBackground.sanitize_hex(color_hex), clampi(font_size, DecorItem.TEXT_MIN_FONT_SIZE, DecorItem.TEXT_MAX_FONT_SIZE))
+	node.set_text_content(DecorItem.clip_text(content), NoteBackground.sanitize_hex(color_hex), clampi(font_size, DecorItem.TEXT_MIN_FONT_SIZE, DecorItem.TEXT_MAX_FONT_SIZE), DecorItem.align_or_default(align))
 	var after: Dictionary = text_state(node)
 	if before == after:
 		return

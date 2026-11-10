@@ -27,6 +27,21 @@ Tethera is a canvas for notes and lore: notes and worlds are laid out as cards, 
 - Renaming a note rewrites `[[old title]]` in every note that links to it; one Ctrl+Z undoes all of it.
 - Space + click pins a card to the screen: it moves with the canvas until you unpin it with the same Space + click. A plain click on an empty part of the canvas releases all pinned cards.
 
+## Text formatting
+
+- Markdown: `**bold**`, `*italic*`, `~~strikethrough~~`, headings `# Title`, `## Title`, `### Title`.
+- Bulleted list: lines starting with `- `. Numbered list: lines starting with `1. ` (any number; the numbers are counted for you). Indent a line to nest a list.
+- Checklist: `- [ ] task` and `- [x] done`. In Preview, click the square to tick or untick it; Ctrl+Z in Edit undoes it. On the card the squares are only shown.
+- Quote: a line starting with `> `.
+- Horizontal rule: a line with only `---`.
+- Code block: a line of three backticks before the code and another after it. Nothing inside is formatted.
+- Inline code: text between single backticks, such as `.tether`, is shown in the monospace font and is not formatted. Enter on a line with only three backticks adds the closing line.
+- Table: a header row `| a | b |`, then a row `|---|---|`, then the rows. The header row is bold. A line with pipes and no `|---|` row stays plain text. Up to 8 columns.
+- Alignment: the toolbar buttons put the selected lines (or the current line) into `[left]`, `[center]` or `[right]`. Press the same button again to remove it.
+- Allowed tags: `[b]`, `[i]`, `[u]`, `[s]`, `[code]`, `[left]`, `[center]`, `[right]`, `[indent]`, `[br]`, `[color=#rrggbb]`, `[bgcolor=#rrggbb]`, `[url=https://...]`, `[font_size=N]` and `[table=N]` with `[cell]`.
+- `[font_size=N]` takes a whole number from 8 to 64; on a card the size is at most 24. `[table=N]` takes the number of columns, 1 to 8. A tag with another value, and every other tag, is shown as typed.
+- A text label on the canvas has its own alignment (left, centre, right) in its edit window.
+
 ## Keyboard shortcuts
 
 Ctrl is Cmd on macOS. Shortcuts for notes do nothing while you type in a text field; there Ctrl+C, Ctrl+X, Ctrl+V and Ctrl+A work on the text.

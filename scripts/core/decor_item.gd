@@ -19,6 +19,9 @@ const TEXT_MAX_WIDTH: float = 4000.0
 const TEXT_DEFAULT_FONT_SIZE: int = 24
 const TEXT_MIN_FONT_SIZE: int = 8
 const TEXT_MAX_FONT_SIZE: int = 200
+const ALIGN_LEFT: String = "left"
+const ALIGN_CENTER: String = "center"
+const ALIGN_RIGHT: String = "right"
 
 var id: String = ""
 var kind: String = KIND_IMAGE
@@ -26,6 +29,7 @@ var text: String = ""
 var color: String = ""
 var font_size: int = TEXT_DEFAULT_FONT_SIZE
 var text_width: float = TEXT_DEFAULT_WIDTH
+var align: String = ALIGN_LEFT
 var image: String = ""
 var pos: Vector2 = Vector2.ZERO
 var size: Vector2 = Vector2(200.0, 200.0)
@@ -56,6 +60,7 @@ func to_dict() -> Dictionary:
 		result["color"] = color
 		result["font_size"] = font_size
 		result["text_width"] = text_width
+		result["align"] = align
 	return result
 
 static func from_dict(value: Variant) -> DecorItem:
@@ -76,6 +81,7 @@ static func from_dict(value: Variant) -> DecorItem:
 		item.color = NoteBackground.sanitize_hex(data.get("color", ""))
 		item.font_size = clampi(int(_number_or(data.get("font_size", null), float(TEXT_DEFAULT_FONT_SIZE))), TEXT_MIN_FONT_SIZE, TEXT_MAX_FONT_SIZE)
 		item.text_width = clampf(_number_or(data.get("text_width", null), TEXT_DEFAULT_WIDTH), TEXT_MIN_WIDTH, TEXT_MAX_WIDTH)
+		item.align = align_or_default(str(data.get("align", ALIGN_LEFT)))
 	item.pos = read_vector(data.get("pos", null), Vector2.ZERO, -ProjectBundle.MAX_COORDINATE, ProjectBundle.MAX_COORDINATE)
 	item.size = read_vector(data.get("size", null), Vector2(200.0, 200.0), MIN_SIZE, MAX_SIZE)
 	item.rotation_deg = normalize_angle(_read_number(data.get("rotation", 0.0)))
@@ -84,6 +90,9 @@ static func from_dict(value: Variant) -> DecorItem:
 
 static func kind_or_default(value: String) -> String:
 	return KIND_TEXT if value == KIND_TEXT else KIND_IMAGE
+
+static func align_or_default(value: String) -> String:
+	return value if value == ALIGN_CENTER or value == ALIGN_RIGHT else ALIGN_LEFT
 
 static func clip_text(value: String) -> String:
 	return value.substr(0, MAX_TEXT_LENGTH)

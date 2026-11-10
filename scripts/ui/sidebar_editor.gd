@@ -75,11 +75,17 @@ var _zen_tween: Tween = null
 var _zen_animating: bool = false
 var _zen_start_scale: float = 0.3
 var _zen_origin_center: Vector2 = Vector2.ZERO
-var _ribbon_alpha: float = 1.0
-var _ribbon_interactive: bool = true
+var _zen_direct: bool = false
 var _dock_style: StyleBox = null
 var _preview_image_width: int = 0
 var _image_dialog_open: bool = false
+var _hovered_meta: String = ""
+var _copied_line: int = -1
+const COPIED_HOLD: float = 1.5
+const EDIT_PADDING: Vector2i = Vector2i(12, 10)
+const PREVIEW_PADDING: Vector2i = Vector2i(18, 16)
+var _press_handled: bool = false
+var _content_frame: PanelContainer = null
 
 const ICON_ZEN_ENTER: Texture2D = preload("res://assets/icons/maximize-2.svg")
 const ICON_ZEN_EXIT: Texture2D = preload("res://assets/icons/minimize-2.svg")
@@ -97,10 +103,10 @@ const SETTING_WIDTH: String = "width"
 const EMPTY_PREVIEW_COLOR: String = "6b7090"
 const WRAP_PAIR_CHARS: Array[String] = ["*", "_", "\"", "~", "`"]
 
-const ZEN_WIDTH_RATIO: float = 0.6
-const ZEN_HEIGHT_RATIO: float = 0.86
+const ZEN_WIDTH_RATIO: float = 0.75
+const ZEN_HEIGHT_RATIO: float = 0.92
 const ZEN_MIN_WIDTH: float = 480.0
-const ZEN_MAX_WIDTH: float = 1100.0
+const ZEN_MAX_WIDTH: float = 1400.0
 const ZEN_DURATION: float = 0.25
 const ZEN_MARGIN: int = 36
 const DOCK_MARGIN: int = 16
@@ -110,8 +116,6 @@ const ZEN_EDIT_FONT: int = 17
 const DOCK_EDIT_FONT: int = 14
 const ZEN_PREVIEW_FONT: int = 18
 const DOCK_PREVIEW_FONT: int = 16
-const RIBBON_REVEAL_SLACK: float = 28.0
-const RIBBON_FADE_SPEED: float = 7.0
 const PREVIEW_FONT_KEYS: Array[String] = ["normal_font_size", "bold_font_size", "italics_font_size", "bold_italics_font_size"]
 
 const COLOR_PALETTE: Array[Color] = [
@@ -137,7 +141,6 @@ func _ready() -> void:
 	close_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	close_button.pressed.connect(close_sidebar)
 	zen_button.pressed.connect(toggle_zen)
-	set_process(false)
 	_bind_scene_colors()
 	delete_button.pressed.connect(_on_delete_pressed)
 	image_button.pressed.connect(_on_image_button_pressed)
@@ -279,7 +282,11 @@ func is_point_over_text_tools(global_pos: Vector2) -> bool:
 func _setup_editor_fonts() -> void:
 	content_edit.add_theme_font_override("font", AppFonts.mono())
 	AppFonts.apply_note_fonts(preview_label)
+	preview_label.meta_underlined = false
 	preview_label.meta_clicked.connect(_on_preview_meta_clicked)
+	preview_label.meta_hover_started.connect(func(meta: Variant) -> void: _hovered_meta = str(meta))
+	preview_label.meta_hover_ended.connect(func(_meta: Variant) -> void: _hovered_meta = "")
+	preview_label.gui_input.connect(_on_preview_gui_input)
 	preview_label.resized.connect(_on_preview_resized)
 
 func _setup_format_bar() -> void:
@@ -287,6 +294,8 @@ func _setup_format_bar() -> void:
 	format_bar.wrap_requested.connect(_on_format_wrap_requested)
 	format_bar.value_tag_requested.connect(_on_format_value_tag_requested)
 	format_bar.prefix_requested.connect(_on_format_prefix_requested)
+	format_bar.align_requested.connect(_on_format_align_requested)
+	format_bar.code_block_requested.connect(_on_format_code_block_requested)
 	format_bar.image_insert_requested.connect(_on_format_image_requested)
 
 func _setup_mode_toggle() -> void:
@@ -354,6 +363,7 @@ func open_card(card: GraphCard) -> void:
 	var switched: bool = current_card != card
 	if switched:
 		_fields_dirty = false
+		background_section.reset_gradient_wish()
 
 	_close_link_popup()
 	current_card = card
@@ -375,6 +385,8 @@ func open_card(card: GraphCard) -> void:
 
 	if not is_open:
 		_animate_visibility(true)
+	elif is_zen and not is_preview:
+		content_edit.grab_focus()
 
 func show_batch(cards: Array[GraphCard]) -> void:
 	if is_instance_valid(current_card):
@@ -580,9 +592,14 @@ func toggle_zen() -> void:
 	else:
 		enter_zen()
 
-func enter_zen() -> void:
+func open_card_in_zen(card: GraphCard) -> void:
+	open_card(card)
+	enter_zen(true)
+
+func enter_zen(direct: bool = false) -> void:
 	if not can_enter_zen():
 		return
+	_zen_direct = direct
 	_close_link_popup()
 	if _slide_tween != null and _slide_tween.is_valid():
 		_slide_tween.kill()
@@ -611,10 +628,8 @@ func enter_zen() -> void:
 	_zen_tween.tween_property(self, "modulate:a", 1.0, ZEN_DURATION * 0.4)
 	_zen_tween.chain().tween_callback(func() -> void:
 		_zen_animating = false
-		if is_zen:
-			set_process(true)
-			if not is_preview:
-				content_edit.grab_focus()
+		if is_zen and not is_preview:
+			content_edit.grab_focus()
 	)
 
 func exit_zen() -> void:
@@ -622,10 +637,11 @@ func exit_zen() -> void:
 		return
 	_flush_save()
 	_close_link_popup()
+	if is_instance_valid(current_card):
+		_zen_origin_center = current_card.get_screen_rect().get_center()
 
 	is_zen = false
 	_zen_animating = true
-	set_process(false)
 	zen_changed.emit(false)
 
 	var folded_position: Vector2 = _zen_origin_center - size * 0.5
@@ -636,14 +652,24 @@ func exit_zen() -> void:
 	_zen_tween.tween_property(self, "modulate:a", 0.0, ZEN_DURATION * 0.5).set_delay(ZEN_DURATION * 0.5)
 	_zen_tween.chain().tween_callback(func() -> void:
 		_restore_dock()
-		_animate_visibility(true)
+		if _zen_direct:
+			_close_after_direct_zen()
+		else:
+			_animate_visibility(true)
 	)
+
+func _close_after_direct_zen() -> void:
+	_zen_direct = false
+	is_open = false
+	visible = false
+	current_card = null
+	closed.emit()
 
 func _leave_zen_instantly() -> void:
 	_kill_zen_tween()
 	var was_zen: bool = is_zen
 	is_zen = false
-	set_process(false)
+	_zen_direct = false
 	if is_instance_valid(current_card):
 		_flush_save()
 	_restore_dock()
@@ -655,11 +681,6 @@ func _restore_dock() -> void:
 	scale = Vector2.ONE
 	modulate.a = 1.0
 	_apply_zen_look(false)
-	_ribbon_alpha = 1.0
-	mode_row.modulate.a = 1.0
-	format_bar.modulate.a = 1.0
-	_ribbon_interactive = false
-	_set_ribbon_interactive(true)
 
 	var view_size: Vector2 = get_viewport_rect().size
 	custom_minimum_size = Vector2(panel_width, 0.0)
@@ -681,12 +702,10 @@ func _bind_scene_colors() -> void:
 	var input: StyleBoxFlat = title_input.get_theme_stylebox(&"normal") as StyleBoxFlat
 	ThemeColors.bind(input, &"bg_color", UiStyle.BG_NORMAL)
 	ThemeColors.bind(input, &"border_color", UiStyle.BORDER)
-	var content: StyleBoxFlat = content_edit.get_theme_stylebox(&"normal") as StyleBoxFlat
-	ThemeColors.bind(content, &"bg_color", &"surface.sunken")
-	ThemeColors.bind(content, &"border_color", &"border.soft")
-	var preview: StyleBoxFlat = preview_label.get_theme_stylebox(&"normal") as StyleBoxFlat
-	ThemeColors.bind(preview, &"bg_color", &"surface.sunken")
-	ThemeColors.bind(preview, &"border_color", &"border.soft")
+	_content_frame = content_edit.get_parent() as PanelContainer
+	var frame: StyleBoxFlat = _content_frame.get_theme_stylebox(&"panel") as StyleBoxFlat
+	ThemeColors.bind(frame, &"bg_color", &"surface.sunken")
+	ThemeColors.bind(frame, &"border_color", &"border.soft")
 	ThemeColors.bind(delete_button.get_theme_stylebox(&"hover"), &"bg_color", UiStyle.BG_NORMAL, 0.6)
 	ThemeColors.bind_override(title_input, &"font_color", &"text.strong")
 	ThemeColors.bind_override(content_edit, &"font_color", &"text.primary")
@@ -742,40 +761,11 @@ func _apply_mode_visibility() -> void:
 		type_section.visible = not is_zen
 		type_section.set_read_only(is_preview)
 	if background_section != null:
-		background_section.visible = editing
+		background_section.visible = editing and not is_zen
 
 func _kill_zen_tween() -> void:
 	if _zen_tween != null and _zen_tween.is_valid():
 		_zen_tween.kill()
-
-func _process(delta: float) -> void:
-	if not is_zen:
-		return
-	var reveal: bool = _is_pointer_in_ribbon_zone() or format_bar.has_open_popup()
-	_ribbon_alpha = move_toward(_ribbon_alpha, 1.0 if reveal else 0.0, delta * RIBBON_FADE_SPEED)
-	mode_row.modulate.a = _ribbon_alpha
-	format_bar.modulate.a = _ribbon_alpha
-	_set_ribbon_interactive(_ribbon_alpha > 0.5)
-
-func _is_pointer_in_ribbon_zone() -> bool:
-	var mouse: Vector2 = get_local_mouse_position()
-	if mouse.x < 0.0 or mouse.x > size.x:
-		return false
-	var bottom_row: Control = format_bar if format_bar.visible else mode_row
-	var bar_origin: Vector2 = get_global_transform().affine_inverse() * bottom_row.get_global_position()
-	var zone_bottom: float = bar_origin.y + bottom_row.size.y + RIBBON_REVEAL_SLACK
-	return mouse.y >= -40.0 and mouse.y <= zone_bottom
-
-func _set_ribbon_interactive(interactive: bool) -> void:
-	if interactive == _ribbon_interactive:
-		return
-	_ribbon_interactive = interactive
-	var filter: Control.MouseFilter = Control.MOUSE_FILTER_STOP if interactive else Control.MOUSE_FILTER_IGNORE
-	mode_toggle.mouse_filter = filter
-	mode_row.mouse_filter = Control.MOUSE_FILTER_PASS if interactive else Control.MOUSE_FILTER_IGNORE
-	format_bar.mouse_filter = Control.MOUSE_FILTER_PASS if interactive else Control.MOUSE_FILTER_IGNORE
-	format_bar.set_enabled(interactive and not is_preview)
-
 
 func _on_mode_toggled(preview: bool) -> void:
 	_user_chose_edit = not preview
@@ -785,6 +775,12 @@ func _set_preview_mode(preview: bool, animate: bool) -> void:
 	_close_link_popup()
 	var ratio: float = _get_scroll_ratio(preview_label if is_preview else content_edit)
 	is_preview = preview
+	var padding: Vector2i = PREVIEW_PADDING if preview else EDIT_PADDING
+	var frame: StyleBoxFlat = _content_frame.get_theme_stylebox(&"panel") as StyleBoxFlat
+	frame.content_margin_left = padding.x
+	frame.content_margin_right = padding.x
+	frame.content_margin_top = padding.y
+	frame.content_margin_bottom = padding.y
 
 	var leaving: Control = content_edit if preview else preview_label
 	var entering: Control = preview_label if preview else content_edit
@@ -826,7 +822,7 @@ func _render_preview() -> void:
 	if source.strip_edges().is_empty():
 		preview_label.text = "[color=#%s][i]%s[/i][/color]" % [EMPTY_PREVIEW_COLOR, tr("sidebar.preview.empty")]
 	else:
-		preview_label.text = MarkdownBBCode.to_bbcode(source, MarkdownBBCode.Profile.PREVIEW, _preview_image_width)
+		preview_label.text = MarkdownBBCode.to_bbcode(source, MarkdownBBCode.Profile.PREVIEW, _preview_image_width, "", _copied_line)
 
 func _preview_text_width() -> int:
 	return maxi(int(preview_label.size.x) - PREVIEW_SCROLLBAR_ROOM, 0)
@@ -861,22 +857,64 @@ func _restore_scroll_ratio(control: Control, ratio: float) -> void:
 	if span <= 0.5:
 		return
 	if control is TextEdit:
-		(control as TextEdit).scroll_vertical = ratio * span
+		(control as TextEdit).scroll_vertical = minf(ratio * span, float((control as TextEdit).get_line_count() - 1))
 	else:
 		bar.value = ratio * span
 
+func _on_preview_gui_input(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton):
+		return
+	var click: InputEventMouseButton = event as InputEventMouseButton
+	if click.button_index != MOUSE_BUTTON_LEFT or not click.pressed or not _hovered_meta.begins_with(MarkdownBBCode.CHECK_META_PREFIX):
+		return
+	preview_label.accept_event()
+	var target: String = _hovered_meta
+	_hovered_meta = ""
+	_press_handled = true
+	_on_preview_meta_clicked(target)
+
 func _on_preview_meta_clicked(meta: Variant) -> void:
 	var target: String = str(meta)
+	if target.begins_with(MarkdownBBCode.CHECK_META_PREFIX) and _press_handled:
+		_press_handled = false
+		return
+	if target.begins_with(MarkdownBBCode.COPY_META_PREFIX):
+		DisplayServer.clipboard_set(MarkdownBBCode.code_block_at(content_edit.text, target.substr(MarkdownBBCode.COPY_META_PREFIX.length()).to_int()))
+		_show_copied(target.substr(MarkdownBBCode.COPY_META_PREFIX.length()).to_int())
+		return
 	if target.begins_with(MarkdownBBCode.IMAGE_META_PREFIX):
 		image_view_requested.emit(target.substr(MarkdownBBCode.IMAGE_META_PREFIX.length()))
 	elif target.begins_with(MarkdownBBCode.WIKI_META_PREFIX):
 		var card_id: String = _find_card_id_by_title(target.substr(MarkdownBBCode.WIKI_META_PREFIX.length()))
 		if card_id != "":
-			if is_zen:
-				exit_zen()
 			wiki_link_navigate_requested.emit(card_id)
+	elif target.begins_with(MarkdownBBCode.CHECK_META_PREFIX):
+		_toggle_preview_checkbox(target.substr(MarkdownBBCode.CHECK_META_PREFIX.length()).to_int())
 	elif target.begins_with("http://") or target.begins_with("https://") or target.begins_with("mailto:"):
 		OS.shell_open(target)
+
+func _show_copied(line: int) -> void:
+	_copied_line = line
+	_rerender_keeping_scroll()
+	await get_tree().create_timer(COPIED_HOLD).timeout
+	if _copied_line == line:
+		_copied_line = -1
+		if is_instance_valid(preview_label) and is_preview:
+			_rerender_keeping_scroll()
+
+func _rerender_keeping_scroll() -> void:
+	var ratio: float = _get_scroll_ratio(preview_label)
+	_render_preview()
+	_restore_scroll_ratio(preview_label, ratio)
+
+func _toggle_preview_checkbox(line: int) -> void:
+	if not is_instance_valid(current_card):
+		return
+	var ratio: float = _get_scroll_ratio(preview_label)
+	if TextFormatOps.toggle_checkbox(content_edit, line):
+		_render_preview()
+		preview_label.deselect()
+		_restore_scroll_ratio(preview_label, ratio)
 
 func _find_card_id_by_title(title: String) -> String:
 	var wanted: String = title.strip_edges().to_lower()
@@ -923,6 +961,18 @@ func _on_format_prefix_requested(prefix: String, heading: bool) -> void:
 		return
 	content_edit.grab_focus()
 	TextFormatOps.toggle_line_prefix(content_edit, prefix, heading)
+
+func _on_format_code_block_requested() -> void:
+	if not _can_format():
+		return
+	content_edit.grab_focus()
+	TextFormatOps.insert_code_block(content_edit)
+
+func _on_format_align_requested(tag: String) -> void:
+	if not _can_format():
+		return
+	content_edit.grab_focus()
+	TextFormatOps.toggle_line_align(content_edit, tag)
 
 func _on_format_image_requested() -> void:
 	if not _can_format() or _image_dialog_open:
@@ -977,6 +1027,11 @@ func _on_content_gui_input(event: InputEvent) -> void:
 		var typed: String = char(key.unicode)
 		if WRAP_PAIR_CHARS.has(typed):
 			TextFormatOps.wrap_selection(content_edit, typed, typed, false)
+			get_viewport().set_input_as_handled()
+			return
+
+	if (key.keycode == KEY_ENTER or key.keycode == KEY_KP_ENTER) and not is_shortcut and not key.shift_pressed and not is_link_popup_open():
+		if TextFormatOps.complete_fence(content_edit):
 			get_viewport().set_input_as_handled()
 			return
 

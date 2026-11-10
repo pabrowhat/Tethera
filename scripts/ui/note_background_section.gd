@@ -32,6 +32,7 @@ var _pick_button: Button = null
 var _gradient_toggle: CheckButton = null
 var _gradient_box: VBoxContainer = null
 var _has_gradient: bool = false
+var _gradient_wanted: bool = false
 var _clear_button: Button = null
 var _hint: Label = null
 var _image_dialog_open: bool = false
@@ -142,13 +143,18 @@ func show_state(color_hex: String, color2_hex: String, image: String, hint: Stri
 		_color2_bar.clear_active()
 	_pick_button.tooltip_text = image.get_file()
 	_has_gradient = color2_hex != ""
-	_gradient_toggle.set_pressed_no_signal(_has_gradient)
-	_gradient_box.visible = _has_gradient
+	var gradient_on: bool = _has_gradient or _gradient_wanted
+	_gradient_toggle.set_pressed_no_signal(gradient_on)
+	_gradient_box.visible = gradient_on
 	_clear_button.disabled = color_hex == "" and color2_hex == "" and image == ""
 	_hint.text = hint
 	_hint.visible = hint != ""
 
+func reset_gradient_wish() -> void:
+	_gradient_wanted = false
+
 func _on_gradient_toggled(on: bool) -> void:
+	_gradient_wanted = on
 	_gradient_box.visible = on
 	if not on and _has_gradient:
 		gradient_cleared.emit()

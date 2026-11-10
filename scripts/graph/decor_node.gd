@@ -33,6 +33,7 @@ var text: String = ""
 var text_color: String = ""
 var font_size: int = DecorItem.TEXT_DEFAULT_FONT_SIZE
 var text_width: float = DecorItem.TEXT_DEFAULT_WIDTH
+var align: String = DecorItem.ALIGN_LEFT
 var image_path: String = ""
 var box_size: Vector2 = Vector2(200.0, 200.0):
 	set(value):
@@ -71,6 +72,7 @@ func apply_item(item: DecorItem) -> void:
 		text_color = item.color
 		font_size = item.font_size
 		text_width = item.text_width
+		align = item.align
 		_rebuild_paragraph()
 		box_size = Vector2(item.size.x, _text_height * item.size.x / text_width)
 	else:
@@ -87,6 +89,7 @@ func to_item() -> DecorItem:
 	item.color = text_color
 	item.font_size = font_size
 	item.text_width = text_width
+	item.align = align
 	item.pos = position
 	item.size = box_size
 	item.rotation_deg = DecorItem.normalize_angle(rad_to_deg(rotation))
@@ -103,12 +106,21 @@ func is_text() -> bool:
 	return kind == DecorItem.KIND_TEXT
 
 static func layout_height(content: String, size_px: int, width: float) -> float:
-	var paragraph: TextParagraph = _make_paragraph(content, size_px, width)
+	var paragraph: TextParagraph = _make_paragraph(content, size_px, width, DecorItem.ALIGN_LEFT)
 	return maxf(paragraph.get_size().y, AppFonts.note_regular().get_height(size_px))
 
-static func _make_paragraph(content: String, size_px: int, width: float) -> TextParagraph:
+static func horizontal_alignment(value: String) -> HorizontalAlignment:
+	match value:
+		DecorItem.ALIGN_CENTER:
+			return HORIZONTAL_ALIGNMENT_CENTER
+		DecorItem.ALIGN_RIGHT:
+			return HORIZONTAL_ALIGNMENT_RIGHT
+	return HORIZONTAL_ALIGNMENT_LEFT
+
+static func _make_paragraph(content: String, size_px: int, width: float, alignment: String) -> TextParagraph:
 	var paragraph: TextParagraph = TextParagraph.new()
 	paragraph.width = width
+	paragraph.alignment = horizontal_alignment(alignment)
 	paragraph.break_flags = TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
 	paragraph.add_string(content, AppFonts.note_regular(), size_px)
 	return paragraph
@@ -126,16 +138,17 @@ func edge_handle_enabled(handle: int) -> bool:
 		return true
 	return not is_text()
 
-func set_text_content(new_text: String, new_color: String, new_font_size: int) -> void:
+func set_text_content(new_text: String, new_color: String, new_font_size: int, new_align: String) -> void:
 	var scale_now: float = text_scale()
 	text = new_text
 	text_color = new_color
 	font_size = new_font_size
+	align = new_align
 	_rebuild_paragraph()
 	box_size = Vector2(box_size.x, _text_height * scale_now)
 
 func _rebuild_paragraph() -> void:
-	_paragraph = _make_paragraph(text, font_size, text_width)
+	_paragraph = _make_paragraph(text, font_size, text_width, align)
 	_text_height = maxf(_paragraph.get_size().y, AppFonts.note_regular().get_height(font_size))
 	queue_redraw()
 

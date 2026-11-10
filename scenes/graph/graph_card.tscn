@@ -229,11 +229,15 @@ expand_icon = true
 theme_override_constants/icon_max_width = 14
 flat = true
 
-[node name="DatesLabel" type="Label" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
+[node name="DatesLabel" type="RichTextLabel" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 11
+bbcode_enabled = true
 text = "card.dates.empty"
-text_overrun_behavior = 3
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
 
 [node name="StatusChips" type="HFlowContainer" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
 layout_mode = 2
@@ -265,12 +269,40 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 toggle_mode = true
 text = "card.status.done"
 
+[node name="TypeBox" type="VBoxContainer" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
 [node name="BacklinksTitle" type="Label" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "card.backlinks.title"
 
 [node name="BacklinksBox" type="VBoxContainer" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="ManualTitle" type="Label" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "card.manual.title"
+
+[node name="ManualBox" type="VBoxContainer" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="OutgoingTitle" type="Label" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "card.outgoing.title"
+
+[node name="OutgoingBox" type="VBoxContainer" parent="FaceHost/FaceRoot/BackMargin/BackBox"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 2

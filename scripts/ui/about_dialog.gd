@@ -11,6 +11,7 @@ const AVATAR_SIZE: float = 64.0
 const GITHUB_URL: String = "https://github.com/pabrowhat/tethera"
 const SECTION_GAP: float = 8.0
 const LUCIDE_LICENSE_PATH: String = "res://assets/icons/LICENSE-lucide.txt"
+const MONO_FONT_LICENSE_PATH: String = "res://assets/fonts/LICENSE-jetbrains-mono.txt"
 
 var _tab_buttons: Array[Button] = []
 var _tab_group: ButtonGroup = null
@@ -128,6 +129,7 @@ func _build_about_page() -> void:
 	box.add_child(_make_label("about.licenses", 15, TITLE_COLOR))
 	_add_license(box, "about.license.godot", _godot_notice)
 	_add_license(box, "about.license.lucide", _lucide_notice)
+	_add_license(box, "about.license.jetbrains_mono", _mono_font_notice)
 
 func _add_license(box: VBoxContainer, title: String, reader: Callable) -> void:
 	var header: HBoxContainer = HBoxContainer.new()
@@ -164,6 +166,10 @@ func _lucide_notice() -> String:
 		return tr("about.license.missing")
 	return FileAccess.get_file_as_string(LUCIDE_LICENSE_PATH)
 
+func _mono_font_notice() -> String:
+	if not FileAccess.file_exists(MONO_FONT_LICENSE_PATH):
+		return tr("about.license.missing")
+	return FileAccess.get_file_as_string(MONO_FONT_LICENSE_PATH)
 
 func _build_whats_new_page() -> void:
 	var current: String = AppVersion.current()

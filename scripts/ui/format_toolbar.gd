@@ -1,13 +1,22 @@
 class_name FormatToolbar
-extends HBoxContainer
+extends HFlowContainer
 
 signal wrap_requested(open: String, close: String)
 signal value_tag_requested(tag: String, value: String)
 signal prefix_requested(prefix: String, heading: bool)
+signal align_requested(tag: String)
+signal code_block_requested
 signal image_insert_requested
 
 const ICON_HIGHLIGHTER: Texture2D = preload("res://assets/icons/highlighter.svg")
 const ICON_IMAGE: Texture2D = preload("res://assets/icons/image.svg")
+const ICON_CHECKLIST: Texture2D = preload("res://assets/icons/square-check.svg")
+const ICON_CODE: Texture2D = preload("res://assets/icons/code.svg")
+const ICON_CODE_BLOCK: Texture2D = preload("res://assets/icons/square-code.svg")
+const ICON_ALIGN_LEFT: Texture2D = preload("res://assets/icons/align-left.svg")
+const ICON_ALIGN_CENTER: Texture2D = preload("res://assets/icons/align-center.svg")
+const ICON_ALIGN_RIGHT: Texture2D = preload("res://assets/icons/align-right.svg")
+const ICON_MAX_WIDTH: int = 16
 const BUTTON_SIZE: Vector2 = Vector2(28.0, 28.0)
 const BUTTON_GAP: int = 3
 const PRESS_SCALE: float = 0.95
@@ -28,7 +37,8 @@ var _highlight_button: SwatchDropdownButton = null
 var _punch_tweens: Dictionary = {}
 
 func _init() -> void:
-	add_theme_constant_override("separation", BUTTON_GAP)
+	add_theme_constant_override("h_separation", BUTTON_GAP)
+	add_theme_constant_override("v_separation", BUTTON_GAP)
 
 func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
 	var bold_button: Button = _add_button("B", "format.bold")
@@ -53,6 +63,20 @@ func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
 	var bullet_button: Button = _add_button("•", "format.bullet")
 	bullet_button.pressed.connect(prefix_requested.emit.bind("- ", false))
 
+	var checklist_button: Button = _add_icon_button(ICON_CHECKLIST, "format.checklist")
+	checklist_button.pressed.connect(prefix_requested.emit.bind(TextFormatOps.CHECKLIST_PREFIX, false))
+
+	add_child(_make_separator())
+
+	_add_icon_button(ICON_CODE, "format.inline_code").pressed.connect(wrap_requested.emit.bind("`", "`"))
+	_add_icon_button(ICON_CODE_BLOCK, "format.code_block").pressed.connect(code_block_requested.emit)
+
+	add_child(_make_separator())
+
+	_add_icon_button(ICON_ALIGN_LEFT, "format.align_left").pressed.connect(align_requested.emit.bind("left"))
+	_add_icon_button(ICON_ALIGN_CENTER, "format.align_center").pressed.connect(align_requested.emit.bind("center"))
+	_add_icon_button(ICON_ALIGN_RIGHT, "format.align_right").pressed.connect(align_requested.emit.bind("right"))
+
 	add_child(_make_separator())
 
 	_text_color_button = SwatchDropdownButton.new()
@@ -74,15 +98,7 @@ func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
 	add_child(_highlight_button)
 	_attach_press_feedback(_highlight_button)
 
-	var image_button: Button = _add_button("", "image.insert")
-	image_button.icon = ICON_IMAGE
-	image_button.expand_icon = true
-	image_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	image_button.add_theme_constant_override("icon_max_width", 16)
-	image_button.pressed.connect(image_insert_requested.emit)
-
-func has_open_popup() -> bool:
-	return _text_color_button.is_popup_open() or _highlight_button.is_popup_open()
+	_add_icon_button(ICON_IMAGE, "image.insert").pressed.connect(image_insert_requested.emit)
 
 func set_enabled(enabled: bool) -> void:
 	for child: Node in get_children():
@@ -101,6 +117,14 @@ func _add_button(label: String, tooltip: String) -> Button:
 	_style_button(button, tooltip)
 	add_child(button)
 	_attach_press_feedback(button)
+	return button
+
+func _add_icon_button(icon: Texture2D, tooltip: String) -> Button:
+	var button: Button = _add_button("", tooltip)
+	button.icon = icon
+	button.expand_icon = true
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.add_theme_constant_override("icon_max_width", ICON_MAX_WIDTH)
 	return button
 
 func _style_button(button: Button, tooltip: String) -> void:

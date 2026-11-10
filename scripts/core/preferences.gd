@@ -17,6 +17,12 @@ const KEY_LAYOUT_LEVEL_GAP: String = "layout_level_gap"
 const KEY_LAYOUT_SIBLING_GAP: String = "layout_sibling_gap"
 const KEY_LAYOUT_BLOCK_GAP: String = "layout_block_gap"
 const KEY_LAYOUT_RING_STEP: String = "layout_ring_step"
+const KEY_OPEN_MODE: String = "open_mode"
+
+const OPEN_SIDEBAR: String = "sidebar"
+const OPEN_ZEN: String = "zen"
+const OPEN_NONE: String = "none"
+const OPEN_MODES: Array[String] = [OPEN_SIDEBAR, OPEN_ZEN, OPEN_NONE]
 
 const LINE_WIDTH_MIN: float = 0.5
 const LINE_WIDTH_MAX: float = 2.0
@@ -44,6 +50,7 @@ static func defaults() -> Dictionary:
 		KEY_LAYOUT_SIBLING_GAP: int(LayoutTemplates.SIBLING_GAP),
 		KEY_LAYOUT_BLOCK_GAP: int(LayoutTemplates.BLOCK_GAP),
 		KEY_LAYOUT_RING_STEP: int(LayoutTemplates.RING_STEP),
+		KEY_OPEN_MODE: OPEN_SIDEBAR,
 	}
 
 static func get_pref(key: String) -> Variant:
@@ -82,6 +89,8 @@ static func sanitize(key: String, value: Variant) -> Variant:
 			return value if value is String and Localization.CHOICES.has(value) else fallback
 		KEY_THEME:
 			return value if value is String and ThemeColors.CHOICES.has(value) else fallback
+		KEY_OPEN_MODE:
+			return value if value is String and OPEN_MODES.has(value) else fallback
 	return fallback
 
 static func save(values: Dictionary) -> void:
@@ -114,6 +123,9 @@ static func language() -> String:
 
 static func theme() -> String:
 	return str(get_pref(KEY_THEME))
+
+static func open_mode() -> String:
+	return str(get_pref(KEY_OPEN_MODE))
 
 static func minimap_decor() -> bool:
 	return bool(get_pref(KEY_MINIMAP_DECOR))

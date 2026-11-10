@@ -650,11 +650,39 @@ func _format_timestamp(unix_time: int) -> String:
 
 func _refresh_back_face(card: GraphCard) -> void:
 	var backlinks: Array[Dictionary] = []
-	for source_id: String in _graph.get_inbound_links(card.card_id):
+	for source_id: String in _graph.get_backlinks(card.card_id, GraphNetwork.KIND_WIKI):
 		var source: GraphCard = _cards_by_id.get(source_id, null)
-		if is_instance_valid(source):
+		if is_instance_valid(source) and source_id != card.card_id and not _has_row(backlinks, source_id):
 			backlinks.append({"id": source_id, "title": source.title_label.text, "color": source.card_color})
-	card.populate_back(_format_timestamp(card.created_at), _format_timestamp(card.modified_at), backlinks)
+	var manual: Array[Dictionary] = []
+	for other_id: String in _graph.get_inbound_links(card.card_id):
+		var other: GraphCard = _cards_by_id.get(other_id, null)
+		if is_instance_valid(other) and other_id != card.card_id and not _graph_wiki_between(card.card_id, other_id):
+			manual.append({"id": other_id, "title": other.title_label.text, "color": other.card_color})
+	var ids_by_title: Dictionary = {}
+	for other: GraphCard in _cards_by_id.values():
+		if not is_instance_valid(other):
+			continue
+		var key: String = LinkReconciler.title_key(other.title_label.text)
+		if not ids_by_title.has(key):
+			ids_by_title[key] = other.card_id
+	var outgoing: Array[Dictionary] = []
+	var outgoing_ids: Array[String] = BackFace.outgoing_ids(card.content_text, ids_by_title, card.card_id)
+	for target_id: String in outgoing_ids:
+		var target: GraphCard = _cards_by_id.get(target_id, null)
+		if is_instance_valid(target):
+			outgoing.append({"id": target_id, "title": target.title_label.text, "color": target.card_color})
+	var type_info: Dictionary = BackFace.type_block(_types.find(card.entity_type_id), card.field_values)
+	card.populate_back(_format_timestamp(card.created_at), _format_timestamp(card.modified_at), backlinks, outgoing, type_info, BackFace.word_count(card.content_text), manual)
+
+func _has_row(rows: Array[Dictionary], id: String) -> bool:
+	for row: Dictionary in rows:
+		if str(row["id"]) == id:
+			return true
+	return false
+
+func _graph_wiki_between(id_a: String, id_b: String) -> bool:
+	return _graph.get_outgoing(id_a, GraphNetwork.KIND_WIKI).has(id_b) or _graph.get_outgoing(id_b, GraphNetwork.KIND_WIKI).has(id_a)
 
 func _refresh_flipped_back_faces() -> void:
 	for card: GraphCard in _cards_by_id.values():
@@ -690,7 +718,7 @@ func _update_lod(zoom: float, animate: bool = true) -> void:
 func _glide_to_card(card: GraphCard, keep_zoom: bool = false) -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size
 	var usable_width: float = viewport_size.x
-	if sidebar_editor.is_open:
+	if sidebar_editor.is_open and not sidebar_editor.is_zen:
 		usable_width = maxf(viewport_size.x - sidebar_editor.panel_width, 100.0)
 	var zoom: float = navigator.get_zoom() if keep_zoom else maxf(navigator.get_zoom(), BACKLINK_FOCUS_ZOOM_MIN)
 	navigator.focus_to_point(card.get_card_center(), zoom, Vector2(usable_width / 2.0, viewport_size.y / 2.0))
@@ -857,6 +885,10 @@ func _input(event: InputEvent) -> void:
 				confirm_modal._on_confirm_pressed()
 				get_viewport().set_input_as_handled()
 				return
+			elif not is_typing and not is_ctrl_cmd and not event.alt_pressed and not event.shift_pressed and not focus_owner is BaseButton 					and not _is_modal_open() and not PopupList.is_any_open() and _selection.count() == 1:
+				open_selected_note()
+				get_viewport().set_input_as_handled()
+				return
 
 		elif event.keycode == KEY_F2 and not is_typing and not _is_modal_open():
 			if _selection.count() == 1:
@@ -971,6 +1003,10 @@ func _handle_decor_input(event: InputEvent) -> bool:
 func _key_is(key: InputEventKey, code: Key) -> bool:
 	return key.keycode == code or key.physical_keycode == code
 
+func _focused_text_has_selection() -> bool:
+	var label: RichTextLabel = get_viewport().gui_get_focus_owner() as RichTextLabel
+	return label != null and label.selection_enabled and not label.get_selected_text().is_empty()
+
 func _handle_global_shortcut(key: InputEventKey, is_typing: bool) -> bool:
 	if (key.keycode == KEY_COMMA or key.physical_keycode == KEY_COMMA) and not key.shift_pressed:
 		open_settings()
@@ -991,7 +1027,7 @@ func _handle_global_shortcut(key: InputEventKey, is_typing: bool) -> bool:
 			_spawn_card_at_viewport_center()
 			return true
 		if _key_is(key, KEY_C):
-			return _clipboard_ops.copy()
+			return not _focused_text_has_selection() and _clipboard_ops.copy()
 		if _key_is(key, KEY_X):
 			_clipboard_ops.cut()
 			return _selection.item_count() == 0
@@ -1069,7 +1105,11 @@ func _handle_zen_input(event: InputEvent) -> void:
 		return
 
 	var is_enter: bool = key.keycode == KEY_ENTER or key.keycode == KEY_KP_ENTER
-	if key.keycode == KEY_ESCAPE:
+	if _key_is(key, KEY_E) and PlatformKeys.is_primary(key) and not key.shift_pressed and not key.alt_pressed:
+		if not PopupList.is_any_open() and sidebar_editor.can_toggle_mode():
+			sidebar_editor.toggle_mode()
+			get_viewport().set_input_as_handled()
+	elif key.keycode == KEY_ESCAPE:
 		if sidebar_editor.is_link_popup_open() or PopupList.is_any_open():
 			return
 		sidebar_editor.exit_zen()
@@ -1286,9 +1326,26 @@ func _on_selection_changed() -> void:
 		0:
 			sidebar_editor.close_sidebar()
 		1:
-			sidebar_editor.open_card(cards[0])
+			if sidebar_editor.is_open or Preferences.open_mode() == Preferences.OPEN_SIDEBAR:
+				sidebar_editor.open_card(cards[0])
 		_:
 			sidebar_editor.show_batch(cards)
+
+func open_selected_note() -> void:
+	var cards: Array[GraphCard] = _selection.get_cards()
+	if cards.size() != 1 or _zen_active:
+		return
+	if Preferences.open_mode() == Preferences.OPEN_ZEN:
+		sidebar_editor.open_card_in_zen(cards[0])
+	else:
+		sidebar_editor.open_card(cards[0])
+
+func _on_card_clean_clicked(card: GraphCard) -> void:
+	if Preferences.open_mode() != Preferences.OPEN_ZEN or _cover_click_suppressed or Input.is_key_pressed(KEY_SHIFT) or PlatformKeys.primary_down():
+		return
+	var cards: Array[GraphCard] = _selection.get_cards()
+	if not _zen_active and not _is_modal_open() and cards.size() == 1 and cards[0] == card:
+		sidebar_editor.open_card_in_zen(card)
 
 func _on_sidebar_closed() -> void:
 	_selection.clear_cards()
@@ -1332,6 +1389,7 @@ func _on_batch_chip_remove_requested(card_id: String) -> void:
 func _connect_card_signals(card: GraphCard) -> void:
 	card.carried_toggled.connect(_on_card_carried_toggled)
 	card.card_clicked.connect(_on_card_clicked)
+	card.card_clean_clicked.connect(_on_card_clean_clicked)
 	card.title_changed.connect(_on_card_title_changed)
 	card.drag_started.connect(_on_card_drag_started)
 	card.drag_moved.connect(_on_card_drag_moved)
@@ -1374,6 +1432,8 @@ func _on_backlink_pressed(target_id: String) -> void:
 	var target: GraphCard = _cards_by_id.get(target_id, null)
 	if not is_instance_valid(target):
 		return
+	if _zen_active:
+		_selection.select_only(target)
 	_glide_to_card(target)
 	target.flash_highlight()
 

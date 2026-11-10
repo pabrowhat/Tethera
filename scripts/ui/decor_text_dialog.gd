@@ -1,12 +1,24 @@
 class_name DecorTextDialog
 extends ModalDialog
 
-signal applied(text: String, color_hex: String, font_size: int)
+signal applied(text: String, color_hex: String, font_size: int, align: String)
 
 const SWATCH_SHADER: Shader = preload("res://shaders/color_swatch.gdshader")
 const DIALOG_WIDTH: float = 460.0
 const TEXT_HEIGHT: float = 160.0
 const FONT_SIZE: int = 13
+const ALIGN_ICON_WIDTH: int = 16
+const ALIGN_BUTTON_WIDTH: float = 44.0
+const ALIGN_ICONS: Dictionary = {
+	DecorItem.ALIGN_LEFT: preload("res://assets/icons/align-left.svg"),
+	DecorItem.ALIGN_CENTER: preload("res://assets/icons/align-center.svg"),
+	DecorItem.ALIGN_RIGHT: preload("res://assets/icons/align-right.svg"),
+}
+const ALIGN_TOOLTIPS: Dictionary = {
+	DecorItem.ALIGN_LEFT: "format.align_left",
+	DecorItem.ALIGN_CENTER: "format.align_center",
+	DecorItem.ALIGN_RIGHT: "format.align_right",
+}
 
 var _edit: TextEdit = null
 var _count_label: Label = null
@@ -14,6 +26,8 @@ var _size_spin: SpinBox = null
 var _color_bar: ColorBar = null
 var _theme_button: Button = null
 var _color_hex: String = ""
+var _align: String = DecorItem.ALIGN_LEFT
+var _align_buttons: Dictionary = {}
 
 func _init() -> void:
 	super()
@@ -44,6 +58,28 @@ func _init() -> void:
 	_size_spin.rounded = true
 	size_row.add_child(_size_spin)
 
+	var align_row: HBoxContainer = HBoxContainer.new()
+	align_row.add_theme_constant_override("separation", 6)
+	_body.add_child(align_row)
+	var align_label: Label = _make_label("decor.text.align", FONT_SIZE, TEXT_COLOR)
+	align_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	align_row.add_child(align_label)
+	for choice: String in ALIGN_ICONS:
+		var align_button: Button = _make_button("", false)
+		align_button.icon = ALIGN_ICONS[choice] as Texture2D
+		align_button.custom_minimum_size = Vector2(ALIGN_BUTTON_WIDTH, 34.0)
+		align_button.expand_icon = true
+		for icon_color: String in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			ThemeColors.bind_override(align_button, StringName(icon_color), TITLE_COLOR)
+		align_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		align_button.add_theme_constant_override("icon_max_width", ALIGN_ICON_WIDTH)
+		align_button.tooltip_text = ALIGN_TOOLTIPS[choice] as String
+		align_button.toggle_mode = true
+		_style_toggle(align_button)
+		align_button.pressed.connect(_on_align_pressed.bind(choice))
+		align_row.add_child(align_button)
+		_align_buttons[choice] = align_button
+
 	_body.add_child(_make_label("decor.text.color", FONT_SIZE, TEXT_COLOR))
 	_color_bar = ColorBar.new()
 	_color_bar.setup(SidebarEditor.COLOR_PALETTE, SWATCH_SHADER)
@@ -71,12 +107,14 @@ func _init() -> void:
 	save_button.pressed.connect(_save)
 	footer.add_child(save_button)
 
-func open_for(content: String, color_hex: String, font_size: int) -> void:
+func open_for(content: String, color_hex: String, font_size: int, align: String) -> void:
 	_edit.text = DecorItem.clip_text(content)
 	_size_spin.set_value_no_signal(float(font_size))
 	_size_spin.get_line_edit().text = str(font_size)
 	_color_hex = color_hex
+	_align = DecorItem.align_or_default(align)
 	_refresh_color_state()
+	_refresh_align_state()
 	_update_count()
 	open()
 	_focus_edit.call_deferred()
@@ -114,6 +152,14 @@ func _on_color_picked(color: Color) -> void:
 	_color_hex = color.to_html(false)
 	_refresh_color_state()
 
+func _on_align_pressed(choice: String) -> void:
+	_align = choice
+	_refresh_align_state()
+
+func _refresh_align_state() -> void:
+	for choice: String in _align_buttons:
+		(_align_buttons[choice] as Button).set_pressed_no_signal(choice == _align)
+
 func _on_theme_color_pressed() -> void:
 	_color_hex = ""
 	_refresh_color_state()
@@ -129,5 +175,5 @@ func _save() -> void:
 	if not is_open():
 		return
 	_size_spin.apply()
-	applied.emit(_edit.text, _color_hex, int(_size_spin.value))
+	applied.emit(_edit.text, _color_hex, int(_size_spin.value), _align)
 	close()

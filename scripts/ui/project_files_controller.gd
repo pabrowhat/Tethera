@@ -1,7 +1,7 @@
 class_name ProjectFilesController
 extends RefCounted
 
-enum MenuItem { OPEN, SAVE, EXPORT, EXPORT_PNG, UNDO, REDO, TYPES, CLEAN_IMAGES, TRASH_RESTORE, TRASH_EMPTY, TRASH_MENU, SETTINGS, ADD_DECOR, OPEN_FOLDER, RECENT, NEW_NOTE, SEARCH, TYPE_FILTER, CANVAS_BACKGROUND, ABOUT, MAIN_MENU, QUIT, EXPORT_MENU, IMAGES_MENU, EXPORT_ALL, INSERT_IMAGE, COPY, PASTE, CUT, DUPLICATE, SELECT_ALL, TOGGLE_MODE, OPEN_PROJECT_MENU, SHORTCUTS, ADD_TEXT }
+enum MenuItem { OPEN, SAVE, EXPORT, EXPORT_PNG, UNDO, REDO, TYPES, CLEAN_IMAGES, TRASH_RESTORE, TRASH_EMPTY, TRASH_MENU, SETTINGS, ADD_DECOR, OPEN_FOLDER, RECENT, NEW_NOTE, SEARCH, TYPE_FILTER, CANVAS_BACKGROUND, ABOUT, MAIN_MENU, QUIT, EXPORT_MENU, IMAGES_MENU, EXPORT_ALL, INSERT_IMAGE, COPY, PASTE, CUT, DUPLICATE, SELECT_ALL, TOGGLE_MODE, OPEN_PROJECT_MENU, SHORTCUTS, ADD_TEXT, OPEN_SELECTED }
 
 const GROUP_MENU: String = "menu"
 const GROUP_EXPORT: String = "export"
@@ -84,6 +84,7 @@ func commands() -> Array[Dictionary]:
 	var insert_reason: String = "" if _ws.sidebar_editor.can_insert_image() else tr("command.reason.no_editor")
 	var trash_reason: String = tr("trash.none") if _ws._storage != null and _ws._storage.trash_file_count() == 0 else ""
 	var selection_reason: String = "" if _ws._selection.item_count() > 0 else tr("command.reason.no_selection")
+	var open_reason: String = "" if _ws._selection.count() == 1 else tr("command.reason.no_selection")
 	var list: Array[Dictionary] = [
 		_command(MenuItem.MAIN_MENU, tr("menu.main_menu"), "Ctrl+M"),
 		_separator(GROUP_MENU),
@@ -92,6 +93,7 @@ func commands() -> Array[Dictionary]:
 		_submenu(MenuItem.EXPORT_MENU, tr("menu.export_group"), GROUP_EXPORT),
 		_separator(GROUP_MENU),
 		_command(MenuItem.RECENT, tr("recent.button")),
+		_command(MenuItem.OPEN_SELECTED, tr("command.open_selected_note"), "Enter", open_reason),
 		_command(MenuItem.OPEN_FOLDER, tr("menu.open_folder")),
 		_separator(GROUP_MENU),
 		_command(MenuItem.EXPORT_PNG, tr("menu.export_png"), "Ctrl+Shift+S"),
@@ -205,6 +207,8 @@ func run_command(id: int) -> void:
 			_ws._clipboard_ops.duplicate()
 		MenuItem.SELECT_ALL:
 			_ws._clipboard_ops.select_all()
+		MenuItem.OPEN_SELECTED:
+			_ws.open_selected_note()
 		MenuItem.TOGGLE_MODE:
 			_ws.sidebar_editor.toggle_mode()
 		MenuItem.OPEN_PROJECT_MENU:

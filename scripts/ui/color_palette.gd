@@ -1,6 +1,8 @@
 class_name SwatchPalette
 extends RefCounted
 
+const PUNCH_META: StringName = &"punch_tween"
+
 static func build(container: Container, colors: Array[Color], swatch_shader: Shader, on_pick: Callable) -> Array[ColorRect]:
 	for child: Node in container.get_children():
 		child.queue_free()
@@ -9,6 +11,7 @@ static func build(container: Container, colors: Array[Color], swatch_shader: Sha
 	for color: Color in colors:
 		var btn: Button = Button.new()
 		btn.custom_minimum_size = Vector2(24, 24)
+		btn.pivot_offset = Vector2(12, 12)
 		btn.focus_mode = Control.FOCUS_NONE
 		UiStyle.make_borderless(btn)
 
@@ -25,11 +28,24 @@ static func build(container: Container, colors: Array[Color], swatch_shader: Sha
 		btn.add_child(swatch_rect)
 
 		var chosen_color: Color = color
-		btn.pressed.connect(func() -> void: on_pick.call(chosen_color))
+		btn.pressed.connect(func() -> void:
+			punch(btn)
+			on_pick.call(chosen_color)
+		)
 		container.add_child(btn)
 		swatches.append(swatch_rect)
 
 	return swatches
+
+static func punch(button: Button) -> void:
+	var previous: Variant = button.get_meta(PUNCH_META) if button.has_meta(PUNCH_META) else null
+	if previous is Tween and (previous as Tween).is_valid():
+		(previous as Tween).kill()
+	button.scale = Vector2.ONE
+	var tween: Tween = button.create_tween().set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(button, "scale", Vector2(ColorBar.PUNCH_SCALE, ColorBar.PUNCH_SCALE), ColorBar.PUNCH_UP_DURATION).set_ease(Tween.EASE_OUT)
+	tween.tween_property(button, "scale", Vector2.ONE, ColorBar.PUNCH_DOWN_DURATION).set_ease(Tween.EASE_IN_OUT)
+	button.set_meta(PUNCH_META, tween)
 
 static func set_active(swatches: Array[ColorRect], active_color: Color) -> void:
 	for swatch: ColorRect in swatches:

@@ -181,6 +181,10 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_scroll_v"]
+content_margin_left = 5.0
+content_margin_right = 5.0
+
 [resource]
 Button/colors/font_color = Color(0.88, 0.89, 0.94, 1)
 Button/colors/font_disabled_color = Color(0.45, 0.47, 0.58, 1)
@@ -231,5 +235,5 @@ TextEdit/styles/read_only = SubResource("StyleBoxFlat_input_readonly")
 VScrollBar/styles/grabber = SubResource("StyleBoxFlat_grabber")
 VScrollBar/styles/grabber_highlight = SubResource("StyleBoxFlat_grabber_hover")
 VScrollBar/styles/grabber_pressed = SubResource("StyleBoxFlat_grabber_pressed")
-VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_scroll")
-VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_scroll")
+VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_scroll_v")
+VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_scroll_v")

@@ -37,19 +37,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preview"]
-content_margin_left = 18.0
-content_margin_top = 16.0
-content_margin_right = 18.0
-content_margin_bottom = 16.0
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_inner"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_del"]
 content_margin_top = 8.0
@@ -140,20 +128,21 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 alignment = 2
 
-[node name="FormatBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580723]
+[node name="FormatBar" type="HFlowContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580723]
 layout_mode = 2
 script = ExtResource("3_format")
 
-[node name="ContentStack" type="MarginContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580724]
+[node name="ContentStack" type="PanelContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580724]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_content")
 
 [node name="ContentEdit" type="TextEdit" parent="MarginContainer/VBoxContainer/ContentStack" unique_id=219841727]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_content")
-theme_override_styles/focus = SubResource("StyleBoxFlat_content")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_inner")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_inner")
 placeholder_text = "sidebar.content.placeholder"
 wrap_mode = 1
 
@@ -167,7 +156,7 @@ theme_override_font_sizes/bold_font_size = 16
 theme_override_font_sizes/bold_italics_font_size = 16
 theme_override_font_sizes/italics_font_size = 16
 theme_override_font_sizes/mono_font_size = 15
-theme_override_styles/normal = SubResource("StyleBoxFlat_preview")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_inner")
 bbcode_enabled = true
 selection_enabled = true
 

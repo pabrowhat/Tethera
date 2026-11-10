@@ -17,8 +17,10 @@ const SLIDER_STEP: float = 0.1
 const PROMPT_WIDTH: float = 380.0
 const LANGUAGE_BUTTON_WIDTH: float = 170.0
 const THEME_BUTTON_WIDTH: float = 170.0
+const OPEN_MODE_BUTTON_WIDTH: float = 170.0
 const SCROLL_RESERVE: float = 190.0
 const SCROLL_MIN_HEIGHT: float = 120.0
+const SCROLL_GAP: int = 10
 
 var _reduce_motion: bool = false
 var _show_grid: bool = true
@@ -28,12 +30,14 @@ var _collapse_distant: bool = true
 var _note_color: Color = Color(Preferences.DEFAULT_NOTE_COLOR_HEX)
 var _language: String = Localization.AUTO
 var _theme: String = ThemeColors.AUTO
+var _open_mode: String = Preferences.OPEN_SIDEBAR
 
 var _scroll: ScrollContainer = null
 var _content: VBoxContainer = null
 var _boxes: Dictionary = {}
 var _language_button: DropdownButton = null
 var _theme_button: DropdownButton = null
+var _open_mode_button: DropdownButton = null
 var _line_slider: HSlider = null
 var _line_value: Label = null
 var _swatch_row: HFlowContainer = null
@@ -72,15 +76,21 @@ func _build() -> void:
 	_scroll = ScrollContainer.new()
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_body.add_child(_scroll)
+	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
+	var scroll_pad: MarginContainer = MarginContainer.new()
+	scroll_pad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll_pad.add_theme_constant_override("margin_right", SCROLL_GAP)
+	_scroll.add_child(scroll_pad)
 	_content = VBoxContainer.new()
 	_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content.add_theme_constant_override("separation", 10)
-	_scroll.add_child(_content)
+	scroll_pad.add_child(_content)
 
 	_add_toggle(&"reduce_motion", "settings.reduce_motion", "settings.reduce_motion.hint", _on_reduce_motion_pressed)
 	_add_toggle(&"show_grid", "settings.show_grid", "", _on_show_grid_pressed)
 	_build_line_width()
 	_build_note_color()
+	_build_open_mode()
 	_build_language()
 	_build_theme()
 	_build_advanced()
@@ -145,6 +155,7 @@ func _build_line_width() -> void:
 	_line_slider.max_value = Preferences.LINE_WIDTH_MAX
 	_line_slider.step = SLIDER_STEP
 	_line_slider.focus_mode = Control.FOCUS_NONE
+	_line_slider.scrollable = false
 	_line_slider.custom_minimum_size = Vector2(0.0, 22.0)
 	_line_slider.value_changed.connect(_on_line_width_changed)
 	_content.add_child(_line_slider)
@@ -156,6 +167,20 @@ func _build_note_color() -> void:
 	_swatch_row.add_theme_constant_override("h_separation", SWATCH_GAP)
 	_swatch_row.add_theme_constant_override("v_separation", SWATCH_GAP)
 	_content.add_child(_swatch_row)
+
+func _build_open_mode() -> void:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_content.add_child(row)
+	var caption: Label = _make_label("settings.open_mode", FONT_SIZE, TEXT_COLOR)
+	caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(caption)
+	_open_mode_button = DropdownButton.new()
+	_open_mode_button.custom_minimum_size = Vector2(OPEN_MODE_BUTTON_WIDTH, 32.0)
+	_fill_open_mode_list()
+	_open_mode_button.item_selected.connect(_on_open_mode_selected)
+	row.add_child(_open_mode_button)
+	_content.add_child(_make_label("settings.open_mode.hint", HINT_SIZE, MUTED_COLOR, true))
 
 func _build_language() -> void:
 	var row: HBoxContainer = HBoxContainer.new()
@@ -322,6 +347,8 @@ func _load_form(values: Dictionary) -> void:
 	_language_button.select_id(Localization.CHOICES.find(_language))
 	_theme = str(values[Preferences.KEY_THEME])
 	_theme_button.select_id(ThemeColors.CHOICES.find(_theme))
+	_open_mode = str(values[Preferences.KEY_OPEN_MODE])
+	_open_mode_button.select_id(Preferences.OPEN_MODES.find(_open_mode))
 
 	_line_slider.set_value_no_signal(float(values[Preferences.KEY_LINE_WIDTH_SCALE]))
 	_update_line_value()
@@ -353,6 +380,7 @@ func _current_values() -> Dictionary:
 		Preferences.KEY_EXPORT_INCLUDE_LINKED: _export_linked,
 		Preferences.KEY_LANGUAGE: _language,
 		Preferences.KEY_THEME: _theme,
+		Preferences.KEY_OPEN_MODE: _open_mode,
 		Preferences.KEY_MINIMAP_DECOR: _minimap_decor,
 		Preferences.KEY_COLLAPSE_DISTANT_NOTES: _collapse_distant,
 	}
@@ -549,6 +577,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and _language_button != null:
 		_fill_language_list()
 		_fill_theme_list()
+		_fill_open_mode_list()
 
 func _fill_language_list() -> void:
 	_language_button.clear()
@@ -561,6 +590,15 @@ func _fill_theme_list() -> void:
 	for index: int in ThemeColors.CHOICES.size():
 		_theme_button.add_item(tr("settings.theme." + ThemeColors.CHOICES[index]), index)
 	_theme_button.select_id(ThemeColors.CHOICES.find(_theme))
+
+func _fill_open_mode_list() -> void:
+	_open_mode_button.clear()
+	for index: int in Preferences.OPEN_MODES.size():
+		_open_mode_button.add_item(tr("settings.open_mode." + Preferences.OPEN_MODES[index]), index)
+	_open_mode_button.select_id(Preferences.OPEN_MODES.find(_open_mode))
+
+func _on_open_mode_selected(id: int) -> void:
+	_open_mode = Preferences.OPEN_MODES[id]
 
 func _on_theme_selected(id: int) -> void:
 	_theme = ThemeColors.CHOICES[id]
