@@ -1831,3 +1831,9 @@ msgstr "Default and custom colours can be changed or reset from a right-click me
 
 msgid "whats_new.1_5_1.clean_swatches"
 msgstr "Colour swatches and the copy button icon in the colour picker are drawn cleanly."
+
+msgid "whats_new.1_5_2.faster_open"
+msgstr "Worlds open faster: notes appear first and their pictures load right after, and pictures are not decoded again when you reopen a world."
+
+msgid "whats_new.1_5_2.backup_later"
+msgstr "The daily backup is taken after the world is shown, not before."
