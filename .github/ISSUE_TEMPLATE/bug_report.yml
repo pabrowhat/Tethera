@@ -6,7 +6,7 @@ body:
     id: version
     attributes:
       label: Tethera version
-      description: Shown in Help > About, for example 1.5.1
+      description: Shown in the About window (the About button on the start screen), for example 1.5.1
     validations:
       required: true
   - type: dropdown
