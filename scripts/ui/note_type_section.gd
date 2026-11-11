@@ -22,6 +22,8 @@ var _read_only: bool = false
 var _picker: DropdownButton = null
 var _follow_button: Button = null
 var _scroll: ScrollContainer = null
+var _reveal: RevealBox = null
+var _built_card: GraphCard = null
 var _fields_box: VBoxContainer = null
 var _refresh_queued: bool = false
 
@@ -57,8 +59,11 @@ func _init() -> void:
 
 	_scroll = ScrollContainer.new()
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_scroll.visible = false
-	add_child(_scroll)
+	_reveal = RevealBox.new()
+	_reveal.visible = false
+	_reveal.is_open = false
+	_reveal.add_child(_scroll)
+	add_child(_reveal)
 
 	_fields_box = VBoxContainer.new()
 	_fields_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -126,11 +131,12 @@ func _rebuild() -> void:
 				var shown: String = _format_value(field, _card.field_values.get(field.key, null))
 				if shown != "":
 					_fields_box.add_child(_make_read_line(field, shown))
-	_scroll.visible = _fields_box.get_child_count() > 0
+	_reveal.set_open(_fields_box.get_child_count() > 0, _built_card == _card)
+	_built_card = _card
 	_fit_scroll.call_deferred()
 
 func _fit_scroll() -> void:
-	if is_instance_valid(_scroll) and _scroll.visible:
+	if is_instance_valid(_scroll) and _fields_box.get_child_count() > 0:
 		var wanted: float = minf(_fields_box.get_combined_minimum_size().y, MAX_FIELDS_HEIGHT)
 		if not is_equal_approx(_scroll.custom_minimum_size.y, wanted):
 			_scroll.custom_minimum_size.y = wanted

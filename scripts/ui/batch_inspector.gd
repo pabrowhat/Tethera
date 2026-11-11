@@ -59,9 +59,9 @@ func _init() -> void:
 	_delete_button.pressed.connect(func() -> void: delete_requested.emit())
 	add_child(_delete_button)
 
-func setup(palette_colors: Array[Color], swatch_shader: Shader) -> void:
+func setup(swatch_shader: Shader) -> void:
 	_color_bar = ColorBar.new()
-	_color_bar.setup(palette_colors, swatch_shader)
+	_color_bar.setup(swatch_shader)
 	_color_bar.color_picked.connect(func(color: Color) -> void: color_chosen.emit(color))
 	_color_bar.color_committed.connect(func(color: Color) -> void: color_chosen.emit(color))
 	_color_bar.eyedropper_requested.connect(eyedropper_requested.emit)

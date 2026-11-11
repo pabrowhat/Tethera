@@ -64,6 +64,7 @@ func set_preview(value: bool, animate: bool = true) -> void:
 
 	_slide_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_slide_tween.tween_method(_set_slide, _slide, 1.0 if value else 0.0, SLIDE_DURATION)
+	UiMotion.settle(_slide_tween)
 
 func _set_slide(value: float) -> void:
 	_slide = value

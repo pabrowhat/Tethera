@@ -40,15 +40,15 @@ signal closed
 @onready var zen_button: Button = $MarginContainer/VBoxContainer/Header/ZenButton
 @onready var mode_row: HBoxContainer = $MarginContainer/VBoxContainer/ModeRow
 @onready var mode_toggle: ModeToggle = $MarginContainer/VBoxContainer/ModeRow/ModeToggle
-@onready var toolbar_row: HFlowContainer = $MarginContainer/VBoxContainer/Toolbar
-@onready var footer_row: HBoxContainer = $MarginContainer/VBoxContainer/Footer
+@onready var action_row: HBoxContainer = $MarginContainer/VBoxContainer/ActionRow
+@onready var appearance_button: Button = $MarginContainer/VBoxContainer/Header/AppearanceButton
 @onready var margin_box: MarginContainer = $MarginContainer
-@onready var image_button: Button = $MarginContainer/VBoxContainer/Toolbar/ImageButton
-@onready var color_container: HBoxContainer = $MarginContainer/VBoxContainer/Toolbar/ColorPalette
+@onready var image_button: Button = $MarginContainer/VBoxContainer/ActionRow/ImageButton
+@onready var color_container: HBoxContainer = $MarginContainer/VBoxContainer/ColorPalette
 @onready var format_bar: FormatToolbar = $MarginContainer/VBoxContainer/FormatBar
 @onready var content_edit: TextEdit = $MarginContainer/VBoxContainer/ContentStack/ContentEdit
 @onready var preview_label: RichTextLabel = $MarginContainer/VBoxContainer/ContentStack/PreviewLabel
-@onready var delete_button: Button = $MarginContainer/VBoxContainer/Footer/DeleteButton
+@onready var delete_button: Button = $MarginContainer/VBoxContainer/ActionRow/DeleteButton
 
 var storage: VaultStorage = null
 var title_label: Label = null
@@ -66,6 +66,10 @@ var _last_link_query: String = ""
 var _batch_inspector: BatchInspector = null
 var type_manager: TypeManagerPanel = null
 var type_section: NoteTypeSection = null
+var props_scroll: ScrollContainer = null
+var props_body: VBoxContainer = null
+var _appearance_open: bool = false
+var _appearance_tween: Tween = null
 var background_section: NoteBackgroundSection = null
 var _type_registry: EntityTypeRegistry = null
 var _fields_dirty: bool = false
@@ -109,6 +113,8 @@ const ZEN_MIN_WIDTH: float = 480.0
 const ZEN_MAX_WIDTH: float = 1400.0
 const ZEN_DURATION: float = 0.25
 const ZEN_MARGIN: int = 36
+const APPEARANCE_MAX_RATIO: float = 0.4
+const APPEARANCE_DURATION: float = 0.15
 const DOCK_MARGIN: int = 16
 const ZEN_TITLE_FONT: int = 22
 const DOCK_TITLE_FONT: int = 15
@@ -117,15 +123,6 @@ const DOCK_EDIT_FONT: int = 14
 const ZEN_PREVIEW_FONT: int = 18
 const DOCK_PREVIEW_FONT: int = 16
 const PREVIEW_FONT_KEYS: Array[String] = ["normal_font_size", "bold_font_size", "italics_font_size", "bold_italics_font_size"]
-
-const COLOR_PALETTE: Array[Color] = [
-	Color("313549"),
-	Color("3498db"),
-	Color("2ecc71"),
-	Color("f1c40f"),
-	Color("9b59b6"),
-	Color("e74c3c")
-]
 
 func _ready() -> void:
 	_wrap_single_view_in_scroll()
@@ -141,6 +138,7 @@ func _ready() -> void:
 	close_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	close_button.pressed.connect(close_sidebar)
 	zen_button.pressed.connect(toggle_zen)
+	appearance_button.toggled.connect(func(open: bool) -> void: _set_appearance_open(open, true))
 	_bind_scene_colors()
 	delete_button.pressed.connect(_on_delete_pressed)
 	image_button.pressed.connect(_on_image_button_pressed)
@@ -182,7 +180,7 @@ func _ready() -> void:
 	_batch_inspector = BatchInspector.new()
 	_batch_inspector.visible = false
 	$MarginContainer.add_child(_batch_inspector)
-	_batch_inspector.setup(COLOR_PALETTE, swatch_shader)
+	_batch_inspector.setup(swatch_shader)
 	_batch_inspector.color_chosen.connect(batch_color_chosen.emit)
 	_batch_inspector.delete_requested.connect(batch_delete_requested.emit)
 	_batch_inspector.chip_focus_requested.connect(batch_chip_focus_requested.emit)
@@ -196,7 +194,6 @@ func _ready() -> void:
 
 	type_section = NoteTypeSection.new()
 	single_view.add_child(type_section)
-	single_view.move_child(type_section, toolbar_row.get_index() + 1)
 	type_section.type_chosen.connect(_on_type_section_type_chosen)
 	type_section.field_edited.connect(_on_type_section_field_edited)
 	type_section.follow_type_color_requested.connect(_on_type_section_follow_requested)
@@ -205,7 +202,6 @@ func _ready() -> void:
 	background_section.setup(swatch_shader, true)
 	background_section.eyedropper_requested.connect(background_eyedropper_requested.emit)
 	single_view.add_child(background_section)
-	single_view.move_child(background_section, type_section.get_index() + 1)
 	background_section.color_previewed.connect(_on_background_previewed)
 	background_section.color_chosen.connect(_on_background_color_chosen)
 	background_section.color2_previewed.connect(func(color: Color) -> void:
@@ -221,15 +217,62 @@ func _ready() -> void:
 	(content_edit.get_parent() as Control).custom_minimum_size.y = 160.0
 	background_section.cleared.connect(_on_background_cleared)
 
+	_build_props_panel()
 	_build_color_palette()
 	color_container.alignment = BoxContainer.ALIGNMENT_BEGIN
 	background_section.attach_border_control(color_container, "background.border_color")
 	_apply_mode_visibility()
 	visible = false
 
+func _build_props_panel() -> void:
+	props_scroll = ScrollContainer.new()
+	props_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	props_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	props_body = VBoxContainer.new()
+	props_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	props_body.add_theme_constant_override("separation", 12)
+	props_scroll.add_child(props_body)
+	props_body.minimum_size_changed.connect(_fit_appearance)
+	single_view.add_child(props_scroll)
+	single_view.move_child(props_scroll, color_container.get_index())
+	for part: Control in [type_section, action_row, background_section]:
+		part.reparent(props_body, false)
+
+func _appearance_target() -> float:
+	return minf(props_body.get_combined_minimum_size().y, _zen_rect().size.y * APPEARANCE_MAX_RATIO)
+
+func _fit_appearance() -> void:
+	if not is_zen or not _appearance_open or (_appearance_tween != null and _appearance_tween.is_running()):
+		return
+	props_scroll.custom_minimum_size.y = _appearance_target()
+	var overflow: bool = props_body.get_combined_minimum_size().y > props_scroll.custom_minimum_size.y + 0.5
+	props_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO if overflow else ScrollContainer.SCROLL_MODE_SHOW_NEVER
+
+func _set_appearance_open(open: bool, animate: bool) -> void:
+	_appearance_open = open and is_zen and not is_preview
+	appearance_button.set_pressed_no_signal(_appearance_open)
+	if _appearance_tween != null and _appearance_tween.is_valid():
+		_appearance_tween.kill()
+	var target: float = _appearance_target() if _appearance_open else 0.0
+	if _appearance_open:
+		props_scroll.visible = true
+	if is_zen:
+		props_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	if not animate or not is_inside_tree() or Preferences.reduce_motion():
+		props_scroll.custom_minimum_size.y = target
+		_fit_appearance()
+		_apply_mode_visibility()
+		return
+	_appearance_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_appearance_tween.tween_property(props_scroll, "custom_minimum_size:y", target, APPEARANCE_DURATION)
+	_appearance_tween.tween_callback(func() -> void:
+		_fit_appearance()
+		_apply_mode_visibility())
+
 func _wrap_single_view_in_scroll() -> void:
 	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	margin_box.add_child(scroll)
@@ -243,7 +286,7 @@ func setup_link_source(cards_by_id: Dictionary) -> void:
 	_link_cards = cards_by_id
 
 func setup_types(registry: EntityTypeRegistry, count_of: Callable) -> void:
-	type_manager.setup(registry, count_of, COLOR_PALETTE, swatch_shader)
+	type_manager.setup(registry, count_of, swatch_shader)
 	type_section.setup(registry)
 	_type_registry = registry
 
@@ -290,7 +333,7 @@ func _setup_editor_fonts() -> void:
 	preview_label.resized.connect(_on_preview_resized)
 
 func _setup_format_bar() -> void:
-	format_bar.setup(swatch_shader, COLOR_PALETTE)
+	format_bar.setup(swatch_shader)
 	format_bar.wrap_requested.connect(_on_format_wrap_requested)
 	format_bar.value_tag_requested.connect(_on_format_value_tag_requested)
 	format_bar.prefix_requested.connect(_on_format_prefix_requested)
@@ -314,7 +357,7 @@ func _setup_splitter() -> void:
 
 func _build_color_palette() -> void:
 	_color_bar = ColorBar.new()
-	_color_bar.setup(COLOR_PALETTE, swatch_shader)
+	_color_bar.setup(swatch_shader)
 	_color_bar.color_picked.connect(_on_color_button_pressed)
 	_color_bar.color_previewed.connect(_on_custom_color_previewed)
 	_color_bar.color_committed.connect(_on_custom_color_committed)
@@ -537,10 +580,12 @@ func _animate_visibility(show_panel: bool) -> void:
 		position.x = viewport_w
 		_slide_tween.set_ease(Tween.EASE_OUT)
 		_slide_tween.tween_property(self, "position:x", viewport_w - panel_width, animation_duration)
+		UiMotion.settle(_slide_tween)
 	else:
 		_slide_tween.set_ease(Tween.EASE_IN)
 		_slide_tween.tween_property(self, "position:x", viewport_w, animation_duration)
 		_slide_tween.chain().tween_callback(func() -> void: visible = false)
+		UiMotion.settle(_slide_tween)
 
 func _sync_title_label() -> void:
 	if title_label == null:
@@ -631,6 +676,7 @@ func enter_zen(direct: bool = false) -> void:
 		if is_zen and not is_preview:
 			content_edit.grab_focus()
 	)
+	UiMotion.settle(_zen_tween)
 
 func exit_zen() -> void:
 	if not is_zen or _zen_animating:
@@ -657,6 +703,7 @@ func exit_zen() -> void:
 		else:
 			_animate_visibility(true)
 	)
+	UiMotion.settle(_zen_tween)
 
 func _close_after_direct_zen() -> void:
 	_zen_direct = false
@@ -720,6 +767,9 @@ func _apply_zen_rect(rect: Rect2) -> void:
 	position = rect.position
 
 func _apply_zen_look(on: bool) -> void:
+	props_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER if on else ScrollContainer.SCROLL_MODE_DISABLED
+	_set_appearance_open(false, false)
+	single_view.move_child(props_scroll, format_bar.get_index() if on else mode_row.get_index() + 1)
 	_apply_mode_visibility()
 	close_button.visible = not on
 	zen_button.icon = ICON_ZEN_EXIT if on else ICON_ZEN_ENTER
@@ -751,17 +801,19 @@ func _apply_zen_look(on: bool) -> void:
 
 func _apply_mode_visibility() -> void:
 	var editing: bool = not is_preview
-	toolbar_row.visible = editing and not is_zen
-	footer_row.visible = editing and not is_zen
+	action_row.visible = editing
+	appearance_button.visible = is_zen and editing
+	if props_scroll != null:
+		props_scroll.visible = not is_zen or (editing and (_appearance_open or props_scroll.custom_minimum_size.y > 0.0))
 	format_bar.visible = editing
 	title_input.visible = editing
 	if title_label != null:
 		title_label.visible = not editing
 	if type_section != null:
-		type_section.visible = not is_zen
+		type_section.visible = true
 		type_section.set_read_only(is_preview)
 	if background_section != null:
-		background_section.visible = editing and not is_zen
+		background_section.visible = editing
 
 func _kill_zen_tween() -> void:
 	if _zen_tween != null and _zen_tween.is_valid():
@@ -790,9 +842,11 @@ func _set_preview_mode(preview: bool, animate: bool) -> void:
 	if _mode_tween != null and _mode_tween.is_valid():
 		_mode_tween.kill()
 	format_bar.set_enabled(not preview)
+	if preview and _appearance_open:
+		_set_appearance_open(false, false)
 	_apply_mode_visibility()
 
-	if not animate or not is_inside_tree():
+	if not animate or not is_inside_tree() or Preferences.reduce_motion():
 		leaving.visible = false
 		leaving.modulate.a = 1.0
 		entering.visible = true

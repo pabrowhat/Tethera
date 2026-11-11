@@ -146,6 +146,7 @@ func _animate_transform(target_pos: Vector2, target_zoom: float) -> void:
 	_camera_tween.tween_property(target_canvas, "position", target_pos, focus_duration)
 	_camera_tween.tween_property(target_canvas, "scale", Vector2(target_zoom, target_zoom), focus_duration)
 	_camera_tween.tween_method(_on_camera_step, 0.0, 1.0, focus_duration)
+	UiMotion.settle(_camera_tween)
 
 func _on_camera_step(_progress: float) -> void:
 	if not is_instance_valid(target_canvas):

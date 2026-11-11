@@ -134,6 +134,7 @@ func toggle_collapsed() -> void:
 	_collapse_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_collapse_tween.tween_method(_set_open_amount, _open_amount, 0.0 if _collapsed else 1.0, COLLAPSE_DURATION)
 	_collapse_tween.tween_callback(func() -> void: clip_contents = false)
+	UiMotion.settle(_collapse_tween)
 
 func _set_open_amount(amount: float) -> void:
 	_open_amount = amount

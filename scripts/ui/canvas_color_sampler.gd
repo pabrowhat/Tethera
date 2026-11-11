@@ -106,7 +106,7 @@ func _apply_sampled_color(color: Color, screen_pos: Vector2) -> void:
 		_ws._touch_card(card)
 	_ws._undo.record_color_change(before, after, overrides_before, overrides_after)
 
-	PaletteStore.instance().add_color(color, SidebarEditor.COLOR_PALETTE)
+	PaletteStore.instance().add_color(color)
 	_ws._eyedropper.confirm_sample(screen_pos, color)
 	_end_sampling()
 

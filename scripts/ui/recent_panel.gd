@@ -84,6 +84,7 @@ func open_below(anchor: Rect2) -> void:
 	_panel.modulate.a = 0.0
 	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_tween.tween_property(_panel, "modulate:a", 1.0, FADE_DURATION)
+	UiMotion.settle(_tween)
 	set_process_input(true)
 
 func close() -> void:
@@ -95,6 +96,7 @@ func close() -> void:
 	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	_tween.tween_property(_panel, "modulate:a", 0.0, FADE_DURATION)
 	_tween.tween_callback(func() -> void: _panel.visible = false)
+	UiMotion.settle(_tween)
 
 func _input(event: InputEvent) -> void:
 	if not _is_open:

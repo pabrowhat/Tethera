@@ -419,7 +419,7 @@ msgid "settings.reduce_motion"
 msgstr "Reduce motion"
 
 msgid "settings.reduce_motion.hint"
-msgstr "Card flip and collapse into a pill happen at once. Fades and highlights stay."
+msgstr "Turns off animations of notes and of the interface: flips, collapsing, menus sliding out, windows, panels and Focus mode change at once."
 
 msgid "settings.show_grid"
 msgstr "Show the background grid"
@@ -640,6 +640,12 @@ msgstr "Dashed"
 msgid "link.style.dotted"
 msgstr "Dotted"
 
+msgid "link.style.dash_dot"
+msgstr "Dash-dot"
+
+msgid "link.style.double"
+msgstr "Double"
+
 msgid "link.history.style"
 msgstr "Link style"
 
@@ -805,6 +811,12 @@ msgstr "Focus mode (F11)"
 msgid "sidebar.zen.exit"
 msgstr "Collapse (Esc)"
 
+msgid "sidebar.zen.properties"
+msgstr "Properties"
+
+msgid "sidebar.zen.properties.tip"
+msgstr "Note appearance: border colour, type, cover, background"
+
 msgid "sidebar.preview.empty"
 msgstr "Nothing here yet. Switch to edit mode and write something."
 
@@ -956,13 +968,25 @@ msgid "format.highlight"
 msgstr "Background highlight"
 
 msgid "palette.slot.filled"
-msgstr "#%s\nRight-click to clear the slot"
+msgstr "#%s\nRight-click: change or delete"
 
 msgid "palette.slot.empty"
 msgstr "Empty slot: your own colours are saved here"
 
 msgid "palette.custom"
 msgstr "Custom colour"
+
+msgid "palette.menu.change"
+msgstr "Change"
+
+msgid "palette.menu.delete"
+msgstr "Delete"
+
+msgid "palette.menu.reset"
+msgstr "Reset"
+
+msgid "palette.duplicate"
+msgstr "This colour is already in the palette."
 
 msgid "picker.copy_hex"
 msgstr "Copy HEX"
@@ -1792,3 +1816,18 @@ msgstr "Inline code: text between single backticks, such as `.tether`, is shown 
 
 msgid "whats_new.1_5_0.code_autoclose"
 msgstr "In the editor, Enter on a line with only three backticks adds the closing line and puts the caret between them."
+
+msgid "whats_new.1_5_1.cover_delete_row"
+msgstr "In the note panel, Cover and Delete are now in a row under the type chooser, and the footer is gone."
+
+msgid "whats_new.1_5_1.zen_appearance"
+msgstr "Zen mode has an Appearance panel: border colour, type, cover, delete and background."
+
+msgid "whats_new.1_5_1.link_styles"
+msgstr "Two new link styles: dash-dot and double. Older versions show them as the default style and lose them on save."
+
+msgid "whats_new.1_5_1.palette_edit"
+msgstr "Default and custom colours can be changed or reset from a right-click menu. Notes keep their colours."
+
+msgid "whats_new.1_5_1.clean_swatches"
+msgstr "Colour swatches and the copy button icon in the colour picker are drawn cleanly."

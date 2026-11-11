@@ -27,10 +27,9 @@ static func build(container: Container, colors: Array[Color], swatch_shader: Sha
 
 		btn.add_child(swatch_rect)
 
-		var chosen_color: Color = color
 		btn.pressed.connect(func() -> void:
 			punch(btn)
-			on_pick.call(chosen_color)
+			on_pick.call(mat.get_shader_parameter("circle_color") as Color)
 		)
 		container.add_child(btn)
 		swatches.append(swatch_rect)

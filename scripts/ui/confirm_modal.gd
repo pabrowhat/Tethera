@@ -67,11 +67,13 @@ func _animate_open(open_state: bool) -> void:
 		_tween.set_ease(Tween.EASE_OUT)
 		_tween.tween_property(self, "modulate:a", 1.0, 0.15)
 		_tween.tween_property(panel, "scale", Vector2.ONE, 0.2)
+		UiMotion.settle(_tween)
 	else:
 		_tween.set_ease(Tween.EASE_IN)
 		_tween.tween_property(self, "modulate:a", 0.0, 0.12)
 		_tween.tween_property(panel, "scale", Vector2(0.95, 0.95), 0.12)
 		_tween.chain().tween_callback(func() -> void: visible = false)
+		UiMotion.settle(_tween)
 
 func _on_cancel_pressed() -> void:
 	_animate_open(false)

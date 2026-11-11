@@ -7,19 +7,14 @@ signal color_committed(color: Color)
 const BUTTON_SIZE: Vector2 = Vector2(24.0, 24.0)
 const IDLE_COLOR: Color = Color.TRANSPARENT
 const PLUS_COLOR: StringName = &"text.caption"
-const POPUP_GAP: float = 6.0
-const POPUP_BG: StringName = &"surface.panel"
-const POPUP_BORDER: StringName = &"border"
 
 var _material: ShaderMaterial = null
 var _plus_label: Label = null
-var _popup: PopupPanel = null
-var _picker: ColorPickerPanel = null
+var _popup: ColorPickerPopup = null
 
 var _presets: Array[Color] = []
 var _picker_color: Color = Color.WHITE
 var _is_custom_active: bool = false
-var _has_changed: bool = false
 
 func _init() -> void:
 	custom_minimum_size = BUTTON_SIZE
@@ -50,21 +45,9 @@ func setup(swatch_shader: Shader, preset_colors: Array[Color]) -> void:
 	ThemeColors.bind_override(_plus_label, &"font_color", PLUS_COLOR)
 	add_child(_plus_label)
 
-	_picker = ColorPickerPanel.new()
-	_picker.color_changed.connect(_on_picker_color_changed)
-
-	var popup_style: StyleBoxFlat = StyleBoxFlat.new()
-	ThemeColors.bind(popup_style, &"bg_color", POPUP_BG)
-	ThemeColors.bind(popup_style, &"border_color", POPUP_BORDER)
-	popup_style.set_border_width_all(1)
-	popup_style.set_corner_radius_all(10)
-	popup_style.set_content_margin_all(12.0)
-
-	_popup = PopupPanel.new()
-	_popup.add_theme_stylebox_override("panel", popup_style)
-	_popup.add_child(_picker)
-	_popup.popup_hide.connect(_on_popup_hidden)
-	_popup.window_input.connect(_on_popup_window_input)
+	_popup = ColorPickerPopup.new()
+	_popup.color_previewed.connect(_on_picker_color_changed)
+	_popup.color_committed.connect(_on_picker_committed)
 	add_child(_popup)
 
 	pressed.connect(_open_picker)
@@ -73,6 +56,9 @@ func sync(active_color: Color) -> void:
 	_picker_color = active_color
 	var is_known: bool = _is_preset(active_color) or PaletteStore.instance().find_color(active_color) != -1
 	_set_custom_active(not is_known, active_color)
+
+func set_presets(preset_colors: Array[Color]) -> void:
+	_presets = preset_colors
 
 func clear_active() -> void:
 	_set_custom_active(false, IDLE_COLOR)
@@ -92,34 +78,13 @@ func _set_custom_active(active: bool, color: Color) -> void:
 	_plus_label.visible = not active
 
 func _open_picker() -> void:
-	_has_changed = false
-	_picker.begin(_picker_color)
-
-	_popup.reset_size()
-	var popup_size: Vector2i = _popup.get_contents_minimum_size()
-	var bounds: Vector2 = get_viewport_rect().size
-	var anchor: Rect2 = get_global_rect()
-	var x: float = clampf(anchor.end.x - float(popup_size.x), 0.0, maxf(bounds.x - float(popup_size.x), 0.0))
-	var y: float = minf(anchor.end.y + POPUP_GAP, maxf(bounds.y - float(popup_size.y), 0.0))
-	_popup.popup(Rect2i(Vector2i(int(x), int(y)), popup_size))
+	_popup.open_for(get_global_rect(), _picker_color, get_viewport_rect().size)
 
 func _on_picker_color_changed(color: Color) -> void:
-	_has_changed = true
 	_picker_color = color
 	_set_custom_active(true, color)
 	color_previewed.emit(color)
 
-func _on_popup_window_input(event: InputEvent) -> void:
-	if not (event is InputEventKey):
-		return
-	var key: InputEventKey = event as InputEventKey
-	if key.pressed and not key.is_echo() and (key.keycode == KEY_ENTER or key.keycode == KEY_KP_ENTER):
-		_popup.set_input_as_handled()
-		_popup.hide()
-
-func _on_popup_hidden() -> void:
-	if not _has_changed:
-		return
-	_has_changed = false
-	PaletteStore.instance().add_color(_picker_color, _presets)
-	color_committed.emit(_picker_color)
+func _on_picker_committed(color: Color) -> void:
+	PaletteStore.instance().add_color(color, _presets)
+	color_committed.emit(color)

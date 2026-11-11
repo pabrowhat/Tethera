@@ -4,6 +4,7 @@
 .import/
 export.cfg
 export_credentials.cfg
+logs/
 
 # Imported translations
 *.translation
@@ -16,5 +17,6 @@ mono_crash.*.json
 # Export
 *.exe
 build/
-# Local packaging files (not published)
+
+# Local
 packaging/

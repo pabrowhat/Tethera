@@ -1051,6 +1051,7 @@ func glide_to(target: Vector2, duration: float = 0.12) -> Tween:
 	_kill_tween(_glide_tween)
 	_glide_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_glide_tween.tween_property(self, "position", target, duration)
+	UiMotion.settle(_glide_tween)
 	return _glide_tween
 
 func _start_drag(mouse_global: Vector2) -> void:

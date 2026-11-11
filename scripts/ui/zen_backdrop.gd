@@ -34,6 +34,7 @@ func fade_in() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_tween.tween_method(_set_amount, _amount, 1.0, FADE_DURATION)
+	UiMotion.settle(_tween)
 
 func fade_out() -> void:
 	if not visible:
@@ -43,6 +44,7 @@ func fade_out() -> void:
 	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_tween.tween_method(_set_amount, _amount, 0.0, FADE_DURATION)
 	_tween.tween_callback(func() -> void: visible = false)
+	UiMotion.settle(_tween)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

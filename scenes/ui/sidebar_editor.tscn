@@ -85,6 +85,16 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_input")
 theme_override_styles/focus = SubResource("StyleBoxFlat_input")
 placeholder_text = "sidebar.title.placeholder"
 
+[node name="AppearanceButton" type="Button" parent="MarginContainer/VBoxContainer/Header" unique_id=1105580740]
+visible = false
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+tooltip_text = "sidebar.zen.properties.tip"
+focus_mode = 0
+theme_override_font_sizes/font_size = 13
+toggle_mode = true
+text = "sidebar.zen.properties"
+
 [node name="ZenButton" type="Button" parent="MarginContainer/VBoxContainer/Header" unique_id=1105580730]
 custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
@@ -108,13 +118,19 @@ custom_minimum_size = Vector2(190, 30)
 layout_mode = 2
 script = ExtResource("2_toggle")
 
-[node name="Toolbar" type="HFlowContainer" parent="MarginContainer/VBoxContainer" unique_id=304203251]
+[node name="ColorPalette" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=977503568]
 layout_mode = 2
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 8
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 2
 
-[node name="ImageButton" type="Button" parent="MarginContainer/VBoxContainer/Toolbar" unique_id=322671950]
+[node name="ActionRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=346071463]
 layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ImageButton" type="Button" parent="MarginContainer/VBoxContainer/ActionRow" unique_id=322671950]
+layout_mode = 2
+size_flags_horizontal = 3
 focus_mode = 0
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 12
@@ -122,11 +138,15 @@ text = "sidebar.cover"
 icon = ExtResource("icon_image")
 expand_icon = true
 
-[node name="ColorPalette" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Toolbar" unique_id=977503568]
+[node name="DeleteButton" type="Button" parent="MarginContainer/VBoxContainer/ActionRow" unique_id=1346062253]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
-alignment = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxEmpty_del")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_del")
+theme_override_styles/hover = SubResource("StyleBoxFlat_del_hover")
+text = "sidebar.delete_note"
 
 [node name="FormatBar" type="HFlowContainer" parent="MarginContainer/VBoxContainer" unique_id=1105580723]
 layout_mode = 2
@@ -159,16 +179,3 @@ theme_override_font_sizes/mono_font_size = 15
 theme_override_styles/normal = SubResource("StyleBoxEmpty_inner")
 bbcode_enabled = true
 selection_enabled = true
-
-[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=346071463]
-layout_mode = 2
-
-[node name="DeleteButton" type="Button" parent="MarginContainer/VBoxContainer/Footer" unique_id=1346062253]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxEmpty_del")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_del")
-theme_override_styles/hover = SubResource("StyleBoxFlat_del_hover")
-text = "sidebar.delete_note"

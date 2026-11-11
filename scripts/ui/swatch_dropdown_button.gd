@@ -11,7 +11,6 @@ const POPUP_BORDER: StringName = &"border"
 var _popup: PopupPanel = null
 var _grid: GridContainer = null
 var _stripe: ColorRect = null
-var _presets: Array[Color] = []
 var _swatch_shader: Shader = null
 
 func _init() -> void:
@@ -46,13 +45,12 @@ func _init() -> void:
 func use_theme_stripe(key: StringName) -> void:
 	ThemeColors.bind(_stripe, &"color", key)
 
-func setup(glyph: String, icon_texture: Texture2D, preset_colors: Array[Color], swatch_shader: Shader, columns: int, stripe_color: Color) -> void:
+func setup(glyph: String, icon_texture: Texture2D, swatch_shader: Shader, columns: int, stripe_color: Color) -> void:
 	text = glyph
 	if icon_texture != null:
 		icon = icon_texture
 		expand_icon = true
 		add_theme_constant_override("icon_max_width", 16)
-	_presets = preset_colors
 	_swatch_shader = swatch_shader
 	_grid.columns = columns
 	_stripe.color = stripe_color
@@ -67,8 +65,8 @@ func _rebuild_swatches() -> void:
 		child.queue_free()
 
 	var colors: Array[Color] = []
-	colors.append_array(_presets)
 	var store: PaletteStore = PaletteStore.instance()
+	colors.append_array(store.presets())
 	for i: int in PaletteStore.SLOT_COUNT:
 		var slot: Variant = store.get_slot(i)
 		if slot != null and not colors.has(slot as Color):

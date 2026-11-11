@@ -419,7 +419,7 @@ msgid "settings.reduce_motion"
 msgstr "Уменьшить движение"
 
 msgid "settings.reduce_motion.hint"
-msgstr "Переворот карточки и сворачивание в плашку происходят мгновенно. Затухания и подсветка остаются."
+msgstr "Отключает анимации заметок и интерфейса: переворот, сворачивание, выезд меню, окна, панели и режим фокуса меняются мгновенно."
 
 msgid "settings.show_grid"
 msgstr "Показывать сетку на фоне"
@@ -640,6 +640,12 @@ msgstr "Пунктир"
 msgid "link.style.dotted"
 msgstr "Точки"
 
+msgid "link.style.dash_dot"
+msgstr "Штрих-пунктир"
+
+msgid "link.style.double"
+msgstr "Двойная"
+
 msgid "link.history.style"
 msgstr "Стиль связи"
 
@@ -805,6 +811,12 @@ msgstr "Режим фокуса (F11)"
 msgid "sidebar.zen.exit"
 msgstr "Свернуть (Esc)"
 
+msgid "sidebar.zen.properties"
+msgstr "Свойства"
+
+msgid "sidebar.zen.properties.tip"
+msgstr "Оформление заметки: цвет рамки, тип, обложка, фон"
+
 msgid "sidebar.preview.empty"
 msgstr "Пока пусто. Переключитесь в режим правки и напишите что-нибудь."
 
@@ -956,13 +968,25 @@ msgid "format.highlight"
 msgstr "Подсветка фона"
 
 msgid "palette.slot.filled"
-msgstr "#%s\nПКМ – очистить слот"
+msgstr "#%s\nПКМ – изменить или удалить"
 
 msgid "palette.slot.empty"
 msgstr "Пустой слот: свои цвета сохраняются сюда"
 
 msgid "palette.custom"
 msgstr "Свой цвет"
+
+msgid "palette.menu.change"
+msgstr "Изменить"
+
+msgid "palette.menu.delete"
+msgstr "Удалить"
+
+msgid "palette.menu.reset"
+msgstr "Сбросить"
+
+msgid "palette.duplicate"
+msgstr "Такой цвет уже есть в палитре."
 
 msgid "picker.copy_hex"
 msgstr "Копировать HEX"
@@ -1792,3 +1816,18 @@ msgstr "Код в строке: текст между одинарными об�
 
 msgid "whats_new.1_5_0.code_autoclose"
 msgstr "В редакторе Enter на строке только из трёх обратных кавычек добавляет закрывающую строку и ставит курсор между ними."
+
+msgid "whats_new.1_5_1.cover_delete_row"
+msgstr "В панели заметки «Обложка» и «Удалить» теперь в одной строке под выбором типа, нижняя панель убрана."
+
+msgid "whats_new.1_5_1.zen_appearance"
+msgstr "В режиме Zen есть панель «Оформление»: цвет рамки, тип, обложка, удаление и фон."
+
+msgid "whats_new.1_5_1.link_styles"
+msgstr "Два новых стиля связи: штрих-пунктир и двойная линия. Старые версии показывают их как стиль по умолчанию и теряют при сохранении."
+
+msgid "whats_new.1_5_1.palette_edit"
+msgstr "Цвета по умолчанию и свои цвета можно изменить или сбросить через меню по правому клику. Цвета заметок не меняются."
+
+msgid "whats_new.1_5_1.clean_swatches"
+msgstr "Цветные кружки и значок кнопки копирования в выборе цвета рисуются чётко."

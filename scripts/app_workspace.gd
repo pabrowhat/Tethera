@@ -296,6 +296,7 @@ func _ready() -> void:
 	_toast = HudToast.new()
 	$UI.add_child(_toast)
 	InlineImages.missing_reporter = _on_inline_image_missing
+	PaletteStore.instance().duplicate_rejected.connect(_on_palette_duplicate)
 	_shutter_flash = ShutterFlash.new()
 	$UI.add_child(_shutter_flash)
 	_project_files.build_project_menu()
@@ -1662,7 +1663,7 @@ func _cancel_link_source() -> void:
 func _toggle_connection(id_a: String, id_b: String) -> void:
 	_links.toggle_drawn(id_a, id_b)
 
-const LINK_MENU_STYLES: Array[String] = ["solid", "dashed", "dotted"]
+const LINK_MENU_STYLES: Array[String] = ["solid", "dashed", "dotted", "dash_dot", "double"]
 
 func _link_at(screen_pos: Vector2) -> Dictionary:
 	var canvas_pos: Vector2 = navigator.screen_to_canvas(screen_pos)
@@ -1692,6 +1693,8 @@ func _pick_link(link: Dictionary, global_pos: Vector2) -> void:
 	_link_menu.add_item(tr("link.style.solid"), 0)
 	_link_menu.add_item(tr("link.style.dashed"), 1)
 	_link_menu.add_item(tr("link.style.dotted"), 2)
+	_link_menu.add_item(tr("link.style.dash_dot"), 3)
+	_link_menu.add_item(tr("link.style.double"), 4)
 	_link_menu.open_at(global_pos, LINK_MENU_WIDTH)
 
 func _unpick_link() -> void:
@@ -1711,6 +1714,9 @@ func _on_link_menu_chosen(id: int) -> void:
 		return
 	if _graph.set_link_style(id_a, id_b, new_style):
 		_history.record(tr("link.history.style"), _graph.set_link_style.bind(id_a, id_b, old_style), _graph.set_link_style.bind(id_a, id_b, new_style))
+
+func _on_palette_duplicate() -> void:
+	_toast.show_message(tr("palette.duplicate"), true)
 
 func _on_link_anchored(to_id: String) -> void:
 	var target: GraphCard = _cards_by_id.get(to_id, null)

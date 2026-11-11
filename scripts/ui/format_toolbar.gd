@@ -32,6 +32,8 @@ const TEXT: StringName = &"text.primary"
 const PALETTE_COLUMNS: int = 6
 const DEFAULT_TEXT_STRIPE: StringName = &"text.primary"
 
+const HIGHLIGHT_STRIPE_INDEX: int = 3
+
 var _text_color_button: SwatchDropdownButton = null
 var _highlight_button: SwatchDropdownButton = null
 var _punch_tweens: Dictionary = {}
@@ -40,7 +42,7 @@ func _init() -> void:
 	add_theme_constant_override("h_separation", BUTTON_GAP)
 	add_theme_constant_override("v_separation", BUTTON_GAP)
 
-func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
+func setup(swatch_shader: Shader) -> void:
 	var bold_button: Button = _add_button("B", "format.bold")
 	bold_button.add_theme_font_override("font", AppFonts.note_bold())
 	bold_button.pressed.connect(wrap_requested.emit.bind("**", "**"))
@@ -82,7 +84,7 @@ func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
 	_text_color_button = SwatchDropdownButton.new()
 	_style_button(_text_color_button, "format.text_color")
 	_text_color_button.add_theme_font_override("font", AppFonts.note_bold())
-	_text_color_button.setup("A", null, palette_colors, swatch_shader, PALETTE_COLUMNS, Color.WHITE)
+	_text_color_button.setup("A", null, swatch_shader, PALETTE_COLUMNS, Color.WHITE)
 	_text_color_button.use_theme_stripe(DEFAULT_TEXT_STRIPE)
 	_text_color_button.color_picked.connect(_on_text_color_picked)
 	add_child(_text_color_button)
@@ -90,10 +92,7 @@ func setup(swatch_shader: Shader, palette_colors: Array[Color]) -> void:
 
 	_highlight_button = SwatchDropdownButton.new()
 	_style_button(_highlight_button, "format.highlight")
-	var highlight_stripe: Color = palette_colors[mini(3, palette_colors.size() - 1)] if not palette_colors.is_empty() else Color.WHITE
-	_highlight_button.setup("", ICON_HIGHLIGHTER, palette_colors, swatch_shader, PALETTE_COLUMNS, highlight_stripe)
-	if palette_colors.is_empty():
-		_highlight_button.use_theme_stripe(DEFAULT_TEXT_STRIPE)
+	_highlight_button.setup("", ICON_HIGHLIGHTER, swatch_shader, PALETTE_COLUMNS, PaletteStore.DEFAULT_PRESETS[HIGHLIGHT_STRIPE_INDEX])
 	_highlight_button.color_picked.connect(_on_highlight_picked)
 	add_child(_highlight_button)
 	_attach_press_feedback(_highlight_button)

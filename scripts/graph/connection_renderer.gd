@@ -42,12 +42,21 @@ const DASH_LENGTH: float = 10.0
 const DASH_GAP: float = 6.0
 const DOT_SIZE: float = 2.0
 const DOT_GAP: float = 5.0
+const DOUBLE_LINE_SCALE: float = 0.4
 const MAX_PATTERN_PIECES: int = 4000
+const LINE_SHADER: Shader = preload("res://shaders/link_line.gdshader")
+const EDGE_MARGIN_PIXELS: float = 1.5
+const MIN_SEGMENT_LENGTH: float = 0.001
+
+var _margin: float = 1.0
 const SELECTED_LIGHTEN: float = 0.35
 const SELECTED_WIDTH_BOOST: float = 1.5
 
 func _ready() -> void:
 	RenderingServer.canvas_item_set_custom_rect(get_canvas_item(), true, INFINITE_BOUNDS)
+	var line_material: ShaderMaterial = ShaderMaterial.new()
+	line_material.shader = LINE_SHADER
+	material = line_material
 	ThemeColors.watch(queue_redraw)
 
 func setup(cards_map: Dictionary) -> void:
@@ -191,6 +200,8 @@ func _draw() -> void:
 		zoom = (parent_node as Node2D).scale.x
 
 	var effective_width: float = maxf(line_width * width_scale, 1.8 / zoom)
+	var pixel_scale: float = (get_viewport().get_final_transform() * get_global_transform_with_canvas()).get_scale().x
+	_margin = EDGE_MARGIN_PIXELS / maxf(pixel_scale, 0.001)
 
 	for conn: Dictionary in connections:
 		var from_id: String = conn.get("from", "")
@@ -214,7 +225,7 @@ func _draw() -> void:
 
 	if is_drawing_preview:
 		var current_preview_color: Color = ThemeColors.color(PREVIEW_DISCONNECT_KEY if is_preview_disconnect else PREVIEW_CONNECT_KEY)
-		draw_line(preview_from_pos, preview_to_pos, current_preview_color, effective_width, true)
+		_segment(preview_from_pos, preview_to_pos, current_preview_color, current_preview_color, effective_width, false)
 
 func _draw_link(from_id: String, to_id: String, progress: float, pulse: float, fade: float, base_width: float, style: String, selected: bool) -> void:
 	var card_from: GraphCard = cards_by_id.get(from_id, null)
@@ -250,33 +261,69 @@ func _draw_link(from_id: String, to_id: String, progress: float, pulse: float, f
 		p2 = p1.lerp(p2, progress)
 		c2 = c1.lerp(c2, progress)
 
-	if c1.is_equal_approx(c2):
-		draw_line(p1, p2, c1, width, true)
-	else:
-		var points: PackedVector2Array = PackedVector2Array([p1, p2])
-		var colors: PackedColorArray = PackedColorArray([c1, c2])
-		draw_polyline_colors(points, colors, width, true)
+	_segment(p1, p2, c1, c2, width, false)
 
 func _draw_pattern(from: Vector2, to: Vector2, visible_length: float, full_length: float, c_start: Color, c_end: Color, width: float, style: String) -> bool:
 	if full_length <= 0.001 or visible_length <= 0.0:
 		return true
-	var is_dotted: bool = style == GraphNetwork.STYLE_DOTTED
-	var piece: float = DOT_SIZE if is_dotted else DASH_LENGTH
-	var pitch: float = piece + (DOT_GAP if is_dotted else DASH_GAP)
+	var direction: Vector2 = (to - from) / full_length
+	if style == GraphNetwork.STYLE_DOUBLE:
+		_draw_double(from, direction, visible_length, full_length, c_start, c_end, width)
+		return true
+	var has_dash: bool = style != GraphNetwork.STYLE_DOTTED
+	var has_dot: bool = style != GraphNetwork.STYLE_DASHED
+	var dot_start: float = DASH_LENGTH + DASH_GAP if has_dash else 0.0
+	var pitch: float = DASH_LENGTH + DASH_GAP
+	if has_dot:
+		pitch = dot_start + DOT_SIZE + (DASH_GAP if has_dash else DOT_GAP)
 	if visible_length / pitch > float(MAX_PATTERN_PIECES):
 		return false
 
-	var direction: Vector2 = (to - from) / full_length
 	var radius: float = maxf(width, DOT_SIZE) * 0.5
 	var offset: float = 0.0
 	while offset < visible_length:
-		if is_dotted:
-			var middle: float = minf(offset + piece * 0.5, visible_length)
-			draw_circle(from + direction * middle, radius, c_start.lerp(c_end, middle / full_length), true, -1.0, true)
-		else:
-			var end: float = minf(offset + piece, visible_length)
-			var points: PackedVector2Array = PackedVector2Array([from + direction * offset, from + direction * end])
-			var colors: PackedColorArray = PackedColorArray([c_start.lerp(c_end, offset / full_length), c_start.lerp(c_end, end / full_length)])
-			draw_polyline_colors(points, colors, width, true)
+		if has_dash:
+			var end: float = minf(offset + DASH_LENGTH, visible_length)
+			_segment(from + direction * offset, from + direction * end, c_start.lerp(c_end, offset / full_length), c_start.lerp(c_end, end / full_length), width, true)
+		if has_dot and offset + dot_start < visible_length:
+			var middle: float = minf(offset + dot_start + DOT_SIZE * 0.5, visible_length)
+			_dot(from + direction * middle, radius, c_start.lerp(c_end, middle / full_length))
 		offset += pitch
 	return true
+
+func _draw_double(from: Vector2, direction: Vector2, visible_length: float, full_length: float, c_start: Color, c_end: Color, width: float) -> void:
+	var shift: Vector2 = direction.orthogonal() * width * (1.0 + DOUBLE_LINE_SCALE) * 0.5
+	var colors: PackedColorArray = PackedColorArray([c_start, c_start.lerp(c_end, visible_length / full_length)])
+	var end: Vector2 = from + direction * visible_length
+	for side: float in [-1.0, 1.0]:
+		_segment(from + shift * side, end + shift * side, colors[0], colors[1], width * DOUBLE_LINE_SCALE, false)
+
+func _segment(from: Vector2, to: Vector2, c_start: Color, c_end: Color, width: float, round_caps: bool) -> void:
+	var length: float = from.distance_to(to)
+	if length < MIN_SEGMENT_LENGTH:
+		return
+	var direction: Vector2 = (to - from) / length
+	var radius: float = width * 0.5
+	var reach: float = radius + _margin
+	var extent: float = reach / radius
+	var across: Vector2 = direction.orthogonal() * reach
+	if round_caps:
+		var inset: float = minf(radius, length * 0.5)
+		from += direction * inset
+		to -= direction * inset
+		_quad(from - direction * reach, from, -extent, 0.0, c_start, c_start, across, extent)
+		_quad(to, to + direction * reach, 0.0, extent, c_end, c_end, across, extent)
+	_quad(from, to, 0.0, 0.0, c_start, c_end, across, extent)
+
+func _quad(from: Vector2, to: Vector2, along_from: float, along_to: float, c_from: Color, c_to: Color, across: Vector2, extent: float) -> void:
+	var points: PackedVector2Array = PackedVector2Array([from + across, to + across, to - across, from - across])
+	var colors: PackedColorArray = PackedColorArray([c_from, c_to, c_to, c_from])
+	var uvs: PackedVector2Array = PackedVector2Array([Vector2(along_from, extent), Vector2(along_to, extent), Vector2(along_to, -extent), Vector2(along_from, -extent)])
+	draw_primitive(points, colors, uvs)
+
+func _dot(center: Vector2, radius: float, color: Color) -> void:
+	var reach: float = radius + _margin
+	var extent: float = reach / radius
+	var points: PackedVector2Array = PackedVector2Array([center + Vector2(-reach, -reach), center + Vector2(reach, -reach), center + Vector2(reach, reach), center + Vector2(-reach, reach)])
+	var uvs: PackedVector2Array = PackedVector2Array([Vector2(-extent, -extent), Vector2(extent, -extent), Vector2(extent, extent), Vector2(-extent, extent)])
+	draw_primitive(points, PackedColorArray([color, color, color, color]), uvs)

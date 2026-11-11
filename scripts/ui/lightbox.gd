@@ -79,6 +79,7 @@ func open(texture: Texture2D, origin_rect: Rect2) -> void:
 	_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
 	_tween.tween_property(_picture, "scale", Vector2.ONE, POP_DURATION)
 	_tween.tween_property(_picture, "position", final_position, POP_DURATION)
+	UiMotion.settle(_tween)
 
 func close() -> void:
 	if not _is_open:
@@ -91,6 +92,7 @@ func close() -> void:
 	_tween.tween_property(self, "modulate:a", 0.0, CLOSE_DURATION)
 	_tween.tween_property(_picture, "scale", Vector2(CLOSE_END_SCALE, CLOSE_END_SCALE), CLOSE_DURATION)
 	_tween.chain().tween_callback(_on_close_finished)
+	UiMotion.settle(_tween)
 	closed.emit()
 
 func _gui_input(event: InputEvent) -> void:

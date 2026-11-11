@@ -82,7 +82,7 @@ func _init() -> void:
 
 	_body.add_child(_make_label("decor.text.color", FONT_SIZE, TEXT_COLOR))
 	_color_bar = ColorBar.new()
-	_color_bar.setup(SidebarEditor.COLOR_PALETTE, SWATCH_SHADER)
+	_color_bar.setup(SWATCH_SHADER)
 	_color_bar.set_eyedropper_visible(false)
 	_color_bar.color_picked.connect(_on_color_picked)
 	_color_bar.color_previewed.connect(_on_color_picked)

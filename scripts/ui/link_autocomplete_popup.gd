@@ -83,6 +83,7 @@ func open_at(caret_global: Vector2, line_height: float) -> void:
 	_open_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_open_tween.tween_property(self, "scale", Vector2.ONE, open_duration)
 	_open_tween.tween_property(self, "modulate:a", 1.0, open_duration)
+	UiMotion.settle(_open_tween)
 
 func move_anchor(caret_global: Vector2, line_height: float) -> void:
 	_anchor_pos = caret_global

@@ -83,6 +83,8 @@ func _init() -> void:
 	_copy_button = Button.new()
 	_copy_button.icon = ICON_COPY
 	_copy_button.expand_icon = true
+	_copy_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_copy_button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	_copy_button.add_theme_constant_override("icon_max_width", 16)
 	_copy_button.tooltip_text = "picker.copy_hex"
 	_copy_button.focus_mode = Control.FOCUS_NONE

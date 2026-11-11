@@ -526,7 +526,7 @@ func _refresh_toggles() -> void:
 
 func _color_choices() -> Array[Color]:
 	var choices: Array[Color] = []
-	choices.append_array(SidebarEditor.COLOR_PALETTE)
+	choices.append_array(PaletteStore.instance().presets())
 	for slot: int in PaletteStore.SLOT_COUNT:
 		var saved_color: Variant = PaletteStore.instance().get_slot(slot)
 		if saved_color != null and not _has_color(choices, saved_color as Color):

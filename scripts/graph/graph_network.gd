@@ -15,7 +15,9 @@ const KIND_RELATED: String = "related"
 const STYLE_SOLID: String = "solid"
 const STYLE_DASHED: String = "dashed"
 const STYLE_DOTTED: String = "dotted"
-const STYLES: PackedStringArray = ["solid", "dashed", "dotted"]
+const STYLE_DASH_DOT: String = "dash_dot"
+const STYLE_DOUBLE: String = "double"
+const STYLES: PackedStringArray = ["solid", "dashed", "dotted", "dash_dot", "double"]
 
 var _connections: Array[Dictionary] = []
 var _adjacency: Dictionary = {}

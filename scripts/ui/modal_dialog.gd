@@ -67,6 +67,7 @@ func open() -> void:
 	_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_tween.tween_property(self, "modulate:a", 1.0, OPEN_DURATION * 0.75)
 	_tween.tween_property(_card, "scale", Vector2.ONE, OPEN_DURATION)
+	UiMotion.settle(_tween)
 	set_process_input(true)
 
 func close() -> void:
@@ -79,6 +80,7 @@ func close() -> void:
 	_tween.tween_property(self, "modulate:a", 0.0, CLOSE_DURATION)
 	_tween.tween_property(_card, "scale", Vector2(0.95, 0.95), CLOSE_DURATION)
 	_tween.chain().tween_callback(_hide_when_closed)
+	UiMotion.settle(_tween)
 
 func cancel() -> void:
 	if not _is_open:

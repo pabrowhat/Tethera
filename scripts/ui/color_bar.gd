@@ -14,6 +14,10 @@ const PUNCH_DOWN_DURATION: float = 0.1
 const CLEAR_DURATION: float = 0.09
 const EMPTY_RING_COLOR: StringName = &"swatch.empty_ring"
 const EMPTY_RING_WIDTH: float = 1.5
+const MENU_WIDTH: float = 120.0
+const MENU_CHANGE: int = 0
+const MENU_DELETE: int = 1
+const MENU_RESET: int = 2
 const ICON_COLOR: StringName = &"text.caption"
 const ICON_PIPETTE: Texture2D = preload("res://assets/icons/pipette.svg")
 const PIPETTE_ICON_SIZE: int = 14
@@ -22,6 +26,11 @@ var _swatch_shader: Shader = null
 var _preset_row: HBoxContainer = null
 var _slot_row: HBoxContainer = null
 var _preset_swatches: Array[ColorRect] = []
+var _editable_presets: bool = false
+var _menu: PopupList = null
+var _edit_popup: ColorPickerPopup = null
+var _edit_preset: bool = false
+var _edit_index: int = -1
 var _custom_button: CustomColorButton = null
 var _eyedropper_button: Button = null
 var _slot_buttons: Array[Button] = []
@@ -34,13 +43,18 @@ var _has_active: bool = false
 func _init() -> void:
 	add_theme_constant_override("separation", ROW_GAP)
 
-func setup(preset_colors: Array[Color], swatch_shader: Shader) -> void:
+func setup(swatch_shader: Shader, fixed_presets: Array[Color] = []) -> void:
 	_swatch_shader = swatch_shader
+	_editable_presets = fixed_presets.is_empty()
+	var preset_colors: Array[Color] = PaletteStore.instance().presets() if _editable_presets else fixed_presets
 
 	_preset_row = HBoxContainer.new()
 	_preset_row.add_theme_constant_override("separation", ROW_GAP)
 	add_child(_preset_row)
 	_preset_swatches = SwatchPalette.build(_preset_row, preset_colors, swatch_shader, func(color: Color) -> void: color_picked.emit(color))
+	if _editable_presets:
+		for i: int in _preset_swatches.size():
+			(_preset_swatches[i].get_parent() as Button).gui_input.connect(_on_preset_gui_input.bind(i))
 
 	_custom_button = CustomColorButton.new()
 	_custom_button.setup(swatch_shader, preset_colors)
@@ -57,7 +71,14 @@ func setup(preset_colors: Array[Color], swatch_shader: Shader) -> void:
 	for i: int in PaletteStore.SLOT_COUNT:
 		_slot_row.add_child(_make_slot_button(i))
 
-	PaletteStore.instance().changed.connect(_refresh_slots)
+	_menu = PopupList.new()
+	_menu.item_chosen.connect(_on_menu_chosen)
+	add_child(_menu)
+	_edit_popup = ColorPickerPopup.new()
+	_edit_popup.color_committed.connect(_on_edit_committed)
+	add_child(_edit_popup)
+
+	PaletteStore.instance().changed.connect(_on_store_changed)
 	_refresh_slots()
 	ThemeColors.watch(_apply_theme_colors)
 
@@ -133,6 +154,17 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and not _slot_buttons.is_empty():
 		_refresh_slots()
 
+func _on_store_changed() -> void:
+	if _editable_presets:
+		var colors: Array[Color] = PaletteStore.instance().presets()
+		for i: int in _preset_swatches.size():
+			(_preset_swatches[i].material as ShaderMaterial).set_shader_parameter("circle_color", colors[i])
+		_custom_button.set_presets(colors)
+		if _has_active:
+			SwatchPalette.set_active(_preset_swatches, _active_color)
+			_custom_button.sync(_active_color)
+	_refresh_slots()
+
 func _refresh_slots() -> void:
 	var store: PaletteStore = PaletteStore.instance()
 	for i: int in _slot_buttons.size():
@@ -171,7 +203,46 @@ func _on_slot_gui_input(event: InputEvent, index: int) -> void:
 	_slot_buttons[index].accept_event()
 	if PaletteStore.instance().get_slot(index) == null:
 		return
-	_clear_slot_animated(index)
+	_open_menu(false, index, _slot_buttons[index])
+
+func _on_preset_gui_input(event: InputEvent, index: int) -> void:
+	if not (event is InputEventMouseButton):
+		return
+	var button_event: InputEventMouseButton = event as InputEventMouseButton
+	if button_event.button_index != MOUSE_BUTTON_RIGHT or not button_event.pressed:
+		return
+	_preset_swatches[index].get_parent().accept_event()
+	_open_menu(true, index, _preset_swatches[index].get_parent() as Button)
+
+func _open_menu(is_preset: bool, index: int, anchor: Button) -> void:
+	_edit_preset = is_preset
+	_edit_index = index
+	_menu.clear()
+	_menu.add_item(tr("palette.menu.change"), MENU_CHANGE)
+	if is_preset:
+		_menu.add_item(tr("palette.menu.reset"), MENU_RESET)
+		_menu.set_item_disabled(MENU_RESET, not PaletteStore.instance().is_preset_overridden(index))
+	else:
+		_menu.add_item(tr("palette.menu.delete"), MENU_DELETE)
+	_menu.open_below(anchor.get_global_rect(), MENU_WIDTH)
+
+func _on_menu_chosen(id: int) -> void:
+	var store: PaletteStore = PaletteStore.instance()
+	match id:
+		MENU_CHANGE:
+			var anchor: Button = (_preset_swatches[_edit_index].get_parent() if _edit_preset else _slot_buttons[_edit_index]) as Button
+			var current: Color = store.presets()[_edit_index] if _edit_preset else store.get_slot(_edit_index) as Color
+			_edit_popup.open_for(anchor.get_global_rect(), current, get_viewport_rect().size)
+		MENU_DELETE:
+			_clear_slot_animated(_edit_index)
+		MENU_RESET:
+			store.reset_preset(_edit_index)
+
+func _on_edit_committed(color: Color) -> void:
+	if _edit_preset:
+		PaletteStore.instance().set_preset(_edit_index, color)
+	else:
+		PaletteStore.instance().set_slot(_edit_index, color)
 
 func _clear_slot_animated(index: int) -> void:
 	var button: Button = _slot_buttons[index]

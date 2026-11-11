@@ -26,11 +26,13 @@ static var _expanded: bool = false
 var _title_key: String = ""
 var _header: Button = null
 var _body: VBoxContainer = null
+var _body_reveal: RevealBox = null
 var _color_bar: ColorBar = null
 var _color2_bar: ColorBar = null
 var _pick_button: Button = null
 var _gradient_toggle: CheckButton = null
-var _gradient_box: VBoxContainer = null
+var _gradient_box: RevealBox = null
+var _gradient_inner: VBoxContainer = null
 var _has_gradient: bool = false
 var _gradient_wanted: bool = false
 var _clear_button: Button = null
@@ -53,10 +55,12 @@ func _init(title_key: String = "background.title") -> void:
 func setup(swatch_shader: Shader, with_eyedropper: bool = false) -> void:
 	_body = VBoxContainer.new()
 	_body.add_theme_constant_override("separation", 8)
-	add_child(_body)
+	_body_reveal = RevealBox.new()
+	_body_reveal.add_child(_body)
+	add_child(_body_reveal)
 
 	_color_bar = ColorBar.new()
-	_color_bar.setup(BODY_PALETTE, swatch_shader)
+	_color_bar.setup(swatch_shader, BODY_PALETTE)
 	_color_bar.set_eyedropper_visible(with_eyedropper)
 	_color_bar.eyedropper_requested.connect(eyedropper_requested.emit.bind(false))
 	_color_bar.color_picked.connect(color_chosen.emit)
@@ -72,22 +76,31 @@ func setup(swatch_shader: Shader, with_eyedropper: bool = false) -> void:
 	_gradient_toggle.toggled.connect(_on_gradient_toggled)
 	_body.add_child(_gradient_toggle)
 
-	_gradient_box = VBoxContainer.new()
-	_gradient_box.add_theme_constant_override("separation", 6)
+	_gradient_box = RevealBox.new()
 	_gradient_box.visible = false
+	_gradient_box.is_open = false
+	_gradient_inner = VBoxContainer.new()
+	_gradient_inner.add_theme_constant_override("separation", 6)
+	_gradient_box.add_child(_gradient_inner)
 	_body.add_child(_gradient_box)
 
 	var gradient_caption: Label = _make_caption("background.gradient_end", 11, HINT_COLOR)
-	_gradient_box.add_child(gradient_caption)
+	_gradient_inner.add_child(gradient_caption)
 
 	_color2_bar = ColorBar.new()
-	_color2_bar.setup(BODY_PALETTE, swatch_shader)
+	_color2_bar.setup(swatch_shader, BODY_PALETTE)
 	_color2_bar.set_eyedropper_visible(with_eyedropper)
 	_color2_bar.eyedropper_requested.connect(eyedropper_requested.emit.bind(true))
 	_color2_bar.color_picked.connect(color2_chosen.emit)
 	_color2_bar.color_previewed.connect(color2_previewed.emit)
 	_color2_bar.color_committed.connect(color2_chosen.emit)
-	_gradient_box.add_child(_color2_bar)
+	_gradient_inner.add_child(_color2_bar)
+
+	_hint = Label.new()
+	_hint.add_theme_font_size_override("font_size", 11)
+	ThemeColors.bind_override(_hint, &"font_color", HINT_COLOR)
+	_hint.visible = false
+	_body.add_child(_hint)
 
 	var row: HFlowContainer = HFlowContainer.new()
 	row.add_theme_constant_override("h_separation", 8)
@@ -98,12 +111,6 @@ func setup(swatch_shader: Shader, with_eyedropper: bool = false) -> void:
 	row.add_child(_pick_button)
 	_clear_button = _make_button("background.clear", cleared.emit)
 	row.add_child(_clear_button)
-
-	_hint = Label.new()
-	_hint.add_theme_font_size_override("font_size", 11)
-	ThemeColors.bind_override(_hint, &"font_color", HINT_COLOR)
-	_hint.visible = false
-	_body.add_child(_hint)
 	_sync_fold()
 
 func attach_border_control(control: Control, caption: String) -> void:
@@ -145,7 +152,7 @@ func show_state(color_hex: String, color2_hex: String, image: String, hint: Stri
 	_has_gradient = color2_hex != ""
 	var gradient_on: bool = _has_gradient or _gradient_wanted
 	_gradient_toggle.set_pressed_no_signal(gradient_on)
-	_gradient_box.visible = gradient_on
+	_gradient_box.set_open(gradient_on, false)
 	_clear_button.disabled = color_hex == "" and color2_hex == "" and image == ""
 	_hint.text = hint
 	_hint.visible = hint != ""
@@ -155,7 +162,7 @@ func reset_gradient_wish() -> void:
 
 func _on_gradient_toggled(on: bool) -> void:
 	_gradient_wanted = on
-	_gradient_box.visible = on
+	_gradient_box.set_open(on, true)
 	if not on and _has_gradient:
 		gradient_cleared.emit()
 
@@ -165,12 +172,12 @@ func _notification(what: int) -> void:
 
 func _on_header_pressed() -> void:
 	_expanded = not _expanded
-	_sync_fold()
+	_sync_fold(true)
 
-func _sync_fold() -> void:
+func _sync_fold(animate: bool = false) -> void:
 	_header.text = ("▾ " if _expanded else "▸ ") + tr(_title_key)
-	if _body != null:
-		_body.visible = _expanded
+	if _body_reveal != null:
+		_body_reveal.set_open(_expanded, animate)
 
 func _on_pick_pressed() -> void:
 	if _image_dialog_open:

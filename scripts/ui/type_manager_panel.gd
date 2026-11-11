@@ -23,7 +23,6 @@ const KIND_KEYS: Array[String] = ["type.field.kind.text", "type.field.kind.numbe
 
 var _registry: EntityTypeRegistry = null
 var _count_of: Callable = Callable()
-var _palette: Array[Color] = []
 var _swatch_shader: Shader = null
 
 var _expanded_id: String = ""
@@ -79,10 +78,9 @@ func _init() -> void:
 	_list.add_theme_constant_override("separation", 8)
 	scroll.add_child(_list)
 
-func setup(registry: EntityTypeRegistry, count_of: Callable, palette: Array[Color], swatch_shader: Shader) -> void:
+func setup(registry: EntityTypeRegistry, count_of: Callable, swatch_shader: Shader) -> void:
 	_registry = registry
 	_count_of = count_of
-	_palette = palette
 	_swatch_shader = swatch_shader
 	_registry.changed.connect(refresh)
 	refresh()
@@ -179,7 +177,7 @@ func _make_type_body(entity_type: EntityType) -> PanelContainer:
 	box.add_child(name_input)
 
 	var color_bar: ColorBar = ColorBar.new()
-	color_bar.setup(_palette, _swatch_shader)
+	color_bar.setup(_swatch_shader)
 	color_bar.set_eyedropper_visible(false)
 	color_bar.set_active_color(entity_type.color)
 	color_bar.color_picked.connect(_on_color_chosen.bind(type_id))

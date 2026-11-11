@@ -151,6 +151,7 @@ func close() -> void:
 	_tween.tween_property(self, "modulate:a", 0.0, CLOSE_DURATION)
 	_tween.tween_property(self, "scale:y", OPEN_SCALE_Y, CLOSE_DURATION)
 	_tween.chain().tween_callback(func() -> void: visible = false)
+	UiMotion.settle(_tween)
 	closed.emit()
 
 func open_beside(row_rect: Rect2, highlight_first: bool) -> void:
@@ -177,6 +178,7 @@ func _open(anchor: Rect2, min_width: float, highlight_id: int) -> void:
 	_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_tween.tween_property(self, "modulate:a", 1.0, OPEN_DURATION)
 	_tween.tween_property(self, "scale:y", 1.0, OPEN_DURATION)
+	UiMotion.settle(_tween)
 
 	if not _is_open:
 		_is_open = true
