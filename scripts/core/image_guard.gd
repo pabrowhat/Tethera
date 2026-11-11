@@ -68,6 +68,9 @@ static func load_image(path: String) -> Image:
 	var file_path: String = InlineImages.disk_path(path)
 	if file_path == "" or not FileAccess.file_exists(file_path):
 		return null
+	return load_file(file_path)
+
+static func load_file(file_path: String) -> Image:
 	var checked: Dictionary = inspect_file(file_path)
 	if not bool(checked["ok"]):
 		return null

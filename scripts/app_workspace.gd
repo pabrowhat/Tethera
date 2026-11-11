@@ -111,6 +111,7 @@ var _pending_confirm: Callable = Callable()
 var _project_path: String = ""
 var _project_created: int = 0
 var _canvas_background: CanvasBackground = CanvasBackground.new()
+var _pictures: WorkspacePictures = null
 
 const SEARCH_ICON: Texture2D = preload("res://assets/icons/search.svg")
 const SEARCH_ICON_SIZE: float = 24.0
@@ -140,6 +141,8 @@ func _ready() -> void:
 	_type_ops = WorkspaceTypes.new(self)
 	_decor = WorkspaceDecor.new(self)
 	_canvas_bg = WorkspaceCanvasBackground.new(self)
+	_pictures = WorkspacePictures.new(self)
+	RenderingServer.frame_post_draw.connect(_run_pending_snapshot)
 	_layout = WorkspaceLayout.new(self)
 	_project_files = ProjectFilesController.new(self)
 	_import = WorkspaceImport.new(self)
@@ -382,6 +385,12 @@ func _refresh_search_hint() -> void:
 	if PlatformKeys.is_macos():
 		search_input.placeholder_text = PlatformKeys.localize(tr("topbar.search.placeholder"))
 
+func _exit_tree() -> void:
+	if RenderingServer.frame_post_draw.is_connected(_run_pending_snapshot):
+		RenderingServer.frame_post_draw.disconnect(_run_pending_snapshot)
+	if _pictures != null:
+		_pictures.shutdown()
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and search_input != null:
 		_refresh_search_hint()
@@ -404,28 +413,40 @@ func _quit_app() -> void:
 func _load_vault_data(skipped_worlds: int = 0) -> void:
 	_storage.ensure_directories()
 	_storage.purge_trash(_now())
-	var snapshot: VaultStorage.SnapshotResult = _storage.take_daily_snapshot(Time.get_date_string_from_system())
+	_storage.snapshot_finished.connect(_on_snapshot_finished)
+	_storage.schedule_daily_snapshot(Time.get_date_string_from_system())
 	_load_types()
+	InlineImages.defer_misses = true
 	var loaded_notes: Array[Dictionary] = _storage.load_all_notes()
 
 	for note: Dictionary in loaded_notes:
 		_instantiate_card(note)
 		_note_counter += 1
 
+	_saving_links_paused = true
 	_graph.load_from_data(_storage.load_connections())
+	_saving_links_paused = false
 	_links.scan_world()
 	_decor.load_all()
 	_canvas_bg.load_saved()
 	_pin_positions(loaded_notes)
 	_update_lod(navigator.get_zoom(), false)
-	_report_vault_problems(snapshot == VaultStorage.SnapshotResult.FAILED, skipped_worlds)
+	InlineImages.defer_misses = false
+	_pictures.begin(InlineImages.pending_references())
+	_report_vault_problems(skipped_worlds)
 
-func _report_vault_problems(snapshot_failed: bool, skipped_worlds: int = 0) -> void:
+func _run_pending_snapshot() -> void:
+	if _storage != null:
+		_storage.flush_pending_snapshot()
+
+func _on_snapshot_finished(result: VaultStorage.SnapshotResult) -> void:
+	if result == VaultStorage.SnapshotResult.FAILED:
+		_toast.show_message(tr("vault.snapshot_failed"), true, VAULT_WARNING_HOLD)
+
+func _report_vault_problems(skipped_worlds: int = 0) -> void:
 	var problems: PackedStringArray = PackedStringArray()
 	if skipped_worlds > 0:
 		problems.append(tr("worlds.damaged_skipped") % skipped_worlds)
-	if snapshot_failed:
-		problems.append(tr("vault.snapshot_failed"))
 	if not _storage.last_corrupt.is_empty():
 		problems.append(tr("vault.corrupt_notes") % [_storage.last_corrupt.size(), _short_list(_storage.last_corrupt)])
 	if not _storage.last_unreadable.is_empty():
@@ -596,6 +617,7 @@ func _end_interactions() -> void:
 	_selection.clear()
 
 func _clear_canvas() -> void:
+	_pictures.close_world()
 	_end_interactions()
 	for card: GraphCard in _cards_by_id.values():
 		if is_instance_valid(card):
@@ -784,6 +806,7 @@ func _jump_to_bookmark(slot: int) -> void:
 	card.flash_highlight()
 
 func _process(_delta: float) -> void:
+	_pictures.pump()
 	if is_instance_valid(_link_source_card):
 		var mouse_screen: Vector2 = get_viewport().get_mouse_position()
 		var hovered_card: GraphCard = _find_card_under_mouse(mouse_screen)

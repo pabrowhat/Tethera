@@ -8,10 +8,20 @@ func _init(workspace: AppWorkspace) -> void:
 
 func load_saved() -> void:
 	_ws._canvas_background = _ws._storage.load_canvas_background()
-	if _ws._canvas_background.is_set() and _texture() == null:
-		_ws._canvas_background = CanvasBackground.new()
-		_ws._toast.show_message(tr("canvas_bg.load_failed"), true)
+	if _ws._canvas_background.is_set() and _texture() == null and not InlineImages.is_pending(_ws._canvas_background.image):
+		_drop_unreadable()
 	apply()
+
+func picture_arrived(reference: String) -> void:
+	if not _ws._canvas_background.is_set() or _ws._canvas_background.image != reference:
+		return
+	if InlineImages.peek(reference) == null:
+		_drop_unreadable()
+	apply()
+
+func _drop_unreadable() -> void:
+	_ws._canvas_background = CanvasBackground.new()
+	_ws._toast.show_message(tr("canvas_bg.load_failed"), true)
 
 func apply() -> void:
 	if not (_ws.background.material is ShaderMaterial):

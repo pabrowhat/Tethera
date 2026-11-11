@@ -275,6 +275,8 @@ static func _image_bbcode(picture: Dictionary, max_image_width: int) -> String:
 	var path: String = str(picture["path"])
 	var texture: Texture2D = InlineImages.texture_for(path)
 	if texture == null:
+		if InlineImages.is_pending(path):
+			return ""
 		InlineImages.report_missing(path)
 		var shown_name: String = path.get_file().replace("[", "(").replace("]", ")")
 		var message: String = str(TranslationServer.translate("image.missing")).replace("%s", shown_name)

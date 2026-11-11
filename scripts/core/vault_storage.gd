@@ -24,6 +24,10 @@ const CORRUPT_SUFFIX: String = ".corrupt"
 enum NoteState { OK, UNREADABLE, CORRUPT }
 enum SnapshotResult { TAKEN, ALREADY_TAKEN, NOTHING_TO_SAVE, FAILED }
 
+signal snapshot_finished(result: SnapshotResult)
+
+var _pending_snapshot_day: String = ""
+
 var last_corrupt: PackedStringArray = PackedStringArray()
 var last_unreadable: PackedStringArray = PackedStringArray()
 
@@ -85,6 +89,7 @@ func save_note(id: String, title: String, content: String, pos: Vector2, color_h
 	return _write_text_atomic(file_path, file_content)
 
 func _write_text_atomic(path: String, text: String) -> bool:
+	flush_pending_snapshot()
 	var temp_path: String = path + TEMP_SUFFIX
 	var file: FileAccess = FileAccess.open(temp_path, FileAccess.WRITE)
 	if file == null:
@@ -132,9 +137,11 @@ func _recover_temp_notes() -> void:
 		if FileAccess.file_exists(notes_dir + note_name):
 			continue
 		if int(_read_note(notes_dir + file_name)["state"]) == NoteState.OK:
+			flush_pending_snapshot()
 			DirAccess.rename_absolute(notes_dir + file_name, notes_dir + note_name)
 
 func _mark_corrupt(file_name: String) -> String:
+	flush_pending_snapshot()
 	var target: String = file_name + CORRUPT_SUFFIX
 	var counter: int = 2
 	while FileAccess.file_exists(notes_dir + target):
@@ -348,6 +355,7 @@ func _collect_image_refs(notes_dir: String, refs: Dictionary) -> void:
 func _move_to_trash(path: String, trash_dir: String) -> bool:
 	if not FileAccess.file_exists(path):
 		return false
+	flush_pending_snapshot()
 	if not DirAccess.dir_exists_absolute(trash_dir) and DirAccess.make_dir_recursive_absolute(trash_dir) != OK:
 		push_error("Failed to create the trash folder: " + trash_dir)
 		return false
@@ -383,6 +391,7 @@ func restore_trashed_note(trash_file: String, new_id: String, note: Dictionary) 
 	var target: String = notes_dir + new_id + ".md"
 	if trash_file != trash_file.get_file() or not ProjectBundle.is_safe_id(new_id) 			or not FileAccess.file_exists(source) or FileAccess.file_exists(target):
 		return false
+	flush_pending_snapshot()
 	ensure_directories()
 	if DirAccess.rename_absolute(source, target) != OK:
 		return false
@@ -444,6 +453,16 @@ func backup_vault(keep: int = MAX_BACKUPS) -> String:
 		return ""
 	_prune_backups(BACKUP_PREFIX, keep)
 	return backup_dir
+
+func schedule_daily_snapshot(day: String) -> void:
+	_pending_snapshot_day = day
+
+func flush_pending_snapshot() -> void:
+	if _pending_snapshot_day == "":
+		return
+	var day: String = _pending_snapshot_day
+	_pending_snapshot_day = ""
+	snapshot_finished.emit(take_daily_snapshot(day))
 
 func take_daily_snapshot(day: String) -> SnapshotResult:
 	ensure_directories()
@@ -561,6 +580,7 @@ func load_extras() -> Array[Dictionary]:
 		return result
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(extras_path))
 	if not (parsed is Array):
+		flush_pending_snapshot()
 		DirAccess.rename_absolute(extras_path, extras_path + CORRUPT_SUFFIX)
 		return result
 	for item: Variant in (parsed as Array):

@@ -370,10 +370,8 @@ func set_cover_image(path: String) -> void:
 	_has_cover = false
 	image_rect.texture = null
 	if image_path != "":
-		var img: Image = ImageGuard.load_image(image_path)
-		if img:
-			img.generate_mipmaps()
-			var tex: ImageTexture = ImageTexture.create_from_image(img)
+		var tex: Texture2D = InlineImages.texture_for(image_path)
+		if tex != null:
 			image_rect.texture = tex
 			_has_cover = true
 	image_rect.visible = _has_cover and not is_compact

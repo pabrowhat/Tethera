@@ -53,6 +53,7 @@ func apply(template: int) -> int:
 	var cards: Array[GraphCard] = _ws._selection.get_cards()
 	if cards.size() < 2:
 		return 0
+	_ws._pictures.finish_now()
 	_ws._cancel_link_source()
 
 	var ids: Array[String] = []

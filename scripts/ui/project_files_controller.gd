@@ -357,6 +357,7 @@ func _on_snapshot_dialog_result(status: bool, selected_paths: PackedStringArray,
 	run_snapshot(path)
 
 func run_snapshot(path: String) -> void:
+	_ws._pictures.finish_now()
 	_ws._snapshot_busy = true
 	_ws._cancel_link_source()
 	_ws._finish_carry()

@@ -6,10 +6,18 @@ var _ws: AppWorkspace = null
 func _init(workspace: AppWorkspace) -> void:
 	_ws = workspace
 
+func _effective(card: GraphCard) -> Dictionary:
+	return NoteBackground.resolve(card.bg_color_hex, card.bg_color2_hex, card.bg_image_path, _ws._types.find(card.entity_type_id))
+
+func refresh_backgrounds_using(reference: String) -> void:
+	for card: GraphCard in _ws._cards_by_id.values():
+		if is_instance_valid(card) and str(_effective(card)["image"]) == reference:
+			apply_background(card)
+
 func apply_background(card: GraphCard) -> void:
 	if not is_instance_valid(card):
 		return
-	var effective: Dictionary = NoteBackground.resolve(card.bg_color_hex, card.bg_color2_hex, card.bg_image_path, _ws._types.find(card.entity_type_id))
+	var effective: Dictionary = _effective(card)
 	var image: String = str(effective["image"])
 	var texture: Texture2D = null
 	if image != "":
